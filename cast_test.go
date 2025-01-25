@@ -30,7 +30,7 @@ func TestValueAs(t *testing.T) {
 			target: `["hello", "world"]`,
 			as:     func(jv fluffyjson.JsonValue) (fluffyjson.JsonValue, error) { a, e := jv.AsString(); return &a, e },
 			expect: `""`,
-			err:    fluffyjson.ErrAsValue{Not: "string", But: "array"},
+			err:    fluffyjson.ErrAsValue{Not: fluffyjson.STRING, But: fluffyjson.ARRAY},
 		},
 	}
 

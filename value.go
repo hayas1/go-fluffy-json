@@ -15,10 +15,21 @@ type (
 		Access
 	}
 
+	Representation string
+
 	Value  struct{ Value JsonValue }
 	Object map[string]JsonValue // TODO int key
 	Array  []JsonValue
 	String string
+)
+
+const (
+	OBJECT Representation = "object"
+	ARRAY  Representation = "array"
+	STRING Representation = "string"
+	NUMBER Representation = "number"
+	BOOL   Representation = "bool"
+	NULL   Representation = "null"
 )
 
 func (v *Value) UnmarshalJSON(data []byte) error {

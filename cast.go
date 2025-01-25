@@ -18,8 +18,8 @@ type (
 		AsString() (String, error)
 	}
 	ErrAsValue struct {
-		Not string
-		But string
+		Not Representation
+		But Representation
 	}
 )
 
@@ -63,20 +63,20 @@ func (v Value) AsString() (String, error) { return v.Value.AsString() }
 func (o Object) IsObject() bool            { return true }
 func (o Object) AsObject() (Object, error) { return o, nil }
 func (o Object) IsArray() bool             { return false }
-func (o Object) AsArray() (Array, error)   { return nil, ErrAsValue{Not: "array", But: "object"} }
+func (o Object) AsArray() (Array, error)   { return nil, ErrAsValue{Not: ARRAY, But: OBJECT} }
 func (o Object) IsString() bool            { return false }
-func (o Object) AsString() (String, error) { return "", ErrAsValue{Not: "string", But: "object"} }
+func (o Object) AsString() (String, error) { return "", ErrAsValue{Not: STRING, But: OBJECT} }
 
 func (a Array) IsObject() bool            { return false }
-func (a Array) AsObject() (Object, error) { return nil, ErrAsValue{Not: "object", But: "array"} }
+func (a Array) AsObject() (Object, error) { return nil, ErrAsValue{Not: OBJECT, But: ARRAY} }
 func (a Array) IsArray() bool             { return true }
 func (a Array) AsArray() (Array, error)   { return a, nil }
 func (a Array) IsString() bool            { return false }
-func (a Array) AsString() (String, error) { return "", ErrAsValue{Not: "string", But: "array"} }
+func (a Array) AsString() (String, error) { return "", ErrAsValue{Not: STRING, But: ARRAY} }
 
 func (s String) IsObject() bool            { return false }
-func (s String) AsObject() (Object, error) { return nil, ErrAsValue{Not: "object", But: "string"} }
+func (s String) AsObject() (Object, error) { return nil, ErrAsValue{Not: OBJECT, But: STRING} }
 func (s String) IsArray() bool             { return false }
-func (s String) AsArray() (Array, error)   { return nil, ErrAsValue{Not: "array", But: "string"} }
+func (s String) AsArray() (Array, error)   { return nil, ErrAsValue{Not: ARRAY, But: STRING} }
 func (s String) IsString() bool            { return true }
 func (s String) AsString() (String, error) { return s, nil }
