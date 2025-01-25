@@ -13,6 +13,7 @@ type (
 		AsObject
 		AsArray
 		AsString
+		AsNumber
 		Accept
 		Access
 	}
@@ -23,6 +24,7 @@ type (
 	Object map[string]JsonValue // TODO int key
 	Array  []JsonValue
 	String string
+	Number float64
 )
 
 const (
@@ -99,4 +101,21 @@ func (s *String) UnmarshalJSON(data []byte) error {
 }
 func (s String) MarshalJSON() ([]byte, error) {
 	return json.Marshal(string(s))
+}
+
+func (n Number) Representation() Representation { return NUMBER }
+func (n *Number) UnmarshalJSON(data []byte) error {
+	var inner interface{}
+	if err := json.Unmarshal(data, &inner); err != nil {
+		return err
+	}
+	num, err := Cast(inner)
+	if err != nil {
+		return err
+	}
+	*n = *num.(*Number)
+	return nil
+}
+func (n Number) MarshalJSON() ([]byte, error) {
+	return json.Marshal(float64(n))
 }

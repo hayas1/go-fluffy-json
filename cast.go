@@ -17,6 +17,11 @@ type (
 		IsString() bool
 		AsString() (String, error)
 	}
+	AsNumber interface {
+		IsNumber() bool
+		AsNumber() (Number, error)
+	}
+
 	ErrAsValue struct {
 		Not Representation
 		But Representation
@@ -61,6 +66,8 @@ func (v Value) IsArray() bool             { return v.Value.IsArray() }
 func (v Value) AsArray() (Array, error)   { return v.Value.AsArray() }
 func (v Value) IsString() bool            { return v.Value.IsString() }
 func (v Value) AsString() (String, error) { return v.Value.AsString() }
+func (v Value) IsNumber() bool            { return v.Value.IsNumber() }
+func (v Value) AsNumber() (Number, error) { return v.Value.AsNumber() }
 
 func CastObject(m map[string]interface{}) (Object, error) {
 	var err error
@@ -85,6 +92,8 @@ func (o Object) IsArray() bool             { return false }
 func (o Object) AsArray() (Array, error)   { return nil, ErrAsValue{Not: ARRAY, But: OBJECT} }
 func (o Object) IsString() bool            { return false }
 func (o Object) AsString() (String, error) { return "", ErrAsValue{Not: STRING, But: OBJECT} }
+func (o Object) IsNumber() bool            { return false }
+func (o Object) AsNumber() (Number, error) { return 0, ErrAsValue{Not: NUMBER, But: OBJECT} }
 
 func CastArray(l []interface{}) (Array, error) {
 	var err error
@@ -109,6 +118,8 @@ func (a Array) IsArray() bool             { return true }
 func (a Array) AsArray() (Array, error)   { return a, nil }
 func (a Array) IsString() bool            { return false }
 func (a Array) AsString() (String, error) { return "", ErrAsValue{Not: STRING, But: ARRAY} }
+func (a Array) IsNumber() bool            { return false }
+func (a Array) AsNumber() (Number, error) { return 0, ErrAsValue{Not: NUMBER, But: ARRAY} }
 
 func CastString(s string) (String, error) {
 	return String(s), nil
@@ -126,3 +137,24 @@ func (s String) IsArray() bool             { return false }
 func (s String) AsArray() (Array, error)   { return nil, ErrAsValue{Not: ARRAY, But: STRING} }
 func (s String) IsString() bool            { return true }
 func (s String) AsString() (String, error) { return s, nil }
+func (s String) IsNumber() bool            { return false }
+func (s String) AsNumber() (Number, error) { return 0, ErrAsValue{Not: NUMBER, But: STRING} }
+
+func CastNumber(n float64) (Number, error) {
+	return Number(n), nil
+}
+func ForceNumber(n float64) *Number {
+	num, err := CastNumber(n)
+	if err != nil {
+		panic(err)
+	}
+	return &num
+}
+func (n Number) IsObject() bool            { return false }
+func (n Number) AsObject() (Object, error) { return nil, ErrAsValue{Not: OBJECT, But: NUMBER} }
+func (n Number) IsArray() bool             { return false }
+func (n Number) AsArray() (Array, error)   { return nil, ErrAsValue{Not: ARRAY, But: NUMBER} }
+func (n Number) IsString() bool            { return false }
+func (n Number) AsString() (String, error) { return "", ErrAsValue{Not: STRING, But: NUMBER} }
+func (n Number) IsNumber() bool            { return true }
+func (n Number) AsNumber() (Number, error) { return n, nil }

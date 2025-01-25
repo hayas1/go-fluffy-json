@@ -13,11 +13,14 @@ type (
 		VisitObjectEntry(string, JsonValue) error
 		LeaveObjectEntry(string, JsonValue) error
 		LeaveObject(*Object) error
+
 		VisitArray(*Array) error
 		VisitArrayEntry(int, JsonValue) error
 		LeaveArrayEntry(int, JsonValue) error
 		LeaveArray(*Array) error
+
 		VisitString(*String) error
+		VisitNumber(*Number) error
 	}
 
 	BaseVisitor    struct{}
@@ -30,6 +33,7 @@ func (v *Value) Accept(visitor Visitor) error  { return v.Value.Accept(visitor) 
 func (o *Object) Accept(visitor Visitor) error { visitor.VisitObject(o); return visitor.LeaveObject(o) }
 func (a *Array) Accept(visitor Visitor) error  { visitor.VisitArray(a); return visitor.LeaveArray(a) }
 func (s *String) Accept(visitor Visitor) error { return visitor.VisitString(s) }
+func (n *Number) Accept(visitor Visitor) error { return visitor.VisitNumber(n) }
 
 func (bv *BaseVisitor) VisitObject(o *Object) error                      { return nil }
 func (bv *BaseVisitor) VisitObjectEntry(key string, val JsonValue) error { return nil }
@@ -40,10 +44,12 @@ func (bv *BaseVisitor) VisitArrayEntry(idx int, val JsonValue) error     { retur
 func (bv *BaseVisitor) LeaveArrayEntry(idx int, val JsonValue) error     { return nil }
 func (bv *BaseVisitor) LeaveArray(a *Array) error                        { return nil }
 func (bv *BaseVisitor) VisitString(s *String) error                      { return nil }
+func (bv *BaseVisitor) VisitNumber(n *Number) error                      { return nil }
 
 func DfsVisitor[V Visitor](visitor V) *Dfs[V] {
 	return &Dfs[V]{Visitor: visitor}
 }
+
 func (dfs *Dfs[V]) VisitObject(o *Object) (err error) {
 	if err = dfs.Visitor.VisitObject(o); err != nil {
 		return err
@@ -74,6 +80,7 @@ func (dfs *Dfs[V]) LeaveObjectEntry(k string, v JsonValue) error {
 func (dfs *Dfs[V]) LeaveObject(o *Object) error {
 	return nil
 }
+
 func (dfs *Dfs[V]) VisitArray(a *Array) (err error) {
 	if err = dfs.Visitor.VisitArray(a); err != nil {
 		return err
@@ -104,8 +111,12 @@ func (dfs *Dfs[V]) LeaveArrayEntry(i int, v JsonValue) error {
 func (dfs *Dfs[V]) LeaveArray(a *Array) error {
 	return nil
 }
+
 func (dfs *Dfs[V]) VisitString(s *String) error {
 	return dfs.Visitor.VisitString(s)
+}
+func (dfs *Dfs[V]) VisitNumber(n *Number) error {
+	return dfs.Visitor.VisitNumber(n)
 }
 
 type ValueVisitor struct {
