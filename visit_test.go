@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	fluffyjson "github.com/hayash1/go-fluffy-json"
+	fluffyjson "github.com/hayas1/go-fluffy-json"
 )
 
 type Collector struct {
