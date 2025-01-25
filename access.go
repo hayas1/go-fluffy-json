@@ -1,6 +1,10 @@
 package fluffyjson
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 type (
 	Access interface {
@@ -70,6 +74,26 @@ func (s SliceAccess) Slicing(v JsonValue) ([]JsonValue, error) {
 	}
 }
 
+// https://tools.ietf.org/html/rfc6901
+func ParsePointer(p string) Pointer {
+	parsed := make([]string, 0)
+	for _, s := range strings.Split(p, "/")[1:] {
+		s = strings.ReplaceAll(s, "~1", "/")
+		s = strings.ReplaceAll(s, "~0", "~")
+		parsed = append(parsed, s)
+	}
+
+	pointer := make([]Accessor, 0, len(parsed))
+	for _, a := range parsed {
+		// TODO integer like map key
+		if index, err := strconv.Atoi(a); err != nil {
+			pointer = append(pointer, KeyAccess(a))
+		} else {
+			pointer = append(pointer, IndexAccess(index))
+		}
+	}
+	return pointer
+}
 func (p Pointer) Accessing(v JsonValue) (JsonValue, error) {
 	curr := v
 	for _, a := range p {

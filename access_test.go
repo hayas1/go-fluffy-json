@@ -95,14 +95,11 @@ func TestPointer(t *testing.T) {
 		err     error
 	}{
 		{
-			name:   "slice access",
-			target: `{"number": ["zero", "one", "two"]}`,
-			pointer: fluffyjson.Pointer{
-				fluffyjson.KeyAccess("number"),
-				fluffyjson.IndexAccess(1),
-			},
-			expect: &[]fluffyjson.String{fluffyjson.String("one")}[0],
-			err:    nil,
+			name:    "slice access",
+			target:  `{"number": ["zero", "one", "two"]}`,
+			pointer: fluffyjson.ParsePointer("/number/1"),
+			expect:  &[]fluffyjson.String{fluffyjson.String("one")}[0],
+			err:     nil,
 		},
 	}
 
