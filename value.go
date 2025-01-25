@@ -5,7 +5,9 @@ import (
 )
 
 type (
+	// https://www.json.org/
 	JsonValue interface {
+		Representation() Representation
 		json.Unmarshaler
 		json.Marshaler
 		AsObject
@@ -32,6 +34,7 @@ const (
 	NULL   Representation = "null"
 )
 
+func (v Value) Representation() Representation { return v.Value.Representation() }
 func (v *Value) UnmarshalJSON(data []byte) error {
 	// TODO remove this wrapper struct `Value` ?
 	// TODO do not implement as deep copy, unmarshal directly
@@ -49,6 +52,7 @@ func (v Value) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.Value)
 }
 
+func (o Object) Representation() Representation { return OBJECT }
 func (o *Object) UnmarshalJSON(data []byte) error {
 	var inner interface{}
 	if err := json.Unmarshal(data, &inner); err != nil {
@@ -64,6 +68,7 @@ func (o Object) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]JsonValue(o))
 }
 
+func (a Array) Representation() Representation { return ARRAY }
 func (a *Array) UnmarshalJSON(data []byte) error {
 	var inner interface{}
 	if err := json.Unmarshal(data, &inner); err != nil {
@@ -79,6 +84,7 @@ func (a Array) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]JsonValue(a))
 }
 
+func (s String) Representation() Representation { return STRING }
 func (s *String) UnmarshalJSON(data []byte) error {
 	var inner interface{}
 	if err := json.Unmarshal(data, &inner); err != nil {
