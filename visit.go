@@ -32,15 +32,15 @@ func (o *Object) Accept(visitor Visitor) error { visitor.VisitObject(o); return 
 func (a *Array) Accept(visitor Visitor) error  { visitor.VisitArray(a); return visitor.LeaveArray(a) }
 func (s *String) Accept(visitor Visitor) error { return visitor.VisitString(s) }
 
-func (v *BaseVisitor) VisitObject(o *Object) error                      { return nil }
-func (v *BaseVisitor) VisitObjectEntry(key string, val JsonValue) error { return nil }
-func (v *BaseVisitor) LeaveObjectEntry(key string, val JsonValue) error { return nil }
-func (v *BaseVisitor) LeaveObject(o *Object) error                      { return nil }
-func (v *BaseVisitor) VisitArray(a *Array) error                        { return nil }
-func (v *BaseVisitor) VisitArrayEntry(idx int, val JsonValue) error     { return nil }
-func (v *BaseVisitor) LeaveArrayEntry(idx int, val JsonValue) error     { return nil }
-func (v *BaseVisitor) LeaveArray(a *Array) error                        { return nil }
-func (v *BaseVisitor) VisitString(s *String) error                      { return nil }
+func (bv *BaseVisitor) VisitObject(o *Object) error                      { return nil }
+func (bv *BaseVisitor) VisitObjectEntry(key string, val JsonValue) error { return nil }
+func (bv *BaseVisitor) LeaveObjectEntry(key string, val JsonValue) error { return nil }
+func (bv *BaseVisitor) LeaveObject(o *Object) error                      { return nil }
+func (bv *BaseVisitor) VisitArray(a *Array) error                        { return nil }
+func (bv *BaseVisitor) VisitArrayEntry(idx int, val JsonValue) error     { return nil }
+func (bv *BaseVisitor) LeaveArrayEntry(idx int, val JsonValue) error     { return nil }
+func (bv *BaseVisitor) LeaveArray(a *Array) error                        { return nil }
+func (bv *BaseVisitor) VisitString(s *String) error                      { return nil }
 
 func DfsVisitor[V Visitor](visitor V) *Dfs[V] {
 	return &Dfs[V]{Visitor: visitor}
