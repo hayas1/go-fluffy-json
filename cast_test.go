@@ -25,13 +25,13 @@ func TestValueAs(t *testing.T) {
 			expect: `{"number": ["zero", "one", "two"]}`,
 			err:    nil,
 		},
-		// {
-		// 	name:   "object as array",
-		// 	target: `{"number": ["zero", "one", "two"]}`,
-		// 	as:     func(jv fluffyjson.JsonValue) (fluffyjson.JsonValue, error) { a, e := jv.AsArray(); return &a, e },
-		// 	expect: `[]`,
-		// 	err:    fluffyjson.ErrAsValue{Not: "array", But: "object"},
-		// },
+		{
+			name:   "array as string",
+			target: `["hello", "world"]`,
+			as:     func(jv fluffyjson.JsonValue) (fluffyjson.JsonValue, error) { a, e := jv.AsString(); return &a, e },
+			expect: `""`,
+			err:    fluffyjson.ErrAsValue{Not: "string", But: "array"},
+		},
 	}
 
 	for _, tc := range testcases {
