@@ -9,11 +9,12 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+type HelloWorld struct {
+	Hello String `json:"hello"`
+	Meta  Value  `json:"meta"`
+}
+
 func TestUnmarshalBasic(t *testing.T) {
-	type HelloWorld struct {
-		Hello String `json:"hello"`
-		Meta  Value  `json:"meta"`
-	}
 	testCases := []struct {
 		name   string
 		actual HelloWorld
@@ -40,6 +41,35 @@ func TestUnmarshalBasic(t *testing.T) {
 			if err != tc.err {
 				t.Fatal(err)
 			} else if diff := cmp.Diff(tc.expect, tc.actual); diff != "" {
+				t.Fatal(diff)
+			}
+		})
+	}
+}
+func TestMarshalBasic(t *testing.T) {
+	testCases := []struct {
+		name   string
+		actual HelloWorld
+		expect string
+		err    error
+	}{
+		{
+			name: "hello world",
+			actual: HelloWorld{
+				Hello: "world",
+				Meta:  Value{Value: &Object{"hoge": &[]String{("fuga")}[0]}},
+			},
+			expect: `{"hello":"world","meta":{"hoge":"fuga"}}`,
+			err:    nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			bytes, err := json.Marshal(&tc.actual)
+			if err != tc.err {
+				t.Fatal(err)
+			} else if diff := cmp.Diff(tc.expect, string(bytes)); diff != "" {
 				t.Fatal(diff)
 			}
 		})

@@ -14,6 +14,7 @@ const (
 type (
 	JsonValue interface {
 		json.Unmarshaler
+		json.Marshaler
 		Represent() string
 	}
 
@@ -65,6 +66,9 @@ func (v *Value) UnmarshalJSON(data []byte) error {
 	}
 	return nil
 }
+func (v Value) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.Value)
+}
 
 func (o Object) Represent() string {
 	return ObjectType
@@ -80,6 +84,9 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	}
 	return nil
 }
+func (o Object) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]JsonValue(o))
+}
 
 func (a Array) Represent() string {
 	return ArrayType
@@ -94,6 +101,9 @@ func (a *Array) UnmarshalJSON(data []byte) error {
 		*a = *array.(*Array)
 	}
 	return nil
+}
+func (a Array) MarshalJSON() ([]byte, error) {
+	return json.Marshal([]JsonValue(a))
 }
 
 func (s String) Represent() string {
@@ -111,4 +121,7 @@ func (s *String) UnmarshalJSON(data []byte) error {
 	}
 	*s = *str.(*String)
 	return nil
+}
+func (s String) MarshalJSON() ([]byte, error) {
+	return json.Marshal(string(s))
 }
