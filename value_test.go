@@ -143,9 +143,9 @@ func TestValueAs(t *testing.T) {
 		// {
 		// 	name:   "object as array",
 		// 	target: `{"number": ["zero", "one", "two"]}`,
-		// 	as:     func(jv fluffyjson.JsonValue) (fluffyjson.JsonValue, error) { o, e := jv.AsArray(); return &o, e },
+		// 	as:     func(jv fluffyjson.JsonValue) (fluffyjson.JsonValue, error) { a, e := jv.AsArray(); return &a, e },
 		// 	expect: `[]`,
-		// 	err:    fmt.Errorf("not array, but object"),
+		// 	err:    fluffyjson.ErrAsValue{Not: "array", But: "object"},
 		// },
 	}
 
