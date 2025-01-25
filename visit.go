@@ -1,5 +1,10 @@
 package fluffyjson
 
+import (
+	"fmt"
+	"iter"
+)
+
 type (
 	Accept interface {
 		Accept(Visitor) error
@@ -102,4 +107,36 @@ func (dfs *Dfs[V]) LeaveArray(a *Array) error {
 }
 func (dfs *Dfs[V]) VisitString(s *String) error {
 	return dfs.Visitor.VisitString(s)
+}
+
+type ValueVisitor struct {
+	BaseVisitor
+	path  []string
+	yield func([]string, JsonValue) bool
+}
+
+func (v *Value) DepthFirst() iter.Seq2[[]string, JsonValue] {
+	return func(yield func([]string, JsonValue) bool) {
+		visitor := &ValueVisitor{yield: yield}
+		v.Accept(DfsVisitor(visitor))
+	}
+}
+
+func (vv *ValueVisitor) VisitObjectEntry(k string, v JsonValue) error {
+	vv.path = append(vv.path, k)
+	vv.yield(vv.path, v)
+	return nil
+}
+func (vv *ValueVisitor) LeaveObjectEntry(k string, v JsonValue) error {
+	vv.path = vv.path[:len(vv.path)-1]
+	return nil
+}
+func (vv *ValueVisitor) VisitArrayEntry(i int, v JsonValue) error {
+	vv.path = append(vv.path, fmt.Sprint(i))
+	vv.yield(vv.path, v)
+	return nil
+}
+func (vv *ValueVisitor) LeaveArrayEntry(i int, v JsonValue) error {
+	vv.path = vv.path[:len(vv.path)-1]
+	return nil
 }
