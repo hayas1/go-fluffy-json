@@ -15,39 +15,42 @@ func TestValueAs(t *testing.T) {
 		name   string
 		target string
 		as     func(fluffyjson.JsonValue) (fluffyjson.JsonValue, error)
-		expect string
+		expect fluffyjson.JsonValue
 		err    error
 	}{
 		{
 			name:   "object as object",
 			target: `{"number": ["zero", "one", "two"]}`,
 			as:     func(jv fluffyjson.JsonValue) (fluffyjson.JsonValue, error) { o, e := jv.AsObject(); return &o, e },
-			expect: `{"number": ["zero", "one", "two"]}`,
-			err:    nil,
+			expect: &fluffyjson.Object{
+				"number": &fluffyjson.Array{
+					&[]fluffyjson.String{("zero")}[0],
+					&[]fluffyjson.String{("one")}[0],
+					&[]fluffyjson.String{("two")}[0],
+				},
+			},
+			err: nil,
 		},
 		{
 			name:   "array as string",
 			target: `["hello", "world"]`,
 			as:     func(jv fluffyjson.JsonValue) (fluffyjson.JsonValue, error) { a, e := jv.AsString(); return &a, e },
-			expect: `""`,
+			expect: &[]fluffyjson.String{fluffyjson.String("")}[0],
 			err:    fluffyjson.ErrAsValue{Not: fluffyjson.STRING, But: fluffyjson.ARRAY},
 		},
 	}
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			var value, expect fluffyjson.Value
+			var value fluffyjson.Value
 			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
-				t.Fatal(err)
-			}
-			if err := json.Unmarshal([]byte(tc.expect), &expect); err != nil {
 				t.Fatal(err)
 			}
 
 			actual, err := tc.as(&value)
 			if !errors.Is(err, tc.err) {
 				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-			} else if diff := cmp.Diff(expect, fluffyjson.Value{Value: actual}); diff != "" {
+			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
 				t.Fatal(diff)
 			}
 		})
