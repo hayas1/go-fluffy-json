@@ -122,29 +122,4 @@ func TestValue(t *testing.T) {
 			t.Fatal("not world")
 		}
 	})
-
-	t.Run("iterator", func(t *testing.T) {
-		raw := `{"hello":"world"}`
-		var value Value
-		if err := json.Unmarshal([]byte(raw), &value); err != nil {
-			t.Fatal(err)
-		}
-
-		for k, v := range value.Iter() {
-			hello, err := k.AsObjectKey()
-			if err != nil {
-				t.Fatal(err)
-			}
-			if hello != "hello" {
-				t.Fatal("not hello")
-			}
-			world, err := v.AsString()
-			if err != nil {
-				t.Fatal(err)
-			}
-			if world != "world" {
-				t.Fatal("not world")
-			}
-		}
-	})
 }

@@ -12,7 +12,6 @@ type (
 		AsObject
 		AsArray
 		AsString
-		Shallow
 	}
 	AsObject interface {
 		IsObject() bool
