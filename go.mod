@@ -1,4 +1,4 @@
-module github.com/hayash1/go-json-value
+module github.com/hayash1/go-fluffy-json
 
 go 1.23.1
 

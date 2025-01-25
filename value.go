@@ -1,4 +1,4 @@
-package jsonvalue
+package fluffyjson
 
 import (
 	"encoding/json"
