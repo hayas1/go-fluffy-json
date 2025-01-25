@@ -1,3 +1,4 @@
+// [fluffyjson] can deal with JSON fluffily.
 package fluffyjson
 
 import (
@@ -5,7 +6,7 @@ import (
 )
 
 type (
-	// https://www.json.org/
+	// The interface of JSON(https://www.json.org/) value
 	JsonValue interface {
 		Representation() Representation
 		json.Unmarshaler // TODO this cause pointer receiver
