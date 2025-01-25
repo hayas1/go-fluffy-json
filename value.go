@@ -24,13 +24,13 @@ type (
 	String string
 )
 
-func New(v interface{}) (JsonValue, error) {
+func Cast(v interface{}) (JsonValue, error) {
 	var err error
 	switch t := v.(type) {
 	case map[string]interface{}:
 		inner := make(map[string]JsonValue, len(t))
 		for k, v := range t {
-			if inner[k], err = New(v); err != nil {
+			if inner[k], err = Cast(v); err != nil {
 				return nil, err
 			}
 		}
@@ -38,7 +38,7 @@ func New(v interface{}) (JsonValue, error) {
 	case []interface{}:
 		inner := make([]JsonValue, len(t))
 		for i, v := range t {
-			if inner[i], err = New(v); err != nil {
+			if inner[i], err = Cast(v); err != nil {
 				return nil, err
 			}
 		}
@@ -59,7 +59,7 @@ func (v *Value) UnmarshalJSON(data []byte) error {
 	var inner interface{}
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
-	} else if value, err := New(inner); err != nil {
+	} else if value, err := Cast(inner); err != nil {
 		return err
 	} else {
 		v.Value = value
@@ -77,7 +77,7 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	var inner interface{}
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
-	} else if object, err := New(inner); err != nil {
+	} else if object, err := Cast(inner); err != nil {
 		return err
 	} else {
 		*o = *object.(*Object)
@@ -95,7 +95,7 @@ func (a *Array) UnmarshalJSON(data []byte) error {
 	var inner interface{}
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
-	} else if array, err := New(inner); err != nil {
+	} else if array, err := Cast(inner); err != nil {
 		return err
 	} else {
 		*a = *array.(*Array)
@@ -115,7 +115,7 @@ func (s *String) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	}
-	str, err := New(inner)
+	str, err := Cast(inner)
 	if err != nil {
 		return err
 	}
