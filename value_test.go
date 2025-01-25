@@ -11,8 +11,8 @@ import (
 
 func TestUnmarshalBasic(t *testing.T) {
 	type HelloWorld struct {
-		Hello String `json:"hello"`
-		Meta  Value  `json:"meta"`
+		Hello String    `json:"hello"`
+		Meta  JsonValue `json:"meta"`
 	}
 	testCases := []struct {
 		name   string
@@ -28,7 +28,8 @@ func TestUnmarshalBasic(t *testing.T) {
 			input: `{"hello":"world", "meta":{"hoge":"fuga"}}`,
 			expect: HelloWorld{
 				Hello: "world",
-				Meta:  Value{Value: &Value{Value: &Object{"hoge": &Value{Value: &[]String{("fuga")}[0]}}}},
+				Meta:  &Object{"hoge": &[]String{("fuga")}[0]},
+				// Value{Value: &Value{Value: &Object{"hoge": &Value{Value: &[]String{("fuga")}[0]}}}},
 			},
 			err: nil,
 		},

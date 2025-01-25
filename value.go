@@ -16,43 +16,29 @@ type JsonValue interface {
 }
 
 type (
-	Value struct {
-		Value JsonValue
-	}
 	Object map[string]JsonValue
 	Array  []JsonValue
 	String string
 )
 
-func (v Value) Represent() string {
-	return v.Value.Represent()
-}
-func (v *Value) UnmarshalJSON(data []byte) error {
-	var inner interface{}
-	if err := json.Unmarshal(data, &inner); err != nil {
-		return err
-	}
-	*v = Value{Value: &[]Value{New(inner)}[0]}
-	return nil
-}
-func New(v interface{}) Value {
+func New(v interface{}) JsonValue {
 	switch t := v.(type) {
 	case map[string]interface{}:
 		inner := make(map[string]JsonValue, len(t))
 		for k, v := range t {
-			inner[k] = &[]Value{New(v)}[0]
+			inner[k] = New(v)
 		}
-		return Value{Value: &[]Object{(inner)}[0]}
+		return &[]Object{(inner)}[0]
 	case []interface{}:
 		inner := make([]JsonValue, len(t))
 		for i, v := range t {
-			inner[i] = &[]Value{New(v)}[0]
+			inner[i] = New(v)
 		}
-		return Value{Value: &[]Array{(inner)}[0]}
+		return &[]Array{(inner)}[0]
 	case string:
-		return Value{Value: &[]String{String(t)}[0]}
+		return &[]String{String(t)}[0]
 	default:
-		return Value{}
+		panic("// TODO unknown type")
 	}
 }
 
@@ -64,7 +50,7 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	}
-	*o = *New(inner).Value.(*Object)
+	*o = *New(inner).(*Object)
 	return nil
 }
 
@@ -76,7 +62,7 @@ func (a *Array) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	}
-	*a = *New(inner).Value.(*Array)
+	*a = *New(inner).(*Array)
 	return nil
 }
 
@@ -89,6 +75,6 @@ func (s *String) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	}
-	*s = *New(inner).Value.(*String)
+	*s = *New(inner).(*String)
 	return nil
 }
