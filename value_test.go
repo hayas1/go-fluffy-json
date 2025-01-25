@@ -1,6 +1,5 @@
-package fluffyjson
-
 // TODO package fluffyjson_test
+package fluffyjson
 
 import (
 	"encoding/json"

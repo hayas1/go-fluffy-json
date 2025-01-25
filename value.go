@@ -12,6 +12,7 @@ type (
 		AsObject
 		AsArray
 		AsString
+		Accept
 	}
 	AsObject interface {
 		IsObject() bool
