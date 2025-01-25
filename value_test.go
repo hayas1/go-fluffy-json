@@ -10,6 +10,39 @@ import (
 	fluffyjson "github.com/hayash1/go-fluffy-json"
 )
 
+func ExampleValue_UnmarshalJSON() {
+	var v struct {
+		Fluffy fluffyjson.Value `json:"fluffy"`
+	}
+	if err := json.Unmarshal([]byte(`{"fluffy":{"deep":{"nested":{"json":{"value":["hello","world"]}}}}}`), &v); err != nil {
+		panic(err)
+	}
+
+	worldValue, err := v.Fluffy.Access(fluffyjson.ParsePointer("/deep/nested/json/value/1"))
+	if err != nil {
+		panic(err)
+	}
+	world, err := worldValue.AsString()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(world)
+	// Output: world
+}
+
+func ExampleValue_MarshalJSON() {
+	v := fluffyjson.Value{Value: &fluffyjson.Array{
+		fluffyjson.ForceString("hello"),
+		fluffyjson.ForceString("world"),
+	}}
+	b, err := v.MarshalJSON()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(b))
+	// Output: ["hello","world"]
+}
+
 type TestFluffy struct {
 	Fluffy fluffyjson.Value `json:"fluffy"`
 }
