@@ -16,6 +16,7 @@ type JsonValue interface {
 }
 
 type (
+	Value  struct{ Value JsonValue }
 	Object map[string]JsonValue
 	Array  []JsonValue
 	String string
@@ -40,6 +41,20 @@ func New(v interface{}) JsonValue {
 	default:
 		panic("// TODO unknown type")
 	}
+}
+
+func (v Value) Represent() string {
+	return v.Value.Represent()
+}
+func (v *Value) UnmarshalJSON(data []byte) error {
+	// TODO remove this wrapper struct `Value` ?
+	// TODO do not implement as deep copy, unmarshal directly
+	var inner interface{}
+	if err := json.Unmarshal(data, &inner); err != nil {
+		return err
+	}
+	v.Value = New(inner)
+	return nil
 }
 
 func (o Object) Represent() string {
