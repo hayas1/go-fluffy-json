@@ -85,3 +85,62 @@ func TestSliceAccess(t *testing.T) {
 		})
 	}
 }
+
+func TestPointer(t *testing.T) {
+	testCases := []struct {
+		name    string
+		target  string
+		pointer fluffyjson.Pointer
+		expect  fluffyjson.JsonValue
+		err     error
+	}{
+		{
+			name:   "slice access",
+			target: `{"number": ["zero", "one", "two"]}`,
+			pointer: fluffyjson.Pointer{
+				fluffyjson.KeyAccess("number"),
+				fluffyjson.IndexAccess(1),
+			},
+			expect: &[]fluffyjson.String{fluffyjson.String("one")}[0],
+			err:    nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			var value fluffyjson.Value
+			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
+				t.Fatal(err)
+			}
+
+			actual, err := value.Pointer(tc.pointer)
+			if err != tc.err {
+				t.Fatal(err)
+			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
+				t.Fatal(diff)
+			}
+		})
+	}
+}
+
+func TestPointerVariadic(t *testing.T) {
+	t.Run("variadic parameter", func(t *testing.T) {
+		raw := `{"number": ["zero", "one", "two"]}`
+		var value fluffyjson.Value
+		if err := json.Unmarshal([]byte(raw), &value); err != nil {
+			t.Fatal(err)
+		}
+
+		two, err := value.Pointer(
+			fluffyjson.KeyAccess("number"),
+			fluffyjson.IndexAccess(2),
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if diff := cmp.Diff(&[]fluffyjson.String{fluffyjson.String("two")}[0], two); diff != "" {
+			t.Fatal(diff)
+		}
+	})
+}
