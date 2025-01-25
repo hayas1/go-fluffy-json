@@ -13,6 +13,7 @@ type (
 		AsArray
 		AsString
 		Accept
+		Access
 	}
 	AsObject interface {
 		IsObject() bool

@@ -25,8 +25,19 @@ type (
 	Pointer []Accessor
 )
 
+func (v *Value) Access(accessor Accessor) (JsonValue, error)        { return accessor.Access(v) }
+func (v *Value) Slice(accessor SliceAccessor) ([]JsonValue, error)  { return accessor.SliceAccess(v) }
+func (o *Object) Access(accessor Accessor) (JsonValue, error)       { return accessor.Access(o) }
+func (o *Object) Slice(accessor SliceAccessor) ([]JsonValue, error) { return accessor.SliceAccess(o) }
+func (a *Array) Access(accessor Accessor) (JsonValue, error)        { return accessor.Access(a) }
+func (a *Array) Slice(accessor SliceAccessor) ([]JsonValue, error)  { return accessor.SliceAccess(a) }
+func (s *String) Access(accessor Accessor) (JsonValue, error)       { return accessor.Access(s) }
+func (s *String) Slice(accessor SliceAccessor) ([]JsonValue, error) { return accessor.SliceAccess(s) }
+
 func (k KeyAccess) Access(v JsonValue) (JsonValue, error) {
 	switch o := v.(type) {
+	case *Value:
+		return k.Access(o.Value)
 	case *Object:
 		return (*o)[string(k)], nil
 	default:
@@ -35,6 +46,8 @@ func (k KeyAccess) Access(v JsonValue) (JsonValue, error) {
 }
 func (i IndexAccess) Access(v JsonValue) (JsonValue, error) {
 	switch a := v.(type) {
+	case *Value:
+		return i.Access(a.Value)
 	case *Array:
 		return (*a)[i], nil
 	default:
@@ -43,6 +56,8 @@ func (i IndexAccess) Access(v JsonValue) (JsonValue, error) {
 }
 func (s SliceAccess) SliceAccess(v JsonValue) ([]JsonValue, error) {
 	switch a := v.(type) {
+	case *Value:
+		return s.SliceAccess(a.Value)
 	case *Array:
 		return (*a)[s.Start:s.End], nil
 	default:
