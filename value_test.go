@@ -26,8 +26,7 @@ func ExampleValue_UnmarshalJSON() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(world)
-	// Output: world
+	fmt.Println(world) // Output: world
 }
 
 func ExampleValue_MarshalJSON() {
@@ -39,8 +38,7 @@ func ExampleValue_MarshalJSON() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(string(b))
-	// Output: ["hello","world"]
+	fmt.Println(string(b)) // Output: ["hello","world"]
 }
 
 type TestFluffy struct {
