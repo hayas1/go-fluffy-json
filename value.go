@@ -28,7 +28,7 @@ type (
 	String string
 	Number float64
 	Bool   bool
-	Null   struct{}
+	Null   []struct{}
 )
 
 const (
@@ -155,5 +155,5 @@ func (n *Null) UnmarshalJSON(data []byte) error {
 	return nil
 }
 func (n Null) MarshalJSON() ([]byte, error) {
-	return json.Marshal(struct{}{})
+	return json.Marshal(nil)
 }

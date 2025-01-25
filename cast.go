@@ -63,6 +63,9 @@ func Cast(v interface{}) (JsonValue, error) {
 	case bool:
 		b, err := CastBool(t)
 		return &b, err
+	case nil:
+		n, err := CastNull(nil)
+		return &n, err
 	default:
 		return nil, ErrCast{Unsupported: t}
 	}
@@ -115,7 +118,7 @@ func (o Object) AsNumber() (Number, error) { return 0, ErrAsValue{Not: NUMBER, B
 func (o Object) IsBool() bool              { return false }
 func (o Object) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL, But: OBJECT} }
 func (o Object) IsNull() bool              { return false }
-func (o Object) AsNull() (Null, error)     { return struct{}{}, ErrAsValue{Not: NULL, But: OBJECT} }
+func (o Object) AsNull() (Null, error)     { return nil, ErrAsValue{Not: NULL, But: OBJECT} }
 
 func CastArray(l []interface{}) (Array, error) {
 	var err error
@@ -145,7 +148,7 @@ func (a Array) AsNumber() (Number, error) { return 0, ErrAsValue{Not: NUMBER, Bu
 func (a Array) IsBool() bool              { return false }
 func (a Array) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL, But: ARRAY} }
 func (a Array) IsNull() bool              { return false }
-func (a Array) AsNull() (Null, error)     { return struct{}{}, ErrAsValue{Not: NULL, But: ARRAY} }
+func (a Array) AsNull() (Null, error)     { return nil, ErrAsValue{Not: NULL, But: ARRAY} }
 
 func CastString(s string) (String, error) {
 	return String(s), nil
@@ -168,7 +171,7 @@ func (s String) AsNumber() (Number, error) { return 0, ErrAsValue{Not: NUMBER, B
 func (s String) IsBool() bool              { return false }
 func (s String) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL, But: STRING} }
 func (s String) IsNull() bool              { return false }
-func (s String) AsNull() (Null, error)     { return struct{}{}, ErrAsValue{Not: NULL, But: STRING} }
+func (s String) AsNull() (Null, error)     { return nil, ErrAsValue{Not: NULL, But: STRING} }
 
 func CastNumber(n float64) (Number, error) {
 	return Number(n), nil
@@ -191,7 +194,7 @@ func (n Number) AsNumber() (Number, error) { return n, nil }
 func (n Number) IsBool() bool              { return false }
 func (n Number) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL, But: NUMBER} }
 func (n Number) IsNull() bool              { return false }
-func (n Number) AsNull() (Null, error)     { return struct{}{}, ErrAsValue{Not: NULL, But: NUMBER} }
+func (n Number) AsNull() (Null, error)     { return nil, ErrAsValue{Not: NULL, But: NUMBER} }
 
 func CastBool(b bool) (Bool, error) {
 	return Bool(b), nil
@@ -214,12 +217,12 @@ func (b Bool) AsNumber() (Number, error) { return 0, ErrAsValue{Not: NUMBER, But
 func (b Bool) IsBool() bool              { return true }
 func (b Bool) AsBool() (Bool, error)     { return b, nil }
 func (b Bool) IsNull() bool              { return false }
-func (b Bool) AsNull() (Null, error)     { return struct{}{}, ErrAsValue{Not: NULL, But: BOOL} }
+func (b Bool) AsNull() (Null, error)     { return nil, ErrAsValue{Not: NULL, But: BOOL} }
 
-func CastNull(n struct{}) (Null, error) {
+func CastNull(n []struct{}) (Null, error) {
 	return Null(n), nil
 }
-func ForceNull(n struct{}) *Null {
+func ForceNull(n []struct{}) *Null {
 	null, err := CastNull(n)
 	if err != nil {
 		panic(err)
