@@ -100,7 +100,7 @@ func TestPointer(t *testing.T) {
 			name:    "slice access",
 			target:  `{"number": ["zero", "one", "two"]}`,
 			pointer: fluffyjson.ParsePointer("/number/1"),
-			expect:  &[]fluffyjson.String{fluffyjson.String("one")}[0],
+			expect:  fluffyjson.ForceString("one"),
 			err:     nil,
 		},
 	}
@@ -138,7 +138,7 @@ func TestPointerVariadic(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if diff := cmp.Diff(&[]fluffyjson.String{fluffyjson.String("two")}[0], two); diff != "" {
+		if diff := cmp.Diff(fluffyjson.ForceString("two"), two); diff != "" {
 			t.Fatal(diff)
 		}
 	})

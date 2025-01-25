@@ -30,7 +30,7 @@ func TestUnmarshalBasic(t *testing.T) {
 			target: `{"hello":"world", "meta":{"hoge":"fuga"}}`,
 			expect: HelloWorld{
 				Hello: "world",
-				Meta:  fluffyjson.Value{Value: &fluffyjson.Object{"hoge": &[]fluffyjson.String{("fuga")}[0]}},
+				Meta:  fluffyjson.Value{Value: &fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
 			},
 			err: nil,
 		},
@@ -58,7 +58,7 @@ func TestMarshalBasic(t *testing.T) {
 			name: "hello world",
 			actual: HelloWorld{
 				Hello: "world",
-				Meta:  fluffyjson.Value{Value: &fluffyjson.Object{"hoge": &[]fluffyjson.String{("fuga")}[0]}},
+				Meta:  fluffyjson.Value{Value: &fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
 			},
 			expect: `{"hello":"world","meta":{"hoge":"fuga"}}`,
 			err:    nil,

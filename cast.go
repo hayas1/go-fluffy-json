@@ -33,8 +33,8 @@ func (e ErrCast) Error() string {
 	return fmt.Sprintf("unsupported type %T", e.Unsupported)
 }
 
-func Cast(a interface{}) (JsonValue, error) {
-	switch t := a.(type) {
+func Cast(v interface{}) (JsonValue, error) {
+	switch t := v.(type) {
 	case map[string]interface{}:
 		o, err := CastObject(t)
 		return &o, err
@@ -47,6 +47,13 @@ func Cast(a interface{}) (JsonValue, error) {
 	default:
 		return nil, ErrCast{Unsupported: t}
 	}
+}
+func Force(v interface{}) *JsonValue {
+	value, err := Cast(v)
+	if err != nil {
+		panic(err)
+	}
+	return &value
 }
 func (v Value) IsObject() bool            { return v.Value.IsObject() }
 func (v Value) AsObject() (Object, error) { return v.Value.AsObject() }
@@ -65,6 +72,13 @@ func CastObject(m map[string]interface{}) (Object, error) {
 	}
 	return object, nil
 }
+func ForceObject(m map[string]interface{}) *Object {
+	object, err := CastObject(m)
+	if err != nil {
+		panic(err)
+	}
+	return &object
+}
 func (o Object) IsObject() bool            { return true }
 func (o Object) AsObject() (Object, error) { return o, nil }
 func (o Object) IsArray() bool             { return false }
@@ -82,6 +96,13 @@ func CastArray(l []interface{}) (Array, error) {
 	}
 	return array, nil
 }
+func ForceArray(l []interface{}) *Array {
+	array, err := CastArray(l)
+	if err != nil {
+		panic(err)
+	}
+	return &array
+}
 func (a Array) IsObject() bool            { return false }
 func (a Array) AsObject() (Object, error) { return nil, ErrAsValue{Not: OBJECT, But: ARRAY} }
 func (a Array) IsArray() bool             { return true }
@@ -91,6 +112,13 @@ func (a Array) AsString() (String, error) { return "", ErrAsValue{Not: STRING, B
 
 func CastString(s string) (String, error) {
 	return String(s), nil
+}
+func ForceString(s string) *String {
+	str, err := CastString(s)
+	if err != nil {
+		panic(err)
+	}
+	return &str
 }
 func (s String) IsObject() bool            { return false }
 func (s String) AsObject() (Object, error) { return nil, ErrAsValue{Not: OBJECT, But: STRING} }

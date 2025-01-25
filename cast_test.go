@@ -24,9 +24,7 @@ func TestValueAs(t *testing.T) {
 			as:     func(jv fluffyjson.JsonValue) (fluffyjson.JsonValue, error) { o, e := jv.AsObject(); return &o, e },
 			expect: &fluffyjson.Object{
 				"number": &fluffyjson.Array{
-					&[]fluffyjson.String{("zero")}[0],
-					&[]fluffyjson.String{("one")}[0],
-					&[]fluffyjson.String{("two")}[0],
+					fluffyjson.ForceString("zero"), fluffyjson.ForceString("one"), fluffyjson.ForceString("two"),
 				},
 			},
 			err: nil,
@@ -35,7 +33,7 @@ func TestValueAs(t *testing.T) {
 			name:   "array as string",
 			target: `["hello", "world"]`,
 			as:     func(jv fluffyjson.JsonValue) (fluffyjson.JsonValue, error) { a, e := jv.AsString(); return &a, e },
-			expect: &[]fluffyjson.String{fluffyjson.String("")}[0],
+			expect: fluffyjson.ForceString(""),
 			err:    fluffyjson.ErrAsValue{Not: fluffyjson.STRING, But: fluffyjson.ARRAY},
 		},
 	}
