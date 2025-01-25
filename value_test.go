@@ -34,11 +34,11 @@ func TestUnmarshalBasic(t *testing.T) {
 		{
 			name:   "compound",
 			actual: TestFluffy{},
-			target: `{"fluffy":[0, 1, {"three": 4}, "five"]}`,
+			target: `{"fluffy":[0, true, {"three": 4}, "five"]}`,
 			expect: TestFluffy{
 				Fluffy: fluffyjson.Value{Value: &fluffyjson.Array{
 					fluffyjson.ForceNumber(0),
-					fluffyjson.ForceNumber(1),
+					fluffyjson.ForceBool(true),
 					&fluffyjson.Object{"three": fluffyjson.ForceNumber(4)},
 					fluffyjson.ForceString("five"),
 				}},
@@ -78,12 +78,12 @@ func TestMarshalBasic(t *testing.T) {
 			actual: TestFluffy{
 				Fluffy: fluffyjson.Value{Value: &fluffyjson.Array{
 					fluffyjson.ForceNumber(0),
-					fluffyjson.ForceNumber(1),
+					fluffyjson.ForceBool(true),
 					&fluffyjson.Object{"three": fluffyjson.ForceNumber(4)},
 					fluffyjson.ForceString("five"),
 				}},
 			},
-			expect: `{"fluffy":[0,1,{"three":4},"five"]}`,
+			expect: `{"fluffy":[0,true,{"three":4},"five"]}`,
 			err:    nil,
 		},
 	}
