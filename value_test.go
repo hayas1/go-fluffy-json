@@ -19,7 +19,7 @@ func TestUnmarshalBasic(t *testing.T) {
 	testcases := []struct {
 		name   string
 		actual HelloWorld
-		input  string
+		target string
 		expect HelloWorld
 		err    error
 	}{
@@ -27,7 +27,7 @@ func TestUnmarshalBasic(t *testing.T) {
 			name:   "hello world",
 			actual: HelloWorld{},
 			// input:  `{"hello":"world"}`,
-			input: `{"hello":"world", "meta":{"hoge":"fuga"}}`,
+			target: `{"hello":"world", "meta":{"hoge":"fuga"}}`,
 			expect: HelloWorld{
 				Hello: "world",
 				Meta:  fluffyjson.Value{Value: &fluffyjson.Object{"hoge": &[]fluffyjson.String{("fuga")}[0]}},
@@ -38,7 +38,7 @@ func TestUnmarshalBasic(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := json.Unmarshal([]byte(tc.input), &tc.actual)
+			err := json.Unmarshal([]byte(tc.target), &tc.actual)
 			if !errors.Is(err, tc.err) {
 				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
 			} else if diff := cmp.Diff(tc.expect, tc.actual); diff != "" {
@@ -79,9 +79,9 @@ func TestMarshalBasic(t *testing.T) {
 
 func TestValue(t *testing.T) {
 	t.Run("switch syntax", func(t *testing.T) {
-		raw := `{"hello":"world"}`
+		target := `{"hello":"world"}`
 		var value fluffyjson.Value
-		if err := json.Unmarshal([]byte(raw), &value); err != nil {
+		if err := json.Unmarshal([]byte(target), &value); err != nil {
 			t.Fatal(err)
 		}
 
@@ -103,9 +103,9 @@ func TestValue(t *testing.T) {
 	})
 
 	t.Run("as methods", func(t *testing.T) {
-		raw := `{"hello":"world"}`
+		target := `{"hello":"world"}`
 		var value fluffyjson.Value
-		if err := json.Unmarshal([]byte(raw), &value); err != nil {
+		if err := json.Unmarshal([]byte(target), &value); err != nil {
 			t.Fatal(err)
 		}
 

@@ -24,9 +24,9 @@ func (c *Collector) VisitString(s *fluffyjson.String) error {
 
 func TestDfsVisitor(t *testing.T) {
 	t.Run("dfs collect visitor", func(t *testing.T) {
-		raw := `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`
+		target := `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`
 		var value fluffyjson.Value
-		if err := json.Unmarshal([]byte(raw), &value); err != nil {
+		if err := json.Unmarshal([]byte(target), &value); err != nil {
 			t.Fatal(err)
 		}
 

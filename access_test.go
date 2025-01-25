@@ -124,9 +124,9 @@ func TestPointer(t *testing.T) {
 
 func TestPointerVariadic(t *testing.T) {
 	t.Run("variadic parameter", func(t *testing.T) {
-		raw := `{"number": ["zero", "one", "two"]}`
+		target := `{"number": ["zero", "one", "two"]}`
 		var value fluffyjson.Value
-		if err := json.Unmarshal([]byte(raw), &value); err != nil {
+		if err := json.Unmarshal([]byte(target), &value); err != nil {
 			t.Fatal(err)
 		}
 
