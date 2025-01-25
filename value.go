@@ -2,6 +2,7 @@ package fluffyjson
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 const (
@@ -10,36 +11,41 @@ const (
 	StringType = "string"
 )
 
-type JsonValue interface {
-	json.Unmarshaler
-	Represent() string
-}
-
 type (
+	JsonValue interface {
+		json.Unmarshaler
+		Represent() string
+	}
+
 	Value  struct{ Value JsonValue }
-	Object map[string]JsonValue
+	Object map[string]JsonValue // TODO int key
 	Array  []JsonValue
 	String string
 )
 
-func New(v interface{}) JsonValue {
+func New(v interface{}) (JsonValue, error) {
+	var err error
 	switch t := v.(type) {
 	case map[string]interface{}:
 		inner := make(map[string]JsonValue, len(t))
 		for k, v := range t {
-			inner[k] = New(v)
+			if inner[k], err = New(v); err != nil {
+				return nil, err
+			}
 		}
-		return &[]Object{(inner)}[0]
+		return &[]Object{(inner)}[0], nil
 	case []interface{}:
 		inner := make([]JsonValue, len(t))
 		for i, v := range t {
-			inner[i] = New(v)
+			if inner[i], err = New(v); err != nil {
+				return nil, err
+			}
 		}
-		return &[]Array{(inner)}[0]
+		return &[]Array{(inner)}[0], nil
 	case string:
-		return &[]String{String(t)}[0]
+		return &[]String{String(t)}[0], nil
 	default:
-		panic("// TODO unknown type")
+		return nil, fmt.Errorf("unsupported type %T", v)
 	}
 }
 
@@ -53,7 +59,11 @@ func (v *Value) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	}
-	v.Value = New(inner)
+	value, err := New(inner)
+	if err != nil {
+		return err
+	}
+	v.Value = value
 	return nil
 }
 
@@ -65,7 +75,11 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	}
-	*o = *New(inner).(*Object)
+	object, err := New(inner)
+	if err != nil {
+		return err
+	}
+	*o = *object.(*Object)
 	return nil
 }
 
@@ -77,7 +91,11 @@ func (a *Array) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	}
-	*a = *New(inner).(*Array)
+	array, err := New(inner)
+	if err != nil {
+		return err
+	}
+	*a = *array.(*Array)
 	return nil
 }
 
@@ -90,6 +108,10 @@ func (s *String) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	}
-	*s = *New(inner).(*String)
+	str, err := New(inner)
+	if err != nil {
+		return err
+	}
+	*s = *str.(*String)
 	return nil
 }
