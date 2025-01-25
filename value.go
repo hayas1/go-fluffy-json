@@ -15,7 +15,22 @@ type (
 	JsonValue interface {
 		json.Unmarshaler
 		json.Marshaler
+		AsObject
+		AsArray
+		AsString
 		Represent() string
+	}
+	AsObject interface {
+		IsObject() bool
+		AsObject() (Object, error)
+	}
+	AsArray interface {
+		IsArray() bool
+		AsArray() (Array, error)
+	}
+	AsString interface {
+		IsString() bool
+		AsString() (String, error)
 	}
 
 	Value  struct{ Value JsonValue }
@@ -69,6 +84,24 @@ func (v *Value) UnmarshalJSON(data []byte) error {
 func (v Value) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.Value)
 }
+func (v Value) IsObject() bool {
+	return v.Value.IsObject()
+}
+func (v Value) AsObject() (Object, error) {
+	return v.Value.AsObject()
+}
+func (v Value) IsArray() bool {
+	return v.Value.IsArray()
+}
+func (v Value) AsArray() (Array, error) {
+	return v.Value.AsArray()
+}
+func (v Value) IsString() bool {
+	return v.Value.IsString()
+}
+func (v Value) AsString() (String, error) {
+	return v.Value.AsString()
+}
 
 func (o Object) Represent() string {
 	return ObjectType
@@ -87,6 +120,24 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 func (o Object) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]JsonValue(o))
 }
+func (o Object) IsObject() bool {
+	return true
+}
+func (o Object) AsObject() (Object, error) {
+	return o, nil
+}
+func (o Object) IsArray() bool {
+	return false
+}
+func (o Object) AsArray() (Array, error) {
+	return nil, fmt.Errorf("not array, but object")
+}
+func (o Object) IsString() bool {
+	return false
+}
+func (o Object) AsString() (String, error) {
+	return "", fmt.Errorf("not string, but object")
+}
 
 func (a Array) Represent() string {
 	return ArrayType
@@ -104,6 +155,24 @@ func (a *Array) UnmarshalJSON(data []byte) error {
 }
 func (a Array) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]JsonValue(a))
+}
+func (a Array) IsObject() bool {
+	return false
+}
+func (a Array) AsObject() (Object, error) {
+	return nil, fmt.Errorf("not object, but array")
+}
+func (a Array) IsArray() bool {
+	return true
+}
+func (a Array) AsArray() (Array, error) {
+	return a, nil
+}
+func (a Array) IsString() bool {
+	return false
+}
+func (a Array) AsString() (String, error) {
+	return "", fmt.Errorf("not string, but array")
 }
 
 func (s String) Represent() string {
@@ -124,4 +193,22 @@ func (s *String) UnmarshalJSON(data []byte) error {
 }
 func (s String) MarshalJSON() ([]byte, error) {
 	return json.Marshal(string(s))
+}
+func (s String) IsObject() bool {
+	return false
+}
+func (s String) AsObject() (Object, error) {
+	return nil, fmt.Errorf("not object, but string")
+}
+func (s String) IsArray() bool {
+	return false
+}
+func (s String) AsArray() (Array, error) {
+	return nil, fmt.Errorf("not array, but string")
+}
+func (s String) IsString() bool {
+	return true
+}
+func (s String) AsString() (String, error) {
+	return s, nil
 }

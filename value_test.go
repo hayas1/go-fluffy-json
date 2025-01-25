@@ -100,4 +100,26 @@ func TestValue(t *testing.T) {
 			t.Fatal("not object")
 		}
 	})
+
+	t.Run("as methods", func(t *testing.T) {
+		raw := `{"hello":"world"}`
+		var v Value
+		if err := json.Unmarshal([]byte(raw), &v); err != nil {
+			t.Fatal(err)
+		}
+
+		o, err := v.Value.AsObject()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		world, err := o["hello"].AsString()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if world != "world" {
+			t.Fatal("not world")
+		}
+	})
 }
