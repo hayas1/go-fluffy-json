@@ -27,7 +27,7 @@ func TestDfsVisitor(t *testing.T) {
 		}
 
 		collector := &Collector{}
-		if err := value.Accept(&DfsVisitor{Inner: collector}); err != nil {
+		if err := value.Accept(DfsVisitor(collector)); err != nil {
 			t.Fatal(err)
 		}
 
