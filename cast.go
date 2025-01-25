@@ -5,6 +5,15 @@ import (
 )
 
 type (
+	AsValue interface {
+		AsObject
+		AsArray
+		AsString
+		AsNumber
+		AsBool
+		AsNull
+	}
+
 	AsObject interface {
 		IsObject() bool
 		AsObject() (Object, error)

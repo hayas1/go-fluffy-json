@@ -10,12 +10,7 @@ type (
 		Representation() Representation
 		json.Unmarshaler // TODO this cause pointer receiver
 		json.Marshaler
-		AsObject
-		AsArray
-		AsString
-		AsNumber
-		AsBool
-		AsNull
+		AsValue
 		Accept
 		Access
 	}
