@@ -9,17 +9,10 @@ import (
 )
 
 type Collector struct {
-	DfsVisitor
+	BaseVisitor
 	visited []string
 }
 
-//	func (collector *Collector) VisitObject(s *Object) error {
-//		return nil
-//	}
-//
-//	func (collector *Collector) VisitArray(s *Array) error {
-//		return nil
-//	}
 func (collector *Collector) VisitString(s *String) error {
 	collector.visited = append(collector.visited, string(*s))
 	return nil
@@ -34,8 +27,7 @@ func TestDfsVisitor(t *testing.T) {
 		}
 
 		collector := &Collector{}
-		// visitor := DfsVisitor{Inner: collector}
-		if err := value.Accept(collector); err != nil {
+		if err := value.Accept(&DfsVisitor{Inner: collector}); err != nil {
 			t.Fatal(err)
 		}
 

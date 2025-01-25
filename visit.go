@@ -11,8 +11,9 @@ type (
 		// LeaveArray(*Array) error
 		VisitString(*String) error
 	}
-	DfsVisitor struct {
-		// Inner Visitor
+	BaseVisitor struct{}
+	DfsVisitor  struct {
+		Inner Visitor
 	}
 )
 
@@ -21,8 +22,12 @@ func (o *Object) Accept(visitor Visitor) error { return visitor.VisitObject(o) }
 func (a *Array) Accept(visitor Visitor) error  { return visitor.VisitArray(a) }
 func (s *String) Accept(visitor Visitor) error { return visitor.VisitString(s) }
 
+func (v *BaseVisitor) VisitObject(o *Object) error { return nil }
+func (v *BaseVisitor) VisitArray(a *Array) error   { return nil }
+func (v *BaseVisitor) VisitString(s *String) error { return nil }
+
 func (dfs *DfsVisitor) VisitObject(o *Object) error {
-	// o.Accept(dfs.Inner)
+	o.Accept(dfs.Inner)
 	for _, v := range *o {
 		if err := v.Accept(dfs); err != nil {
 			return err
@@ -31,7 +36,7 @@ func (dfs *DfsVisitor) VisitObject(o *Object) error {
 	return nil
 }
 func (dfs *DfsVisitor) VisitArray(a *Array) error {
-	// a.Accept(dfs.Inner)
+	a.Accept(dfs.Inner)
 	for _, v := range *a {
 		if err := v.Accept(dfs); err != nil {
 			return err
@@ -40,6 +45,5 @@ func (dfs *DfsVisitor) VisitArray(a *Array) error {
 	return nil
 }
 func (dfs *DfsVisitor) VisitString(s *String) error {
-	// return s.Accept(dfs.Inner)
-	return nil
+	return s.Accept(dfs.Inner)
 }
