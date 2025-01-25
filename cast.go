@@ -21,6 +21,9 @@ type (
 		Not Representation
 		But Representation
 	}
+	ErrCast struct {
+		Unsupported interface{}
+	}
 )
 
 func Cast(v interface{}) (JsonValue, error) {
@@ -45,12 +48,15 @@ func Cast(v interface{}) (JsonValue, error) {
 	case string:
 		return &[]String{String(t)}[0], nil
 	default:
-		return nil, fmt.Errorf("unsupported type %T", v)
+		return nil, ErrCast{Unsupported: t}
 	}
 }
 
 func (e ErrAsValue) Error() string {
 	return fmt.Sprintf("not %s, but %s", e.Not, e.But)
+}
+func (e ErrCast) Error() string {
+	return fmt.Sprintf("unsupported type %T", e.Unsupported)
 }
 
 func (v Value) IsObject() bool            { return v.Value.IsObject() }
