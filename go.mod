@@ -1,4 +1,4 @@
-module github.com/hayash1/go-fluffy-json
+module github.com/hayas1/go-fluffy-json
 
 go 1.23.1
 
