@@ -5,12 +5,6 @@ import (
 	"fmt"
 )
 
-const (
-	ObjectType = "object"
-	ArrayType  = "array"
-	StringType = "string"
-)
-
 type (
 	JsonValue interface {
 		json.Unmarshaler
@@ -18,7 +12,6 @@ type (
 		AsObject
 		AsArray
 		AsString
-		Represent() string
 	}
 	AsObject interface {
 		IsObject() bool
@@ -65,9 +58,6 @@ func Cast(v interface{}) (JsonValue, error) {
 	}
 }
 
-func (v Value) Represent() string {
-	return v.Value.Represent()
-}
 func (v *Value) UnmarshalJSON(data []byte) error {
 	// TODO remove this wrapper struct `Value` ?
 	// TODO do not implement as deep copy, unmarshal directly
@@ -103,9 +93,6 @@ func (v Value) AsString() (String, error) {
 	return v.Value.AsString()
 }
 
-func (o Object) Represent() string {
-	return ObjectType
-}
 func (o *Object) UnmarshalJSON(data []byte) error {
 	var inner interface{}
 	if err := json.Unmarshal(data, &inner); err != nil {
@@ -139,9 +126,6 @@ func (o Object) AsString() (String, error) {
 	return "", fmt.Errorf("not string, but object")
 }
 
-func (a Array) Represent() string {
-	return ArrayType
-}
 func (a *Array) UnmarshalJSON(data []byte) error {
 	var inner interface{}
 	if err := json.Unmarshal(data, &inner); err != nil {
@@ -173,10 +157,6 @@ func (a Array) IsString() bool {
 }
 func (a Array) AsString() (String, error) {
 	return "", fmt.Errorf("not string, but array")
-}
-
-func (s String) Represent() string {
-	return StringType
 }
 
 func (s *String) UnmarshalJSON(data []byte) error {
