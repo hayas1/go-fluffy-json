@@ -1,7 +1,6 @@
 package fluffyjson
 
 import (
-	"fmt"
 	"iter"
 )
 
@@ -111,32 +110,32 @@ func (dfs *Dfs[V]) VisitString(s *String) error {
 
 type ValueVisitor struct {
 	BaseVisitor
-	path  []string
-	yield func([]string, JsonValue) bool
+	pointer Pointer
+	yield   func(Pointer, JsonValue) bool
 }
 
-func (v *Value) DepthFirst() iter.Seq2[[]string, JsonValue] {
-	return func(yield func([]string, JsonValue) bool) {
+func (v *Value) DepthFirst() iter.Seq2[Pointer, JsonValue] {
+	return func(yield func(Pointer, JsonValue) bool) {
 		visitor := &ValueVisitor{yield: yield}
 		v.Accept(DfsVisitor(visitor))
 	}
 }
 
 func (vv *ValueVisitor) VisitObjectEntry(k string, v JsonValue) error {
-	vv.path = append(vv.path, k)
-	vv.yield(vv.path, v)
+	vv.pointer = append(vv.pointer, KeyAccess(k))
+	vv.yield(vv.pointer, v)
 	return nil
 }
 func (vv *ValueVisitor) LeaveObjectEntry(k string, v JsonValue) error {
-	vv.path = vv.path[:len(vv.path)-1]
+	vv.pointer = vv.pointer[:len(vv.pointer)-1]
 	return nil
 }
 func (vv *ValueVisitor) VisitArrayEntry(i int, v JsonValue) error {
-	vv.path = append(vv.path, fmt.Sprint(i))
-	vv.yield(vv.path, v)
+	vv.pointer = append(vv.pointer, IndexAccess(i))
+	vv.yield(vv.pointer, v)
 	return nil
 }
 func (vv *ValueVisitor) LeaveArrayEntry(i int, v JsonValue) error {
-	vv.path = vv.path[:len(vv.path)-1]
+	vv.pointer = vv.pointer[:len(vv.pointer)-1]
 	return nil
 }
