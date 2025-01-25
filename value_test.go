@@ -79,12 +79,12 @@ func TestMarshalBasic(t *testing.T) {
 func TestValue(t *testing.T) {
 	t.Run("switch syntax", func(t *testing.T) {
 		raw := `{"hello":"world"}`
-		var v Value
-		if err := json.Unmarshal([]byte(raw), &v); err != nil {
+		var value Value
+		if err := json.Unmarshal([]byte(raw), &value); err != nil {
 			t.Fatal(err)
 		}
 
-		switch object := v.Value.(type) {
+		switch object := value.Value.(type) {
 		// case SomeType:
 		// 	t.Fatal("fail to compile: the interface is not implemented for SomeType basically")
 		case *Object:
@@ -103,12 +103,12 @@ func TestValue(t *testing.T) {
 
 	t.Run("as methods", func(t *testing.T) {
 		raw := `{"hello":"world"}`
-		var v Value
-		if err := json.Unmarshal([]byte(raw), &v); err != nil {
+		var value Value
+		if err := json.Unmarshal([]byte(raw), &value); err != nil {
 			t.Fatal(err)
 		}
 
-		object, err := v.Value.AsObject()
+		object, err := value.Value.AsObject()
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -120,6 +120,27 @@ func TestValue(t *testing.T) {
 
 		if world != "world" {
 			t.Fatal("not world")
+		}
+	})
+
+	t.Run("iterator", func(t *testing.T) {
+		raw := `{"hello":"world"}`
+		var value Value
+		if err := json.Unmarshal([]byte(raw), &value); err != nil {
+			t.Fatal(err)
+		}
+
+		for k, v := range value.Iter() {
+			if k != "hello" {
+				t.Fatal("not hello")
+			}
+			world, err := v.AsString()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if world != "world" {
+				t.Fatal("not world")
+			}
 		}
 	})
 }
