@@ -13,8 +13,12 @@ type Collector struct {
 	visited []string
 }
 
-func (collector *Collector) VisitString(s *String) error {
-	collector.visited = append(collector.visited, string(*s))
+func (c *Collector) VisitObjectEntry(e *ObjectEntry) error {
+	c.visited = append(c.visited, e.Key)
+	return nil
+}
+func (c *Collector) VisitString(s *String) error {
+	c.visited = append(c.visited, string(*s))
 	return nil
 }
 
