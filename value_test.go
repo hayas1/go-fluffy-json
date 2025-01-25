@@ -14,7 +14,7 @@ type HelloWorld struct {
 }
 
 func TestUnmarshalBasic(t *testing.T) {
-	testCases := []struct {
+	testcases := []struct {
 		name   string
 		actual HelloWorld
 		input  string
@@ -34,7 +34,7 @@ func TestUnmarshalBasic(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
+	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			err := json.Unmarshal([]byte(tc.input), &tc.actual)
 			if err != tc.err {
@@ -46,7 +46,7 @@ func TestUnmarshalBasic(t *testing.T) {
 	}
 }
 func TestMarshalBasic(t *testing.T) {
-	testCases := []struct {
+	testcases := []struct {
 		name   string
 		actual HelloWorld
 		expect string
@@ -63,7 +63,7 @@ func TestMarshalBasic(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
+	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			bytes, err := json.Marshal(&tc.actual)
 			if err != tc.err {

@@ -43,7 +43,7 @@ func TestDfsVisitor(t *testing.T) {
 }
 
 func TestDepthFirst(t *testing.T) {
-	testCases := []struct {
+	testcases := []struct {
 		name          string
 		target        string
 		expectPointer [][]fluffyjson.Pointer
@@ -103,7 +103,7 @@ func TestDepthFirst(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
+	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			var value fluffyjson.Value
 			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
