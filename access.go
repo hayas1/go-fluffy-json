@@ -48,6 +48,9 @@ func (n *Number) Pointer(ptr ...Accessor) (JsonValue, error)   { return Pointer(
 func (b *Bool) Access(acc Accessor) (JsonValue, error)         { return acc.Accessing(b) }
 func (b *Bool) Slice(acc SliceAccessor) ([]JsonValue, error)   { return acc.Slicing(b) }
 func (b *Bool) Pointer(ptr ...Accessor) (JsonValue, error)     { return Pointer(ptr).Accessing(b) }
+func (n *Null) Access(acc Accessor) (JsonValue, error)         { return acc.Accessing(n) }
+func (n *Null) Slice(acc SliceAccessor) ([]JsonValue, error)   { return acc.Slicing(n) }
+func (n *Null) Pointer(ptr ...Accessor) (JsonValue, error)     { return Pointer(ptr).Accessing(n) }
 
 func (k KeyAccess) Accessing(v JsonValue) (JsonValue, error) {
 	switch o := v.(type) {

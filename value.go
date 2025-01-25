@@ -15,6 +15,7 @@ type (
 		AsString
 		AsNumber
 		AsBool
+		AsNull
 		Accept
 		Access
 	}
@@ -27,6 +28,7 @@ type (
 	String string
 	Number float64
 	Bool   bool
+	Null   struct{}
 )
 
 const (
@@ -137,4 +139,21 @@ func (b *Bool) UnmarshalJSON(data []byte) error {
 }
 func (b Bool) MarshalJSON() ([]byte, error) {
 	return json.Marshal(bool(b))
+}
+
+func (n Null) Representation() Representation { return NULL }
+func (n *Null) UnmarshalJSON(data []byte) error {
+	var inner interface{}
+	if err := json.Unmarshal(data, &inner); err != nil {
+		return err
+	}
+	null, err := Cast(inner)
+	if err != nil {
+		return err
+	}
+	*n = *null.(*Null)
+	return nil
+}
+func (n Null) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct{}{})
 }

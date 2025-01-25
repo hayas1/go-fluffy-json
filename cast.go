@@ -25,6 +25,10 @@ type (
 		IsBool() bool
 		AsBool() (Bool, error)
 	}
+	AsNull interface {
+		IsNull() bool
+		AsNull() (Null, error)
+	}
 
 	ErrAsValue struct {
 		Not Representation
@@ -80,6 +84,8 @@ func (v Value) IsNumber() bool            { return v.Value.IsNumber() }
 func (v Value) AsNumber() (Number, error) { return v.Value.AsNumber() }
 func (v Value) IsBool() bool              { return v.Value.IsBool() }
 func (v Value) AsBool() (Bool, error)     { return v.Value.AsBool() }
+func (v Value) IsNull() bool              { return v.Value.IsNull() }
+func (v Value) AsNull() (Null, error)     { return v.Value.AsNull() }
 
 func CastObject(m map[string]interface{}) (Object, error) {
 	var err error
@@ -108,6 +114,8 @@ func (o Object) IsNumber() bool            { return false }
 func (o Object) AsNumber() (Number, error) { return 0, ErrAsValue{Not: NUMBER, But: OBJECT} }
 func (o Object) IsBool() bool              { return false }
 func (o Object) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL, But: OBJECT} }
+func (o Object) IsNull() bool              { return false }
+func (o Object) AsNull() (Null, error)     { return struct{}{}, ErrAsValue{Not: NULL, But: OBJECT} }
 
 func CastArray(l []interface{}) (Array, error) {
 	var err error
@@ -136,6 +144,8 @@ func (a Array) IsNumber() bool            { return false }
 func (a Array) AsNumber() (Number, error) { return 0, ErrAsValue{Not: NUMBER, But: ARRAY} }
 func (a Array) IsBool() bool              { return false }
 func (a Array) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL, But: ARRAY} }
+func (a Array) IsNull() bool              { return false }
+func (a Array) AsNull() (Null, error)     { return struct{}{}, ErrAsValue{Not: NULL, But: ARRAY} }
 
 func CastString(s string) (String, error) {
 	return String(s), nil
@@ -157,6 +167,8 @@ func (s String) IsNumber() bool            { return false }
 func (s String) AsNumber() (Number, error) { return 0, ErrAsValue{Not: NUMBER, But: STRING} }
 func (s String) IsBool() bool              { return false }
 func (s String) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL, But: STRING} }
+func (s String) IsNull() bool              { return false }
+func (s String) AsNull() (Null, error)     { return struct{}{}, ErrAsValue{Not: NULL, But: STRING} }
 
 func CastNumber(n float64) (Number, error) {
 	return Number(n), nil
@@ -178,6 +190,8 @@ func (n Number) IsNumber() bool            { return true }
 func (n Number) AsNumber() (Number, error) { return n, nil }
 func (n Number) IsBool() bool              { return false }
 func (n Number) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL, But: NUMBER} }
+func (n Number) IsNull() bool              { return false }
+func (n Number) AsNull() (Null, error)     { return struct{}{}, ErrAsValue{Not: NULL, But: NUMBER} }
 
 func CastBool(b bool) (Bool, error) {
 	return Bool(b), nil
@@ -199,3 +213,28 @@ func (b Bool) IsNumber() bool            { return false }
 func (b Bool) AsNumber() (Number, error) { return 0, ErrAsValue{Not: NUMBER, But: BOOL} }
 func (b Bool) IsBool() bool              { return true }
 func (b Bool) AsBool() (Bool, error)     { return b, nil }
+func (b Bool) IsNull() bool              { return false }
+func (b Bool) AsNull() (Null, error)     { return struct{}{}, ErrAsValue{Not: NULL, But: BOOL} }
+
+func CastNull(n struct{}) (Null, error) {
+	return Null(n), nil
+}
+func ForceNull(n struct{}) *Null {
+	null, err := CastNull(n)
+	if err != nil {
+		panic(err)
+	}
+	return &null
+}
+func (n Null) IsObject() bool            { return false }
+func (n Null) AsObject() (Object, error) { return nil, ErrAsValue{Not: OBJECT, But: NULL} }
+func (n Null) IsArray() bool             { return false }
+func (n Null) AsArray() (Array, error)   { return nil, ErrAsValue{Not: ARRAY, But: NULL} }
+func (n Null) IsString() bool            { return false }
+func (n Null) AsString() (String, error) { return "", ErrAsValue{Not: STRING, But: NULL} }
+func (n Null) IsNumber() bool            { return false }
+func (n Null) AsNumber() (Number, error) { return 0, ErrAsValue{Not: NUMBER, But: NULL} }
+func (n Null) IsBool() bool              { return false }
+func (n Null) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL, But: NULL} }
+func (n Null) IsNull() bool              { return true }
+func (n Null) AsNull() (Null, error)     { return n, nil }

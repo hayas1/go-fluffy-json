@@ -22,6 +22,7 @@ type (
 		VisitString(*String) error
 		VisitNumber(*Number) error
 		VisitBool(*Bool) error
+		VisitNull(*Null) error
 	}
 
 	BaseVisitor    struct{}
@@ -36,6 +37,7 @@ func (a *Array) Accept(visitor Visitor) error  { visitor.VisitArray(a); return v
 func (s *String) Accept(visitor Visitor) error { return visitor.VisitString(s) }
 func (n *Number) Accept(visitor Visitor) error { return visitor.VisitNumber(n) }
 func (b *Bool) Accept(visitor Visitor) error   { return visitor.VisitBool(b) }
+func (n *Null) Accept(visitor Visitor) error   { return visitor.VisitNull(n) }
 
 func (bv *BaseVisitor) VisitObject(o *Object) error                      { return nil }
 func (bv *BaseVisitor) VisitObjectEntry(key string, val JsonValue) error { return nil }
@@ -48,6 +50,7 @@ func (bv *BaseVisitor) LeaveArray(a *Array) error                        { retur
 func (bv *BaseVisitor) VisitString(s *String) error                      { return nil }
 func (bv *BaseVisitor) VisitNumber(n *Number) error                      { return nil }
 func (bv *BaseVisitor) VisitBool(b *Bool) error                          { return nil }
+func (bv *BaseVisitor) VisitNull(n *Null) error                          { return nil }
 
 func DfsVisitor[V Visitor](visitor V) *Dfs[V] {
 	return &Dfs[V]{Visitor: visitor}
@@ -123,6 +126,9 @@ func (dfs *Dfs[V]) VisitNumber(n *Number) error {
 }
 func (dfs *Dfs[V]) VisitBool(b *Bool) error {
 	return dfs.Visitor.VisitBool(b)
+}
+func (dfs *Dfs[V]) VisitNull(n *Null) error {
+	return dfs.Visitor.VisitNull(n)
 }
 
 type ValueVisitor struct {
