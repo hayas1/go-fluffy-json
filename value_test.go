@@ -76,34 +76,26 @@ func TestMarshalBasic(t *testing.T) {
 	}
 }
 
-func TestUnmarshal(t *testing.T) {
-	type HelloWorld struct {
-		Hello string `json:"hello"`
-	}
-	testCases := []struct {
-		name   string
-		actual HelloWorld
-		input  string
-		expect interface{}
-		err    error
-	}{
-		{
-			name:   "hello world",
-			actual: HelloWorld{},
-			input:  `{"hello":"world"}`,
-			expect: HelloWorld{Hello: "world"},
-			err:    nil,
-		},
-	}
+func TestValue(t *testing.T) {
+	t.Run("switch syntax", func(t *testing.T) {
+		raw := `{"hello":"world"}`
+		var v Value
+		if err := json.Unmarshal([]byte(raw), &v); err != nil {
+			t.Fatal(err)
+		}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			err := json.Unmarshal([]byte(tc.input), &tc.actual)
-			if err != tc.err {
-				t.Fatal(err)
-			} else if diff := cmp.Diff(tc.expect, tc.actual); diff != "" {
-				t.Fatal(diff)
+		switch o := v.Value.(type) {
+		case *Object:
+			switch world := (*o)["hello"].(type) {
+			case *String:
+				if *world != "world" {
+					t.Fatal("not world")
+				}
+			default:
+				t.Fatal("not string")
 			}
-		})
-	}
+		default:
+			t.Fatal("not object")
+		}
+	})
 }
