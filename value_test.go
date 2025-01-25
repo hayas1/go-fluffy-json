@@ -85,6 +85,8 @@ func TestValue(t *testing.T) {
 		}
 
 		switch o := v.Value.(type) {
+		// case SomeType:
+		// 	t.Fatal("fail to compile: the interface is not implemented for SomeType basically")
 		case *Object:
 			switch world := (*o)["hello"].(type) {
 			case *String:
