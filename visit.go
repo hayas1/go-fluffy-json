@@ -40,22 +40,28 @@ func (v *BaseVisitor) VisitString(s *String) error                      { return
 func DfsVisitor[V Visitor](visitor V) *Dfs[V] {
 	return &Dfs[V]{Visitor: visitor}
 }
-func (dfs *Dfs[V]) VisitObject(o *Object) error {
-	dfs.Visitor.VisitObject(o)
+func (dfs *Dfs[V]) VisitObject(o *Object) (err error) {
+	if err = dfs.Visitor.VisitObject(o); err != nil {
+		return err
+	}
+	defer func() { err = dfs.Visitor.LeaveObject(o) }()
+
 	for k, v := range *o {
 		if err := dfs.VisitObjectEntry(k, v); err != nil {
 			return err
 		}
 	}
-	dfs.Visitor.LeaveObject(o)
 	return nil
 }
-func (dfs *Dfs[V]) VisitObjectEntry(k string, v JsonValue) error {
-	dfs.Visitor.VisitObjectEntry(k, v)
+func (dfs *Dfs[V]) VisitObjectEntry(k string, v JsonValue) (err error) {
+	if err = dfs.Visitor.VisitObjectEntry(k, v); err != nil {
+		return err
+	}
+	defer func() { err = dfs.Visitor.LeaveObjectEntry(k, v) }()
+
 	if err := v.Accept(dfs); err != nil {
 		return err
 	}
-	dfs.Visitor.LeaveObjectEntry(k, v)
 	return nil
 }
 func (dfs *Dfs[V]) LeaveObjectEntry(k string, v JsonValue) error {
@@ -64,22 +70,28 @@ func (dfs *Dfs[V]) LeaveObjectEntry(k string, v JsonValue) error {
 func (dfs *Dfs[V]) LeaveObject(o *Object) error {
 	return nil
 }
-func (dfs *Dfs[V]) VisitArray(a *Array) error {
-	dfs.Visitor.VisitArray(a)
+func (dfs *Dfs[V]) VisitArray(a *Array) (err error) {
+	if err = dfs.Visitor.VisitArray(a); err != nil {
+		return err
+	}
+	defer func() { err = dfs.Visitor.LeaveArray(a) }()
+
 	for i, v := range *a {
 		if err := dfs.VisitArrayEntry(i, v); err != nil {
 			return err
 		}
 	}
-	dfs.Visitor.LeaveArray(a)
 	return nil
 }
-func (dfs *Dfs[V]) VisitArrayEntry(i int, v JsonValue) error {
-	dfs.Visitor.VisitArrayEntry(i, v)
+func (dfs *Dfs[V]) VisitArrayEntry(i int, v JsonValue) (err error) {
+	if err = dfs.Visitor.VisitArrayEntry(i, v); err != nil {
+		return err
+	}
+	defer func() { err = dfs.Visitor.LeaveArrayEntry(i, v) }()
+
 	if err := v.Accept(dfs); err != nil {
 		return err
 	}
-	dfs.Visitor.LeaveArrayEntry(i, v)
 	return nil
 }
 func (dfs *Dfs[V]) LeaveArrayEntry(i int, v JsonValue) error {
