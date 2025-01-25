@@ -84,11 +84,11 @@ func TestValue(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		switch o := v.Value.(type) {
+		switch object := v.Value.(type) {
 		// case SomeType:
 		// 	t.Fatal("fail to compile: the interface is not implemented for SomeType basically")
 		case *Object:
-			switch world := (*o)["hello"].(type) {
+			switch world := (*object)["hello"].(type) {
 			case *String:
 				if *world != "world" {
 					t.Fatal("not world")
@@ -108,12 +108,12 @@ func TestValue(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		o, err := v.Value.AsObject()
+		object, err := v.Value.AsObject()
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		world, err := o["hello"].AsString()
+		world, err := object["hello"].AsString()
 		if err != nil {
 			t.Fatal(err)
 		}
