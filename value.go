@@ -14,6 +14,7 @@ type (
 		AsArray
 		AsString
 		AsNumber
+		AsBool
 		Accept
 		Access
 	}
@@ -21,10 +22,11 @@ type (
 	Representation string
 
 	Value  struct{ Value JsonValue }
-	Object map[string]JsonValue // TODO int key
+	Object map[string]JsonValue
 	Array  []JsonValue
 	String string
 	Number float64
+	Bool   bool
 )
 
 const (
@@ -118,4 +120,21 @@ func (n *Number) UnmarshalJSON(data []byte) error {
 }
 func (n Number) MarshalJSON() ([]byte, error) {
 	return json.Marshal(float64(n))
+}
+
+func (b Bool) Representation() Representation { return BOOL }
+func (b *Bool) UnmarshalJSON(data []byte) error {
+	var inner interface{}
+	if err := json.Unmarshal(data, &inner); err != nil {
+		return err
+	}
+	bool, err := Cast(inner)
+	if err != nil {
+		return err
+	}
+	*b = *bool.(*Bool)
+	return nil
+}
+func (b Bool) MarshalJSON() ([]byte, error) {
+	return json.Marshal(bool(b))
 }
