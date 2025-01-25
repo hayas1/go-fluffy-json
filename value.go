@@ -8,7 +8,7 @@ type (
 	// https://www.json.org/
 	JsonValue interface {
 		Representation() Representation
-		json.Unmarshaler
+		json.Unmarshaler // TODO this cause pointer receiver
 		json.Marshaler
 		AsObject
 		AsArray
