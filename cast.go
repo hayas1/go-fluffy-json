@@ -49,6 +49,9 @@ func Cast(v interface{}) (JsonValue, error) {
 	case string:
 		s, err := CastString(t)
 		return &s, err
+	case float64:
+		n, err := CastNumber(t)
+		return &n, err
 	default:
 		return nil, ErrCast{Unsupported: t}
 	}

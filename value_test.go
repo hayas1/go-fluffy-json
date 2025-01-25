@@ -10,27 +10,38 @@ import (
 	fluffyjson "github.com/hayash1/go-fluffy-json"
 )
 
-type HelloWorld struct {
-	Hello fluffyjson.String `json:"hello"`
-	Meta  fluffyjson.Value  `json:"meta"`
+type TestFluffy struct {
+	Fluffy fluffyjson.Value `json:"fluffy"`
 }
 
 func TestUnmarshalBasic(t *testing.T) {
 	testcases := []struct {
 		name   string
-		actual HelloWorld
+		actual TestFluffy
 		target string
-		expect HelloWorld
+		expect TestFluffy
 		err    error
 	}{
 		{
-			name:   "hello world",
-			actual: HelloWorld{},
-			// input:  `{"hello":"world"}`,
-			target: `{"hello":"world", "meta":{"hoge":"fuga"}}`,
-			expect: HelloWorld{
-				Hello: "world",
-				Meta:  fluffyjson.Value{Value: &fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
+			name:   "object and string",
+			actual: TestFluffy{},
+			target: `{"fluffy":{"hoge":"fuga"}}`,
+			expect: TestFluffy{
+				Fluffy: fluffyjson.Value{Value: &fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
+			},
+			err: nil,
+		},
+		{
+			name:   "compound",
+			actual: TestFluffy{},
+			target: `{"fluffy":[0, 1, {"three": 4}, "five"]}`,
+			expect: TestFluffy{
+				Fluffy: fluffyjson.Value{Value: &fluffyjson.Array{
+					fluffyjson.ForceNumber(0),
+					fluffyjson.ForceNumber(1),
+					&fluffyjson.Object{"three": fluffyjson.ForceNumber(4)},
+					fluffyjson.ForceString("five"),
+				}},
 			},
 			err: nil,
 		},
@@ -50,17 +61,29 @@ func TestUnmarshalBasic(t *testing.T) {
 func TestMarshalBasic(t *testing.T) {
 	testcases := []struct {
 		name   string
-		actual HelloWorld
+		actual TestFluffy
 		expect string
 		err    error
 	}{
 		{
-			name: "hello world",
-			actual: HelloWorld{
-				Hello: "world",
-				Meta:  fluffyjson.Value{Value: &fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
+			name: "object and string",
+			actual: TestFluffy{
+				Fluffy: fluffyjson.Value{Value: &fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
 			},
-			expect: `{"hello":"world","meta":{"hoge":"fuga"}}`,
+			expect: `{"fluffy":{"hoge":"fuga"}}`,
+			err:    nil,
+		},
+		{
+			name: "compound",
+			actual: TestFluffy{
+				Fluffy: fluffyjson.Value{Value: &fluffyjson.Array{
+					fluffyjson.ForceNumber(0),
+					fluffyjson.ForceNumber(1),
+					&fluffyjson.Object{"three": fluffyjson.ForceNumber(4)},
+					fluffyjson.ForceString("five"),
+				}},
+			},
+			expect: `{"fluffy":[0,1,{"three":4},"five"]}`,
 			err:    nil,
 		},
 	}
