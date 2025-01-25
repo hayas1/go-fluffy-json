@@ -1,16 +1,16 @@
-// TODO package fluffyjson_test
-package fluffyjson
+package fluffyjson_test
 
 import (
 	"encoding/json"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	fluffyjson "github.com/hayash1/go-fluffy-json"
 )
 
 type HelloWorld struct {
-	Hello String `json:"hello"`
-	Meta  Value  `json:"meta"`
+	Hello fluffyjson.String `json:"hello"`
+	Meta  fluffyjson.Value  `json:"meta"`
 }
 
 func TestUnmarshalBasic(t *testing.T) {
@@ -28,7 +28,7 @@ func TestUnmarshalBasic(t *testing.T) {
 			input: `{"hello":"world", "meta":{"hoge":"fuga"}}`,
 			expect: HelloWorld{
 				Hello: "world",
-				Meta:  Value{Value: &Object{"hoge": &[]String{("fuga")}[0]}},
+				Meta:  fluffyjson.Value{Value: &fluffyjson.Object{"hoge": &[]fluffyjson.String{("fuga")}[0]}},
 			},
 			err: nil,
 		},
@@ -56,7 +56,7 @@ func TestMarshalBasic(t *testing.T) {
 			name: "hello world",
 			actual: HelloWorld{
 				Hello: "world",
-				Meta:  Value{Value: &Object{"hoge": &[]String{("fuga")}[0]}},
+				Meta:  fluffyjson.Value{Value: &fluffyjson.Object{"hoge": &[]fluffyjson.String{("fuga")}[0]}},
 			},
 			expect: `{"hello":"world","meta":{"hoge":"fuga"}}`,
 			err:    nil,
@@ -78,7 +78,7 @@ func TestMarshalBasic(t *testing.T) {
 func TestValue(t *testing.T) {
 	t.Run("switch syntax", func(t *testing.T) {
 		raw := `{"hello":"world"}`
-		var value Value
+		var value fluffyjson.Value
 		if err := json.Unmarshal([]byte(raw), &value); err != nil {
 			t.Fatal(err)
 		}
@@ -86,9 +86,9 @@ func TestValue(t *testing.T) {
 		switch object := value.Value.(type) {
 		// case SomeType:
 		// 	t.Fatal("fail to compile: the interface is not implemented for SomeType basically")
-		case *Object:
+		case *fluffyjson.Object:
 			switch world := (*object)["hello"].(type) {
-			case *String:
+			case *fluffyjson.String:
 				if *world != "world" {
 					t.Fatal("not world")
 				}
@@ -102,7 +102,7 @@ func TestValue(t *testing.T) {
 
 	t.Run("as methods", func(t *testing.T) {
 		raw := `{"hello":"world"}`
-		var value Value
+		var value fluffyjson.Value
 		if err := json.Unmarshal([]byte(raw), &value); err != nil {
 			t.Fatal(err)
 		}
