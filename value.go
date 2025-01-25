@@ -58,12 +58,11 @@ func (v *Value) UnmarshalJSON(data []byte) error {
 	var inner interface{}
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
-	}
-	value, err := New(inner)
-	if err != nil {
+	} else if value, err := New(inner); err != nil {
 		return err
+	} else {
+		v.Value = value
 	}
-	v.Value = value
 	return nil
 }
 
@@ -74,12 +73,11 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	var inner interface{}
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
-	}
-	object, err := New(inner)
-	if err != nil {
+	} else if object, err := New(inner); err != nil {
 		return err
+	} else {
+		*o = *object.(*Object)
 	}
-	*o = *object.(*Object)
 	return nil
 }
 
@@ -90,12 +88,11 @@ func (a *Array) UnmarshalJSON(data []byte) error {
 	var inner interface{}
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
-	}
-	array, err := New(inner)
-	if err != nil {
+	} else if array, err := New(inner); err != nil {
 		return err
+	} else {
+		*a = *array.(*Array)
 	}
-	*a = *array.(*Array)
 	return nil
 }
 
