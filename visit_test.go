@@ -10,15 +10,15 @@ import (
 
 type Collector struct {
 	BaseVisitor
-	visited []string
+	visited string
 }
 
-func (c *Collector) VisitObjectEntry(e *ObjectEntry) error {
-	c.visited = append(c.visited, e.Key)
+func (c *Collector) VisitObjectEntry(k string, v JsonValue) error {
+	c.visited += k
 	return nil
 }
 func (c *Collector) VisitString(s *String) error {
-	c.visited = append(c.visited, string(*s))
+	c.visited += string(*s)
 	return nil
 }
 
@@ -35,7 +35,7 @@ func TestDfsVisitor(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if diff := cmp.Diff([]string{"a", "b", "c", "d", "e", "f", "g"}, collector.visited); diff != "" {
+		if diff := cmp.Diff("abcdefg", collector.visited); diff != "" {
 			t.Fatal(diff)
 		}
 	})
