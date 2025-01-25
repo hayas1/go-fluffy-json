@@ -18,7 +18,9 @@ func (v Value) Iter() iter.Seq2[IterKey, JsonValue] {
 func (o Object) Iter() iter.Seq2[IterKey, JsonValue] {
 	return func(yield func(IterKey, JsonValue) bool) {
 		for k, v := range o {
-			yield(ObjectKey(k), v)
+			if !yield(ObjectKey(k), v) {
+				break
+			}
 		}
 	}
 }
@@ -26,7 +28,9 @@ func (o Object) Iter() iter.Seq2[IterKey, JsonValue] {
 func (a Array) Iter() iter.Seq2[IterKey, JsonValue] {
 	return func(yield func(IterKey, JsonValue) bool) {
 		for i, v := range a {
-			yield(ArrayIndex(i), v)
+			if !yield(ArrayIndex(i), v) {
+				break
+			}
 		}
 	}
 }
