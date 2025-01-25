@@ -22,14 +22,14 @@ func TestAccess(t *testing.T) {
 			name:     "key access",
 			target:   `{"hello":"world"}`,
 			accessor: fluffyjson.KeyAccess("hello"),
-			expect:   &[]fluffyjson.String{fluffyjson.String("world")}[0],
+			expect:   fluffyjson.ForceString("world"),
 			err:      nil,
 		},
 		{
 			name:     "index access",
 			target:   `["hello", "world"]`,
 			accessor: fluffyjson.IndexAccess(1),
-			expect:   &[]fluffyjson.String{fluffyjson.String("world")}[0],
+			expect:   fluffyjson.ForceString("world"),
 			err:      nil,
 		},
 	}
@@ -64,8 +64,8 @@ func TestSliceAccess(t *testing.T) {
 			target:   `["one", "two", "three"]`,
 			accessor: fluffyjson.SliceAccess{Start: 1, End: 3},
 			expect: []fluffyjson.JsonValue{
-				&[]fluffyjson.String{fluffyjson.String("two")}[0],
-				&[]fluffyjson.String{fluffyjson.String("three")}[0],
+				fluffyjson.ForceString("two"),
+				fluffyjson.ForceString("three"),
 			},
 			err: nil,
 		},
