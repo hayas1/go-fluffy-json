@@ -131,7 +131,11 @@ func TestValue(t *testing.T) {
 		}
 
 		for k, v := range value.Iter() {
-			if k != "hello" {
+			hello, err := k.AsObjectKey()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if hello != "hello" {
 				t.Fatal("not hello")
 			}
 			world, err := v.AsString()
