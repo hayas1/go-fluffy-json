@@ -2,6 +2,8 @@ package fluffyjson_test
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -37,8 +39,8 @@ func TestUnmarshalBasic(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			err := json.Unmarshal([]byte(tc.input), &tc.actual)
-			if err != tc.err {
-				t.Fatal(err)
+			if !errors.Is(err, tc.err) {
+				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
 			} else if diff := cmp.Diff(tc.expect, tc.actual); diff != "" {
 				t.Fatal(diff)
 			}
@@ -66,8 +68,8 @@ func TestMarshalBasic(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			bytes, err := json.Marshal(&tc.actual)
-			if err != tc.err {
-				t.Fatal(err)
+			if !errors.Is(err, tc.err) {
+				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
 			} else if diff := cmp.Diff(tc.expect, string(bytes)); diff != "" {
 				t.Fatal(diff)
 			}
@@ -121,4 +123,48 @@ func TestValue(t *testing.T) {
 			t.Fatal("not world")
 		}
 	})
+}
+
+func TestValueAs(t *testing.T) {
+	testcases := []struct {
+		name   string
+		target string
+		as     func(fluffyjson.JsonValue) (fluffyjson.JsonValue, error)
+		expect string
+		err    error
+	}{
+		{
+			name:   "object as object",
+			target: `{"number": ["zero", "one", "two"]}`,
+			as:     func(jv fluffyjson.JsonValue) (fluffyjson.JsonValue, error) { o, e := jv.AsObject(); return &o, e },
+			expect: `{"number": ["zero", "one", "two"]}`,
+			err:    nil,
+		},
+		// {
+		// 	name:   "object as array",
+		// 	target: `{"number": ["zero", "one", "two"]}`,
+		// 	as:     func(jv fluffyjson.JsonValue) (fluffyjson.JsonValue, error) { o, e := jv.AsArray(); return &o, e },
+		// 	expect: `[]`,
+		// 	err:    fmt.Errorf("not array, but object"),
+		// },
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			var value, expect fluffyjson.Value
+			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
+				t.Fatal(err)
+			}
+			if err := json.Unmarshal([]byte(tc.expect), &expect); err != nil {
+				t.Fatal(err)
+			}
+
+			actual, err := tc.as(&value)
+			if !errors.Is(err, tc.err) {
+				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
+			} else if diff := cmp.Diff(expect, fluffyjson.Value{Value: actual}); diff != "" {
+				t.Fatal(diff)
+			}
+		})
+	}
 }

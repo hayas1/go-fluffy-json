@@ -48,7 +48,6 @@ func TestDepthFirst(t *testing.T) {
 		target        string
 		expectPointer [][]fluffyjson.Pointer
 		expectValue   [][]fluffyjson.JsonValue
-		err           error
 	}{
 		{
 			name:   "depth first",
@@ -99,7 +98,6 @@ func TestDepthFirst(t *testing.T) {
 					&[]fluffyjson.String{("d")}[0],
 				},
 			},
-			err: nil,
 		},
 	}
 

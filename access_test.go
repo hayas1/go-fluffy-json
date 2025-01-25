@@ -2,6 +2,8 @@ package fluffyjson_test
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -40,8 +42,8 @@ func TestAccess(t *testing.T) {
 			}
 
 			actual, err := value.Access(tc.accessor)
-			if err != tc.err {
-				t.Fatal(err)
+			if !errors.Is(err, tc.err) {
+				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
 			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
 				t.Fatal(diff)
 			}
@@ -77,8 +79,8 @@ func TestSliceAccess(t *testing.T) {
 			}
 
 			actual, err := value.Slice(tc.accessor)
-			if err != tc.err {
-				t.Fatal(err)
+			if !errors.Is(err, tc.err) {
+				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
 			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
 				t.Fatal(diff)
 			}
@@ -111,8 +113,8 @@ func TestPointer(t *testing.T) {
 			}
 
 			actual, err := value.Pointer(tc.pointer)
-			if err != tc.err {
-				t.Fatal(err)
+			if !errors.Is(err, tc.err) {
+				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
 			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
 				t.Fatal(diff)
 			}
