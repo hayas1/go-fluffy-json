@@ -178,6 +178,7 @@ func (dfs *Dfs[V]) VisitNull(n *Null) error {
 	return dfs.visitor.VisitNull(n)
 }
 
+// Get bfs wrapped visitor
 func BfsVisitor[V Visitor](visitor V) *Bfs[V] {
 	return &Bfs[V]{visitor: visitor}
 }
