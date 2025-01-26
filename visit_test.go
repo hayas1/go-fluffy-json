@@ -9,7 +9,7 @@ import (
 )
 
 type Collector struct {
-	fluffyjson.BaseVisitor
+	fluffyjson.PointerVisitor
 	visited string
 }
 
