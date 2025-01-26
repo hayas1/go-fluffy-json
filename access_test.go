@@ -32,6 +32,17 @@ func TestAccess(t *testing.T) {
 			expect:   fluffyjson.ForceString("world"),
 			err:      nil,
 		},
+		{
+			name:     "invalid key access",
+			target:   `["hello", "world"]`,
+			accessor: fluffyjson.KeyAccess("hello"),
+			expect:   nil,
+			err: fluffyjson.ErrAccess{
+				Accessor: fmt.Sprintf("%T", fluffyjson.KeyAccess("hello")),
+				Expect:   fluffyjson.OBJECT,
+				Actual:   fluffyjson.ARRAY,
+			},
+		},
 	}
 
 	for _, tc := range testcases {
@@ -68,6 +79,17 @@ func TestSliceAccess(t *testing.T) {
 				fluffyjson.ForceString("three"),
 			},
 			err: nil,
+		},
+		{
+			name:     "invalid slice access",
+			target:   `{"hello":"world"}`,
+			accessor: fluffyjson.SliceAccess{Start: 0, End: 2},
+			expect:   nil,
+			err: fluffyjson.ErrAccess{
+				Accessor: fmt.Sprintf("%T", fluffyjson.SliceAccess{}),
+				Expect:   fluffyjson.ARRAY,
+				Actual:   fluffyjson.OBJECT,
+			},
 		},
 	}
 

@@ -28,7 +28,17 @@ type (
 	}
 
 	Pointer []Accessor
+
+	ErrAccess struct {
+		Accessor string
+		Expect   Representation
+		Actual   Representation
+	}
 )
+
+func (e ErrAccess) Error() string {
+	return fmt.Sprintf("%s only allowed on %s, got %s", e.Accessor, e.Expect, e.Actual)
+}
 
 func (v *RootValue) Access(acc Accessor) (JsonValue, error)       { return acc.Accessing(v) }
 func (v *RootValue) Slice(acc SliceAccessor) ([]JsonValue, error) { return acc.Slicing(v) }
@@ -59,7 +69,11 @@ func (k KeyAccess) Accessing(v JsonValue) (JsonValue, error) {
 	case *Object:
 		return (*o)[string(k)], nil
 	default:
-		return nil, fmt.Errorf("key access only allowed on object, got %T", v)
+		return nil, ErrAccess{
+			Accessor: fmt.Sprintf("%T", k),
+			Expect:   OBJECT,
+			Actual:   v.Representation(),
+		}
 	}
 }
 func (i IndexAccess) Accessing(v JsonValue) (JsonValue, error) {
@@ -69,7 +83,11 @@ func (i IndexAccess) Accessing(v JsonValue) (JsonValue, error) {
 	case *Array:
 		return (*a)[i], nil
 	default:
-		return nil, fmt.Errorf("index access only allowed on array, got %T", v)
+		return nil, ErrAccess{
+			Accessor: fmt.Sprintf("%T", i),
+			Expect:   ARRAY,
+			Actual:   v.Representation(),
+		}
 	}
 }
 func (s SliceAccess) Slicing(v JsonValue) ([]JsonValue, error) {
@@ -79,7 +97,11 @@ func (s SliceAccess) Slicing(v JsonValue) ([]JsonValue, error) {
 	case *Array:
 		return (*a)[s.Start:s.End], nil
 	default:
-		return nil, fmt.Errorf("slice access only allowed on array, got %T", v)
+		return nil, ErrAccess{
+			Accessor: fmt.Sprintf("%T", s),
+			Expect:   ARRAY,
+			Actual:   v.Representation(),
+		}
 	}
 }
 
