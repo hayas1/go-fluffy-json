@@ -60,6 +60,7 @@ func (bv *BaseVisitor) VisitNumber(n *Number) error                      { retur
 func (bv *BaseVisitor) VisitBool(b *Bool) error                          { return nil }
 func (bv *BaseVisitor) VisitNull(n *Null) error                          { return nil }
 
+// Get dfs wrapped visitor
 func DfsVisitor[V Visitor](visitor V) *Dfs[V] {
 	return &Dfs[V]{visitor: visitor}
 }
