@@ -16,3 +16,5 @@ import fluffyjson "github.com/hayas1/go-fluffy-json"
 ## Examples
 Here is some examples. https://pkg.go.dev/github.com/hayas1/go-fluffy-json#pkg-examples
 
+## Documents
+Here is some documents. https://pkg.go.dev/github.com/hayas1/go-fluffy-json
