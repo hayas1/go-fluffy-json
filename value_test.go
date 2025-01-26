@@ -30,7 +30,7 @@ func ExampleRootValue_UnmarshalJSON() {
 }
 
 func ExampleRootValue_MarshalJSON() {
-	v := fluffyjson.RootValue{Value: &fluffyjson.Array{
+	v := fluffyjson.RootValue{&fluffyjson.Array{
 		fluffyjson.ForceString("hello"),
 		fluffyjson.ForceString("world"),
 	}}
@@ -48,7 +48,7 @@ func ExampleRootValue_asMethods() {
 		panic(err)
 	}
 
-	object, err := value.Value.AsObject()
+	object, err := value.AsObject()
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +72,7 @@ func ExampleRootValue_switchSyntax() {
 		panic(err)
 	}
 
-	switch object := value.Value.(type) {
+	switch object := value.JsonValue.(type) {
 	// case SomeType:
 	// 	panic("fail to compile: the interface is not implemented for SomeType basically")
 	case *fluffyjson.Object:
@@ -102,8 +102,6 @@ func ExampleRootValue_DepthFirst() {
 	var sum func(v fluffyjson.JsonValue) int
 	sum = func(v fluffyjson.JsonValue) int {
 		switch t := v.(type) {
-		case *fluffyjson.RootValue:
-			return sum(t.Value) // TODO
 		case *fluffyjson.Array:
 			s := 0
 			for _, vv := range *t {
@@ -140,7 +138,7 @@ func TestUnmarshalBasic(t *testing.T) {
 			actual: TestFluffy{},
 			target: `{"fluffy":{"hoge":"fuga"}}`,
 			expect: TestFluffy{
-				Fluffy: fluffyjson.RootValue{Value: &fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
+				Fluffy: fluffyjson.RootValue{&fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
 			},
 			err: nil,
 		},
@@ -149,7 +147,7 @@ func TestUnmarshalBasic(t *testing.T) {
 			actual: TestFluffy{},
 			target: `{"fluffy":[null, true, {"three": 4}, "five"]}`,
 			expect: TestFluffy{
-				Fluffy: fluffyjson.RootValue{Value: &fluffyjson.Array{
+				Fluffy: fluffyjson.RootValue{&fluffyjson.Array{
 					fluffyjson.ForceNull(nil),
 					fluffyjson.ForceBool(true),
 					&fluffyjson.Object{"three": fluffyjson.ForceNumber(4)},
@@ -181,7 +179,7 @@ func TestMarshalBasic(t *testing.T) {
 		{
 			name: "object and string",
 			actual: TestFluffy{
-				Fluffy: fluffyjson.RootValue{Value: &fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
+				Fluffy: fluffyjson.RootValue{&fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
 			},
 			expect: `{"fluffy":{"hoge":"fuga"}}`,
 			err:    nil,
@@ -189,7 +187,7 @@ func TestMarshalBasic(t *testing.T) {
 		{
 			name: "compound",
 			actual: TestFluffy{
-				Fluffy: fluffyjson.RootValue{Value: &fluffyjson.Array{
+				Fluffy: fluffyjson.RootValue{&fluffyjson.Array{
 					fluffyjson.ForceNull(nil),
 					fluffyjson.ForceBool(true),
 					&fluffyjson.Object{"three": fluffyjson.ForceNumber(4)},

@@ -67,7 +67,7 @@ func (dfs *Dfs[V]) VisitRoot(v *RootValue) (err error) {
 	if err = dfs.visitor.VisitRoot(v); err != nil {
 		return err
 	}
-	if err := v.Value.Accept(dfs); err != nil {
+	if err := v.JsonValue.Accept(dfs); err != nil {
 		return err
 	}
 	defer func() { err = dfs.LeaveRoot(v) }() // TODO if err != nil, leave should be called or not ?
@@ -168,7 +168,7 @@ func (v *Null) DepthFirst() iter.Seq2[Pointer, JsonValue]      { return depthFir
 
 func (vv *ValueVisitor) VisitRoot(v *RootValue) error {
 	vv.pointer = nil
-	vv.yield(vv.pointer, v.Value)
+	vv.yield(vv.pointer, v.JsonValue)
 	return nil
 }
 func (vv *ValueVisitor) VisitObjectEntry(k string, v JsonValue) error {

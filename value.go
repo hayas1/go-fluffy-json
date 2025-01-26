@@ -22,7 +22,7 @@ type (
 
 	Representation string
 
-	RootValue struct{ Value JsonValue }
+	RootValue struct{ JsonValue }
 	Object    map[string]JsonValue
 	Array     []JsonValue
 	String    string
@@ -40,7 +40,6 @@ const (
 	NULL   Representation = "null"
 )
 
-func (v RootValue) Representation() Representation { return v.Value.Representation() }
 func (v *RootValue) UnmarshalJSON(data []byte) error {
 	// TODO remove this wrapper struct `Value` ?
 	// TODO do not implement as deep copy, unmarshal directly
@@ -50,12 +49,12 @@ func (v *RootValue) UnmarshalJSON(data []byte) error {
 	} else if value, err := Cast(inner); err != nil {
 		return err
 	} else {
-		v.Value = value
+		v.JsonValue = value
 	}
 	return nil
 }
 func (v RootValue) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.Value)
+	return json.Marshal(v.JsonValue)
 }
 
 func (o Object) Representation() Representation { return OBJECT }

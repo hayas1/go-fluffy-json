@@ -123,10 +123,8 @@ func TestPointer(t *testing.T) {
 				name:    "root",
 				target:  `{"hello":"world"}`,
 				pointer: fluffyjson.ParsePointer("/"),
-				expect: &fluffyjson.RootValue{
-					Value: &fluffyjson.Object{"hello": fluffyjson.ForceString("world")},
-				},
-				err: nil,
+				expect:  &fluffyjson.Object{"hello": fluffyjson.ForceString("world")},
+				err:     nil,
 			},
 			{
 				name:    "slice access",
