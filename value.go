@@ -1,5 +1,5 @@
 // [fluffyjson] can deal with JSON fluffily.
-//   - Compatible with [encode/json] and better interface than any(interface{}).
+//   - Compatible with [encode/json] and better interface than interface{}.
 //   - Useful methods to handle JSON value such as cast, access, visit, and so on.
 //   - Pure Go implementation.
 package fluffyjson
