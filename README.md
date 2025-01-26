@@ -8,8 +8,10 @@ fluffyjson can deal with JSON fluffily.
 - Pure Go implementation.
 
 # Usage
-## Install
-TODO
+## Import
+```go
+import fluffyjson "github.com/hayas1/go-fluffy-json"
+```
 
 ## Examples
 Here is some examples. https://pkg.go.dev/github.com/hayas1/go-fluffy-json#pkg-examples
