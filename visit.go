@@ -49,6 +49,11 @@ type (
 	}
 )
 
+var (
+	// implemented visitor
+	_ []Visitor = []Visitor{&BaseVisitor{}, &PointerVisitor{}, &Dfs[Visitor]{}, &Bfs[Visitor]{}}
+)
+
 func (v *RootValue) Accept(visitor Visitor) error { return visitor.VisitRoot(v) }
 func (o *Object) Accept(visitor Visitor) error    { return visitor.VisitObject(o) }
 func (a *Array) Accept(visitor Visitor) error     { return visitor.VisitArray(a) }
