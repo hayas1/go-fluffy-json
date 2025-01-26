@@ -42,216 +42,218 @@ func TestDfsVisitor(t *testing.T) {
 	})
 }
 
-func TestDepthFirst(t *testing.T) {
-	testcases := []struct {
-		name          string
-		target        string
-		expectPointer [][]fluffyjson.Pointer
-		expectValue   [][]fluffyjson.JsonValue
-	}{
-		{
-			name:   "depth first",
-			target: `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`,
-			expectPointer: [][]fluffyjson.Pointer{
-				{
-					fluffyjson.ParsePointer("/"),
-					fluffyjson.ParsePointer("/a"),
-					fluffyjson.ParsePointer("/a/b"),
-					fluffyjson.ParsePointer("/a/b/0"),
-					fluffyjson.ParsePointer("/a/b/1"),
-					fluffyjson.ParsePointer("/a/e"),
-					fluffyjson.ParsePointer("/a/e/0"),
-					fluffyjson.ParsePointer("/a/e/1"),
+func TestSearch(t *testing.T) {
+	t.Run("depth first", func(t *testing.T) {
+		testcases := []struct {
+			name          string
+			target        string
+			expectPointer [][]fluffyjson.Pointer
+			expectValue   [][]fluffyjson.JsonValue
+		}{
+			{
+				name:   "depth first",
+				target: `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`,
+				expectPointer: [][]fluffyjson.Pointer{
+					{
+						fluffyjson.ParsePointer("/"),
+						fluffyjson.ParsePointer("/a"),
+						fluffyjson.ParsePointer("/a/b"),
+						fluffyjson.ParsePointer("/a/b/0"),
+						fluffyjson.ParsePointer("/a/b/1"),
+						fluffyjson.ParsePointer("/a/e"),
+						fluffyjson.ParsePointer("/a/e/0"),
+						fluffyjson.ParsePointer("/a/e/1"),
+					},
+					{
+						fluffyjson.ParsePointer("/"),
+						fluffyjson.ParsePointer("/a"),
+						fluffyjson.ParsePointer("/a/e"),
+						fluffyjson.ParsePointer("/a/e/0"),
+						fluffyjson.ParsePointer("/a/e/1"),
+						fluffyjson.ParsePointer("/a/b"),
+						fluffyjson.ParsePointer("/a/b/0"),
+						fluffyjson.ParsePointer("/a/b/1"),
+					},
 				},
-				{
-					fluffyjson.ParsePointer("/"),
-					fluffyjson.ParsePointer("/a"),
-					fluffyjson.ParsePointer("/a/e"),
-					fluffyjson.ParsePointer("/a/e/0"),
-					fluffyjson.ParsePointer("/a/e/1"),
-					fluffyjson.ParsePointer("/a/b"),
-					fluffyjson.ParsePointer("/a/b/0"),
-					fluffyjson.ParsePointer("/a/b/1"),
-				},
-			},
-			expectValue: [][]fluffyjson.JsonValue{
-				{
-					&fluffyjson.Object{
-						"a": &fluffyjson.Object{
+				expectValue: [][]fluffyjson.JsonValue{
+					{
+						&fluffyjson.Object{
+							"a": &fluffyjson.Object{
+								"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
+								"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
+							},
+						},
+						&fluffyjson.Object{
 							"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
 							"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
 						},
+						&fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
+						fluffyjson.ForceString("c"),
+						fluffyjson.ForceString("d"),
+						&fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
+						fluffyjson.ForceString("f"),
+						fluffyjson.ForceString("g"),
 					},
-					&fluffyjson.Object{
-						"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
-						"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
-					},
-					&fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
-					fluffyjson.ForceString("c"),
-					fluffyjson.ForceString("d"),
-					&fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
-					fluffyjson.ForceString("f"),
-					fluffyjson.ForceString("g"),
-				},
-				{
-					&fluffyjson.Object{
-						"a": &fluffyjson.Object{
+					{
+						&fluffyjson.Object{
+							"a": &fluffyjson.Object{
+								"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
+								"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
+							},
+						},
+						&fluffyjson.Object{
 							"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
 							"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
 						},
+						&fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
+						fluffyjson.ForceString("f"),
+						fluffyjson.ForceString("g"),
+						&fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
+						fluffyjson.ForceString("c"),
+						fluffyjson.ForceString("d"),
 					},
-					&fluffyjson.Object{
-						"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
-						"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
-					},
-					&fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
-					fluffyjson.ForceString("f"),
-					fluffyjson.ForceString("g"),
-					&fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
-					fluffyjson.ForceString("c"),
-					fluffyjson.ForceString("d"),
 				},
 			},
-		},
-	}
+		}
 
-	for _, tc := range testcases {
-		t.Run(tc.name, func(t *testing.T) {
-			var value fluffyjson.RootValue
-			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
-				t.Fatal(err)
-			}
-
-			var i int
-			for p, v := range value.DepthFirst() {
-				pAny, pDiff := false, make([]string, 0, len(tc.expectPointer))
-				for _, ep := range tc.expectPointer {
-					diff := cmp.Diff(ep[i], p)
-					pDiff = append(pDiff, diff)
-					pAny = pAny || diff == ""
-				}
-				if !pAny {
-					t.Fatal(pDiff)
+		for _, tc := range testcases {
+			t.Run(tc.name, func(t *testing.T) {
+				var value fluffyjson.RootValue
+				if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
+					t.Fatal(err)
 				}
 
-				vAny, vDiff := false, make([]string, 0, len(tc.expectValue))
-				for _, ev := range tc.expectValue {
-					diff := cmp.Diff(ev[i], v)
-					vDiff = append(vDiff, diff)
-					vAny = vAny || diff == ""
-				}
-				if !vAny {
-					t.Fatal(vDiff)
-				}
-				i++
-			}
-		})
-	}
-}
+				var i int
+				for p, v := range value.DepthFirst() {
+					pAny, pDiff := false, make([]string, 0, len(tc.expectPointer))
+					for _, ep := range tc.expectPointer {
+						diff := cmp.Diff(ep[i], p)
+						pDiff = append(pDiff, diff)
+						pAny = pAny || diff == ""
+					}
+					if !pAny {
+						t.Fatal(pDiff)
+					}
 
-func TestBreadthFirst(t *testing.T) {
-	testcases := []struct {
-		name          string
-		target        string
-		expectPointer [][]fluffyjson.Pointer
-		expectValue   [][]fluffyjson.JsonValue
-	}{
-		{
-			name:   "depth first",
-			target: `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`,
-			expectPointer: [][]fluffyjson.Pointer{
-				{
-					fluffyjson.ParsePointer("/"),
-					fluffyjson.ParsePointer("/a"),
-					fluffyjson.ParsePointer("/a/b"),
-					fluffyjson.ParsePointer("/a/e"),
-					fluffyjson.ParsePointer("/a/b/0"),
-					fluffyjson.ParsePointer("/a/b/1"),
-					fluffyjson.ParsePointer("/a/e/0"),
-					fluffyjson.ParsePointer("/a/e/1"),
+					vAny, vDiff := false, make([]string, 0, len(tc.expectValue))
+					for _, ev := range tc.expectValue {
+						diff := cmp.Diff(ev[i], v)
+						vDiff = append(vDiff, diff)
+						vAny = vAny || diff == ""
+					}
+					if !vAny {
+						t.Fatal(vDiff)
+					}
+					i++
+				}
+			})
+		}
+	})
+
+	t.Run("breadth first", func(t *testing.T) {
+		testcases := []struct {
+			name          string
+			target        string
+			expectPointer [][]fluffyjson.Pointer
+			expectValue   [][]fluffyjson.JsonValue
+		}{
+			{
+				name:   "depth first",
+				target: `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`,
+				expectPointer: [][]fluffyjson.Pointer{
+					{
+						fluffyjson.ParsePointer("/"),
+						fluffyjson.ParsePointer("/a"),
+						fluffyjson.ParsePointer("/a/b"),
+						fluffyjson.ParsePointer("/a/e"),
+						fluffyjson.ParsePointer("/a/b/0"),
+						fluffyjson.ParsePointer("/a/b/1"),
+						fluffyjson.ParsePointer("/a/e/0"),
+						fluffyjson.ParsePointer("/a/e/1"),
+					},
+					{
+						fluffyjson.ParsePointer("/"),
+						fluffyjson.ParsePointer("/a"),
+						fluffyjson.ParsePointer("/a/e"),
+						fluffyjson.ParsePointer("/a/b"),
+						fluffyjson.ParsePointer("/a/e/0"),
+						fluffyjson.ParsePointer("/a/e/1"),
+						fluffyjson.ParsePointer("/a/b/0"),
+						fluffyjson.ParsePointer("/a/b/1"),
+					},
 				},
-				{
-					fluffyjson.ParsePointer("/"),
-					fluffyjson.ParsePointer("/a"),
-					fluffyjson.ParsePointer("/a/e"),
-					fluffyjson.ParsePointer("/a/b"),
-					fluffyjson.ParsePointer("/a/e/0"),
-					fluffyjson.ParsePointer("/a/e/1"),
-					fluffyjson.ParsePointer("/a/b/0"),
-					fluffyjson.ParsePointer("/a/b/1"),
-				},
-			},
-			expectValue: [][]fluffyjson.JsonValue{
-				{
-					&fluffyjson.Object{
-						"a": &fluffyjson.Object{
+				expectValue: [][]fluffyjson.JsonValue{
+					{
+						&fluffyjson.Object{
+							"a": &fluffyjson.Object{
+								"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
+								"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
+							},
+						},
+						&fluffyjson.Object{
 							"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
 							"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
 						},
+						&fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
+						&fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
+						fluffyjson.ForceString("c"),
+						fluffyjson.ForceString("d"),
+						fluffyjson.ForceString("f"),
+						fluffyjson.ForceString("g"),
 					},
-					&fluffyjson.Object{
-						"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
-						"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
-					},
-					&fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
-					&fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
-					fluffyjson.ForceString("c"),
-					fluffyjson.ForceString("d"),
-					fluffyjson.ForceString("f"),
-					fluffyjson.ForceString("g"),
-				},
-				{
-					&fluffyjson.Object{
-						"a": &fluffyjson.Object{
+					{
+						&fluffyjson.Object{
+							"a": &fluffyjson.Object{
+								"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
+								"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
+							},
+						},
+						&fluffyjson.Object{
 							"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
 							"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
 						},
+						&fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
+						&fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
+						fluffyjson.ForceString("f"),
+						fluffyjson.ForceString("g"),
+						fluffyjson.ForceString("c"),
+						fluffyjson.ForceString("d"),
 					},
-					&fluffyjson.Object{
-						"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
-						"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
-					},
-					&fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
-					&fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
-					fluffyjson.ForceString("f"),
-					fluffyjson.ForceString("g"),
-					fluffyjson.ForceString("c"),
-					fluffyjson.ForceString("d"),
 				},
 			},
-		},
-	}
+		}
 
-	for _, tc := range testcases {
-		t.Run(tc.name, func(t *testing.T) {
-			var value fluffyjson.RootValue
-			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
-				t.Fatal(err)
-			}
-
-			var i int
-			for p, v := range value.BreadthFirst() {
-				pAny, pDiff := false, make([]string, 0, len(tc.expectPointer))
-				for _, ep := range tc.expectPointer {
-					diff := cmp.Diff(ep[i], p)
-					pDiff = append(pDiff, diff)
-					pAny = pAny || diff == ""
-				}
-				if !pAny {
-					t.Fatal(pDiff)
+		for _, tc := range testcases {
+			t.Run(tc.name, func(t *testing.T) {
+				var value fluffyjson.RootValue
+				if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
+					t.Fatal(err)
 				}
 
-				vAny, vDiff := false, make([]string, 0, len(tc.expectValue))
-				for _, ev := range tc.expectValue {
-					diff := cmp.Diff(ev[i], v)
-					vDiff = append(vDiff, diff)
-					vAny = vAny || diff == ""
+				var i int
+				for p, v := range value.BreadthFirst() {
+					pAny, pDiff := false, make([]string, 0, len(tc.expectPointer))
+					for _, ep := range tc.expectPointer {
+						diff := cmp.Diff(ep[i], p)
+						pDiff = append(pDiff, diff)
+						pAny = pAny || diff == ""
+					}
+					if !pAny {
+						t.Fatal(pDiff)
+					}
+
+					vAny, vDiff := false, make([]string, 0, len(tc.expectValue))
+					for _, ev := range tc.expectValue {
+						diff := cmp.Diff(ev[i], v)
+						vDiff = append(vDiff, diff)
+						vAny = vAny || diff == ""
+					}
+					if !vAny {
+						t.Fatal(vDiff)
+					}
+					i++
 				}
-				if !vAny {
-					t.Fatal(vDiff)
-				}
-				i++
-			}
-		})
-	}
+			})
+		}
+	})
 }
