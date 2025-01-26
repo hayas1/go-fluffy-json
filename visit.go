@@ -38,6 +38,11 @@ type (
 	Dfs[V Visitor] struct {
 		visitor V
 	}
+	Bfs[V Visitor] struct {
+		pointerBuf []Pointer
+		valueBuf   []JsonValue
+		visitor    V
+	}
 )
 
 func (v *RootValue) Accept(visitor Visitor) error { return visitor.VisitRoot(v) }
@@ -75,10 +80,10 @@ func (dfs *Dfs[V]) VisitRoot(v *RootValue) (err error) {
 	if err = dfs.visitor.VisitRoot(v); err != nil {
 		return err
 	}
+	defer func() { err = dfs.LeaveRoot(v) }() // TODO if err != nil, leave should be called or not ?
 	if err := v.JsonValue.Accept(dfs); err != nil {
 		return err
 	}
-	defer func() { err = dfs.LeaveRoot(v) }() // TODO if err != nil, leave should be called or not ?
 	return nil
 }
 func (dfs *Dfs[V]) LeaveRoot(v *RootValue) error {
@@ -98,7 +103,7 @@ func (dfs *Dfs[V]) VisitObject(o *Object) (err error) {
 	return nil
 }
 func (dfs *Dfs[V]) VisitObjectEntry(k string, v JsonValue) (err error) {
-	dfs.visitor.SetPointer(append(dfs.visitor.GetPointer(), KeyAccess(k)))
+	dfs.SetPointer(append(dfs.GetPointer(), KeyAccess(k)))
 	if err = dfs.visitor.VisitObjectEntry(k, v); err != nil {
 		return err
 	}
@@ -110,7 +115,7 @@ func (dfs *Dfs[V]) VisitObjectEntry(k string, v JsonValue) (err error) {
 	return nil
 }
 func (dfs *Dfs[V]) LeaveObjectEntry(k string, v JsonValue) error {
-	defer dfs.visitor.SetPointer(dfs.visitor.GetPointer()[:len(dfs.visitor.GetPointer())-1])
+	defer dfs.SetPointer(dfs.GetPointer()[:len(dfs.GetPointer())-1])
 	return dfs.visitor.LeaveObjectEntry(k, v)
 }
 func (dfs *Dfs[V]) LeaveObject(o *Object) error {
@@ -130,7 +135,7 @@ func (dfs *Dfs[V]) VisitArray(a *Array) (err error) {
 	return nil
 }
 func (dfs *Dfs[V]) VisitArrayEntry(i int, v JsonValue) (err error) {
-	dfs.visitor.SetPointer(append(dfs.visitor.GetPointer(), IndexAccess(i)))
+	dfs.SetPointer(append(dfs.GetPointer(), IndexAccess(i)))
 	if err = dfs.visitor.VisitArrayEntry(i, v); err != nil {
 		return err
 	}
@@ -142,7 +147,7 @@ func (dfs *Dfs[V]) VisitArrayEntry(i int, v JsonValue) (err error) {
 	return nil
 }
 func (dfs *Dfs[V]) LeaveArrayEntry(i int, v JsonValue) error {
-	defer dfs.visitor.SetPointer(dfs.visitor.GetPointer()[:len(dfs.visitor.GetPointer())-1])
+	defer dfs.SetPointer(dfs.GetPointer()[:len(dfs.GetPointer())-1])
 	return dfs.visitor.LeaveArrayEntry(i, v)
 }
 func (dfs *Dfs[V]) LeaveArray(a *Array) error {
@@ -159,6 +164,97 @@ func (dfs *Dfs[V]) VisitBool(b *Bool) error {
 }
 func (dfs *Dfs[V]) VisitNull(n *Null) error {
 	return dfs.visitor.VisitNull(n)
+}
+
+func BfsVisitor[V Visitor](visitor V) *Bfs[V] {
+	return &Bfs[V]{visitor: visitor}
+}
+func (bfs *Bfs[V]) GetPointer() Pointer  { return bfs.visitor.GetPointer() }
+func (bfs *Bfs[V]) SetPointer(p Pointer) { bfs.visitor.SetPointer(p) }
+func (bfs *Bfs[V]) VisitRoot(v *RootValue) (err error) {
+	if err = bfs.visitor.VisitRoot(v); err != nil {
+		return err
+	}
+	defer func() { err = bfs.LeaveRoot(v) }() // TODO if err != nil, leave should be called or not ?
+
+	bfs.pointerBuf, bfs.valueBuf = append(bfs.pointerBuf, nil), append(bfs.valueBuf, v.JsonValue)
+	for len(bfs.pointerBuf) > 0 {
+		p, v := bfs.pointerBuf[0], bfs.valueBuf[0]
+		bfs.pointerBuf, bfs.valueBuf = bfs.pointerBuf[1:], bfs.valueBuf[1:]
+
+		bfs.visitor.SetPointer(p)
+		if err := v.Accept(bfs); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (bfs *Bfs[V]) LeaveRoot(v *RootValue) error {
+	return bfs.visitor.LeaveRoot(v)
+}
+func (bfs *Bfs[V]) VisitObject(o *Object) (err error) {
+	if err = bfs.visitor.VisitObject(o); err != nil {
+		return err
+	}
+	defer func() { err = bfs.LeaveObject(o) }()
+
+	for k, v := range *o {
+		bfs.pointerBuf = append(bfs.pointerBuf, append(bfs.visitor.GetPointer(), KeyAccess(k)))
+		bfs.valueBuf = append(bfs.valueBuf, v)
+	}
+	return nil
+}
+func (bfs *Bfs[V]) LeaveObject(o *Object) error {
+	return bfs.visitor.LeaveObject(o)
+}
+func (bfs *Bfs[V]) VisitObjectEntry(k string, v JsonValue) (err error) {
+	if err = bfs.visitor.VisitObjectEntry(k, v); err != nil {
+		return err
+	}
+	defer func() { err = bfs.LeaveObjectEntry(k, v) }()
+
+	return nil
+}
+func (bfs *Bfs[V]) LeaveObjectEntry(k string, v JsonValue) error {
+	return bfs.visitor.LeaveObjectEntry(k, v)
+}
+func (bfs *Bfs[V]) VisitArray(a *Array) (err error) {
+	if err = bfs.visitor.VisitArray(a); err != nil {
+		return err
+	}
+	defer func() { err = bfs.LeaveArray(a) }()
+
+	for i, v := range *a {
+		bfs.pointerBuf = append(bfs.pointerBuf, append(bfs.visitor.GetPointer(), IndexAccess(i)))
+		bfs.valueBuf = append(bfs.valueBuf, v)
+	}
+	return nil
+}
+func (bfs *Bfs[V]) LeaveArray(a *Array) error {
+	return bfs.visitor.LeaveArray(a)
+}
+func (bfs *Bfs[V]) VisitArrayEntry(i int, v JsonValue) (err error) {
+	if err = bfs.visitor.VisitArrayEntry(i, v); err != nil {
+		return err
+	}
+	defer func() { err = bfs.LeaveArrayEntry(i, v) }()
+
+	return nil
+}
+func (bfs *Bfs[V]) LeaveArrayEntry(i int, v JsonValue) error {
+	return bfs.visitor.LeaveArrayEntry(i, v)
+}
+func (bfs *Bfs[V]) VisitString(s *String) error {
+	return bfs.visitor.VisitString(s)
+}
+func (bfs *Bfs[V]) VisitNumber(n *Number) error {
+	return bfs.visitor.VisitNumber(n)
+}
+func (bfs *Bfs[V]) VisitBool(b *Bool) error {
+	return bfs.visitor.VisitBool(b)
+}
+func (bfs *Bfs[V]) VisitNull(n *Null) error {
+	return bfs.visitor.VisitNull(n)
 }
 
 type ValueVisitor struct {
