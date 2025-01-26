@@ -10,6 +10,7 @@ type (
 	}
 	Search interface {
 		DepthFirst() iter.Seq2[Pointer, JsonValue]
+		BreadthFirst() iter.Seq2[Pointer, JsonValue]
 	}
 	Visitor interface {
 		GetPointer() Pointer
@@ -274,6 +275,19 @@ func (v *String) DepthFirst() iter.Seq2[Pointer, JsonValue]    { return depthFir
 func (v *Number) DepthFirst() iter.Seq2[Pointer, JsonValue]    { return depthFirstValues(v) }
 func (v *Bool) DepthFirst() iter.Seq2[Pointer, JsonValue]      { return depthFirstValues(v) }
 func (v *Null) DepthFirst() iter.Seq2[Pointer, JsonValue]      { return depthFirstValues(v) }
+
+func breadthFirstValues(v JsonValue) iter.Seq2[Pointer, JsonValue] {
+	return func(yield func(Pointer, JsonValue) bool) {
+		v.Accept(BfsVisitor(&ValueVisitor{yield: yield}))
+	}
+}
+func (v *RootValue) BreadthFirst() iter.Seq2[Pointer, JsonValue] { return breadthFirstValues(v) }
+func (v *Object) BreadthFirst() iter.Seq2[Pointer, JsonValue]    { return breadthFirstValues(v) }
+func (v *Array) BreadthFirst() iter.Seq2[Pointer, JsonValue]     { return breadthFirstValues(v) }
+func (v *String) BreadthFirst() iter.Seq2[Pointer, JsonValue]    { return breadthFirstValues(v) }
+func (v *Number) BreadthFirst() iter.Seq2[Pointer, JsonValue]    { return breadthFirstValues(v) }
+func (v *Bool) BreadthFirst() iter.Seq2[Pointer, JsonValue]      { return breadthFirstValues(v) }
+func (v *Null) BreadthFirst() iter.Seq2[Pointer, JsonValue]      { return breadthFirstValues(v) }
 
 func (vv *ValueVisitor) VisitObject(o *Object) error {
 	vv.yield(vv.GetPointer(), o)
