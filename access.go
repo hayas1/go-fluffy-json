@@ -107,6 +107,23 @@ func ParsePointer(p string) Pointer {
 	}
 	return pointer
 }
+func (p Pointer) String() string {
+	escaped := make([]string, 0, len(p))
+	for _, acc := range p {
+		var pointer string
+		switch ki := acc.(type) {
+		case KeyAccess:
+			pointer = string(ki)
+		case IndexAccess:
+			pointer = fmt.Sprint(ki)
+		}
+		pointer = strings.ReplaceAll(pointer, "~", "~0")
+		pointer = strings.ReplaceAll(pointer, "/", "~1")
+		escaped = append(escaped, pointer)
+	}
+	return "/" + strings.Join(escaped, "/")
+}
+
 func (p Pointer) Accessing(v JsonValue) (JsonValue, error) {
 	curr := v
 	for _, a := range p {

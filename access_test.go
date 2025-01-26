@@ -89,37 +89,78 @@ func TestSliceAccess(t *testing.T) {
 }
 
 func TestPointer(t *testing.T) {
-	testcases := []struct {
-		name    string
-		target  string
-		pointer fluffyjson.Pointer
-		expect  fluffyjson.JsonValue
-		err     error
-	}{
-		{
-			name:    "slice access",
-			target:  `{"number": ["zero", "one", "two"]}`,
-			pointer: fluffyjson.ParsePointer("/number/1"),
-			expect:  fluffyjson.ForceString("one"),
-			err:     nil,
-		},
-	}
+	t.Run("parse", func(t *testing.T) {
+		testcases := []struct {
+			name    string
+			target  string
+			pointer fluffyjson.Pointer
+			expect  fluffyjson.JsonValue
+			err     error
+		}{
+			{
+				name:    "root",
+				target:  `{"hello":"world"}`,
+				pointer: fluffyjson.ParsePointer("/"),
+				expect: &fluffyjson.RootValue{
+					Value: &fluffyjson.Object{"hello": fluffyjson.ForceString("world")},
+				},
+				err: nil,
+			},
+			{
+				name:    "slice access",
+				target:  `{"number": ["zero", "one", "two"]}`,
+				pointer: fluffyjson.ParsePointer("/number/1"),
+				expect:  fluffyjson.ForceString("one"),
+				err:     nil,
+			},
+		}
 
-	for _, tc := range testcases {
-		t.Run(tc.name, func(t *testing.T) {
-			var value fluffyjson.RootValue
-			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
-				t.Fatal(err)
-			}
+		for _, tc := range testcases {
+			t.Run(tc.name, func(t *testing.T) {
+				var value fluffyjson.RootValue
+				if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
+					t.Fatal(err)
+				}
 
-			actual, err := value.Pointer(tc.pointer)
-			if !errors.Is(err, tc.err) {
-				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-				t.Fatal(diff)
-			}
-		})
-	}
+				actual, err := value.Pointer(tc.pointer)
+				if !errors.Is(err, tc.err) {
+					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
+				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
+					t.Fatal(diff)
+				}
+			})
+		}
+	})
+
+	t.Run("to string", func(t *testing.T) {
+		testcases := []struct {
+			name    string
+			pointer fluffyjson.Pointer
+			expect  string
+		}{
+			{
+				name:    "root",
+				pointer: nil,
+				expect:  "/",
+			},
+			{
+				name:    "slice access",
+				pointer: fluffyjson.Pointer{fluffyjson.KeyAccess("number"), fluffyjson.IndexAccess(1)},
+				expect:  "/number/1",
+			},
+		}
+
+		for _, tc := range testcases {
+			t.Run(tc.name, func(t *testing.T) {
+
+				actual := tc.pointer.String()
+				if diff := cmp.Diff(tc.expect, actual); diff != "" {
+					t.Fatal(diff)
+				}
+			})
+		}
+	})
+
 }
 
 func TestPointerVariadic(t *testing.T) {
