@@ -118,10 +118,9 @@ func ExampleValue_DepthFirst() {
 	}
 	results := make([]int, 0, 15)
 	for _, v := range value.DepthFirst() {
-		// TODO where is 36 ?
 		results = append(results, sum(v))
 	}
-	fmt.Println(results) // Output: [10 3 1 2 7 3 4 26 11 5 6 15 7 8]
+	fmt.Println(results) // Output: [36 10 3 1 2 7 3 4 26 11 5 6 15 7 8]
 }
 
 type TestFluffy struct {

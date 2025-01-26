@@ -85,6 +85,10 @@ func (s SliceAccess) Slicing(v JsonValue) ([]JsonValue, error) {
 
 // https://tools.ietf.org/html/rfc6901
 func ParsePointer(p string) Pointer {
+	if p == "/" {
+		return nil
+	}
+
 	parsed := make([]string, 0)
 	for _, s := range strings.Split(p, "/")[1:] {
 		s = strings.ReplaceAll(s, "~1", "/")

@@ -54,6 +54,7 @@ func TestDepthFirst(t *testing.T) {
 			target: `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`,
 			expectPointer: [][]fluffyjson.Pointer{
 				{
+					fluffyjson.ParsePointer("/"),
 					fluffyjson.ParsePointer("/a"),
 					fluffyjson.ParsePointer("/a/b"),
 					fluffyjson.ParsePointer("/a/b/0"),
@@ -63,6 +64,7 @@ func TestDepthFirst(t *testing.T) {
 					fluffyjson.ParsePointer("/a/e/1"),
 				},
 				{
+					fluffyjson.ParsePointer("/"),
 					fluffyjson.ParsePointer("/a"),
 					fluffyjson.ParsePointer("/a/e"),
 					fluffyjson.ParsePointer("/a/e/0"),
@@ -75,6 +77,12 @@ func TestDepthFirst(t *testing.T) {
 			expectValue: [][]fluffyjson.JsonValue{
 				{
 					&fluffyjson.Object{
+						"a": &fluffyjson.Object{
+							"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
+							"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
+						},
+					},
+					&fluffyjson.Object{
 						"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
 						"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
 					},
@@ -86,6 +94,12 @@ func TestDepthFirst(t *testing.T) {
 					fluffyjson.ForceString("g"),
 				},
 				{
+					&fluffyjson.Object{
+						"a": &fluffyjson.Object{
+							"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
+							"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
+						},
+					},
 					&fluffyjson.Object{
 						"b": &fluffyjson.Array{fluffyjson.ForceString("c"), fluffyjson.ForceString("d")},
 						"e": &fluffyjson.Array{fluffyjson.ForceString("f"), fluffyjson.ForceString("g")},
