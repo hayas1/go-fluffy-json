@@ -113,6 +113,13 @@ func TestPointer(t *testing.T) {
 				expect:  fluffyjson.ForceString("one"),
 				err:     nil,
 			},
+			{
+				name:    "escape",
+				target:  `{"a/b~c~1": "success"}`,
+				pointer: fluffyjson.ParsePointer("/a~1b~0c~01"),
+				expect:  fluffyjson.ForceString("success"),
+				err:     nil,
+			},
 		}
 
 		for _, tc := range testcases {
@@ -147,6 +154,11 @@ func TestPointer(t *testing.T) {
 				name:    "slice access",
 				pointer: fluffyjson.Pointer{fluffyjson.KeyAccess("number"), fluffyjson.IndexAccess(1)},
 				expect:  "/number/1",
+			},
+			{
+				name:    "escape",
+				pointer: fluffyjson.Pointer{fluffyjson.KeyAccess("a/b~c~1")},
+				expect:  "/a~1b~0c~01",
 			},
 		}
 
