@@ -33,7 +33,10 @@ type (
 		VisitBool(*Bool) error
 		VisitNull(*Null) error
 	}
+
+	BaseVisitor    struct{}
 	PointerVisitor struct {
+		BaseVisitor
 		pointer Pointer
 	}
 	Dfs[V Visitor] struct {
@@ -54,22 +57,25 @@ func (n *Number) Accept(visitor Visitor) error    { return visitor.VisitNumber(n
 func (b *Bool) Accept(visitor Visitor) error      { return visitor.VisitBool(b) }
 func (n *Null) Accept(visitor Visitor) error      { return visitor.VisitNull(n) }
 
-func (bv *PointerVisitor) GetPointer() Pointer                              { return bv.pointer }
-func (bv *PointerVisitor) SetPointer(p Pointer)                             { bv.pointer = p }
-func (bv *PointerVisitor) VisitRoot(v *RootValue) error                     { return nil }
-func (bv *PointerVisitor) LeaveRoot(v *RootValue) error                     { return nil }
-func (bv *PointerVisitor) VisitObject(o *Object) error                      { return nil }
-func (bv *PointerVisitor) VisitObjectEntry(key string, val JsonValue) error { return nil }
-func (bv *PointerVisitor) LeaveObjectEntry(key string, val JsonValue) error { return nil }
-func (bv *PointerVisitor) LeaveObject(o *Object) error                      { return nil }
-func (bv *PointerVisitor) VisitArray(a *Array) error                        { return nil }
-func (bv *PointerVisitor) VisitArrayEntry(idx int, val JsonValue) error     { return nil }
-func (bv *PointerVisitor) LeaveArrayEntry(idx int, val JsonValue) error     { return nil }
-func (bv *PointerVisitor) LeaveArray(a *Array) error                        { return nil }
-func (bv *PointerVisitor) VisitString(s *String) error                      { return nil }
-func (bv *PointerVisitor) VisitNumber(n *Number) error                      { return nil }
-func (bv *PointerVisitor) VisitBool(b *Bool) error                          { return nil }
-func (bv *PointerVisitor) VisitNull(n *Null) error                          { return nil }
+func (bv *BaseVisitor) GetPointer() Pointer                              { return nil }
+func (bv *BaseVisitor) SetPointer(Pointer)                               {}
+func (bv *BaseVisitor) VisitRoot(v *RootValue) error                     { return nil }
+func (bv *BaseVisitor) LeaveRoot(v *RootValue) error                     { return nil }
+func (bv *BaseVisitor) VisitObject(o *Object) error                      { return nil }
+func (bv *BaseVisitor) VisitObjectEntry(key string, val JsonValue) error { return nil }
+func (bv *BaseVisitor) LeaveObjectEntry(key string, val JsonValue) error { return nil }
+func (bv *BaseVisitor) LeaveObject(o *Object) error                      { return nil }
+func (bv *BaseVisitor) VisitArray(a *Array) error                        { return nil }
+func (bv *BaseVisitor) VisitArrayEntry(idx int, val JsonValue) error     { return nil }
+func (bv *BaseVisitor) LeaveArrayEntry(idx int, val JsonValue) error     { return nil }
+func (bv *BaseVisitor) LeaveArray(a *Array) error                        { return nil }
+func (bv *BaseVisitor) VisitString(s *String) error                      { return nil }
+func (bv *BaseVisitor) VisitNumber(n *Number) error                      { return nil }
+func (bv *BaseVisitor) VisitBool(b *Bool) error                          { return nil }
+func (bv *BaseVisitor) VisitNull(n *Null) error                          { return nil }
+
+func (bv *PointerVisitor) GetPointer() Pointer  { return bv.pointer }
+func (bv *PointerVisitor) SetPointer(p Pointer) { bv.pointer = p }
 
 // Get dfs wrapped visitor
 func DfsVisitor[V Visitor](visitor V) *Dfs[V] {
