@@ -44,7 +44,7 @@ func (v RootValue) Representation() Representation { return v.Value.Representati
 func (v *RootValue) UnmarshalJSON(data []byte) error {
 	// TODO remove this wrapper struct `Value` ?
 	// TODO do not implement as deep copy, unmarshal directly
-	var inner interface{}
+	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	} else if value, err := Cast(inner); err != nil {
@@ -60,7 +60,7 @@ func (v RootValue) MarshalJSON() ([]byte, error) {
 
 func (o Object) Representation() Representation { return OBJECT }
 func (o *Object) UnmarshalJSON(data []byte) error {
-	var inner interface{}
+	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	} else if object, err := Cast(inner); err != nil {
@@ -76,7 +76,7 @@ func (o Object) MarshalJSON() ([]byte, error) {
 
 func (a Array) Representation() Representation { return ARRAY }
 func (a *Array) UnmarshalJSON(data []byte) error {
-	var inner interface{}
+	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	} else if array, err := Cast(inner); err != nil {
@@ -92,7 +92,7 @@ func (a Array) MarshalJSON() ([]byte, error) {
 
 func (s String) Representation() Representation { return STRING }
 func (s *String) UnmarshalJSON(data []byte) error {
-	var inner interface{}
+	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	}
@@ -109,7 +109,7 @@ func (s String) MarshalJSON() ([]byte, error) {
 
 func (n Number) Representation() Representation { return NUMBER }
 func (n *Number) UnmarshalJSON(data []byte) error {
-	var inner interface{}
+	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	}
@@ -126,7 +126,7 @@ func (n Number) MarshalJSON() ([]byte, error) {
 
 func (b Bool) Representation() Representation { return BOOL }
 func (b *Bool) UnmarshalJSON(data []byte) error {
-	var inner interface{}
+	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	}
@@ -143,7 +143,7 @@ func (b Bool) MarshalJSON() ([]byte, error) {
 
 func (n Null) Representation() Representation { return NULL }
 func (n *Null) UnmarshalJSON(data []byte) error {
-	var inner interface{}
+	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
 		return err
 	}

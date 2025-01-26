@@ -44,7 +44,7 @@ type (
 		But Representation
 	}
 	ErrCast struct {
-		Unsupported interface{}
+		Unsupported any
 	}
 )
 
@@ -55,12 +55,12 @@ func (e ErrCast) Error() string {
 	return fmt.Sprintf("unsupported type %T", e.Unsupported)
 }
 
-func Cast(v interface{}) (JsonValue, error) {
+func Cast(v any) (JsonValue, error) {
 	switch t := v.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		o, err := CastObject(t)
 		return &o, err
-	case []interface{}:
+	case []any:
 		a, err := CastArray(t)
 		return &a, err
 	case string:
@@ -79,7 +79,7 @@ func Cast(v interface{}) (JsonValue, error) {
 		return nil, ErrCast{Unsupported: t}
 	}
 }
-func Force(v interface{}) *JsonValue {
+func Force(v any) *JsonValue {
 	value, err := Cast(v)
 	if err != nil {
 		panic(err)
@@ -99,7 +99,7 @@ func (v RootValue) AsBool() (Bool, error)     { return v.Value.AsBool() }
 func (v RootValue) IsNull() bool              { return v.Value.IsNull() }
 func (v RootValue) AsNull() (Null, error)     { return v.Value.AsNull() }
 
-func CastObject(m map[string]interface{}) (Object, error) {
+func CastObject(m map[string]any) (Object, error) {
 	var err error
 	object := make(map[string]JsonValue, len(m))
 	for k, v := range m {
@@ -109,7 +109,7 @@ func CastObject(m map[string]interface{}) (Object, error) {
 	}
 	return object, nil
 }
-func ForceObject(m map[string]interface{}) *Object {
+func ForceObject(m map[string]any) *Object {
 	object, err := CastObject(m)
 	if err != nil {
 		panic(err)
@@ -129,7 +129,7 @@ func (o Object) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL,
 func (o Object) IsNull() bool              { return false }
 func (o Object) AsNull() (Null, error)     { return nil, ErrAsValue{Not: NULL, But: OBJECT} }
 
-func CastArray(l []interface{}) (Array, error) {
+func CastArray(l []any) (Array, error) {
 	var err error
 	array := make([]JsonValue, len(l))
 	for i, v := range l {
@@ -139,7 +139,7 @@ func CastArray(l []interface{}) (Array, error) {
 	}
 	return array, nil
 }
-func ForceArray(l []interface{}) *Array {
+func ForceArray(l []any) *Array {
 	array, err := CastArray(l)
 	if err != nil {
 		panic(err)
