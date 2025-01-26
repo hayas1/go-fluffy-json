@@ -8,6 +8,9 @@ type (
 	Accept interface {
 		Accept(Visitor) error
 	}
+	Search interface {
+		DepthFirst() iter.Seq2[Pointer, JsonValue]
+	}
 	Visitor interface {
 		VisitRoot(*RootValue) error
 		LeaveRoot(*RootValue) error
@@ -30,7 +33,7 @@ type (
 
 	BaseVisitor    struct{}
 	Dfs[V Visitor] struct {
-		Visitor V
+		visitor V
 	}
 )
 
@@ -58,10 +61,10 @@ func (bv *BaseVisitor) VisitBool(b *Bool) error                          { retur
 func (bv *BaseVisitor) VisitNull(n *Null) error                          { return nil }
 
 func DfsVisitor[V Visitor](visitor V) *Dfs[V] {
-	return &Dfs[V]{Visitor: visitor}
+	return &Dfs[V]{visitor: visitor}
 }
 func (dfs *Dfs[V]) VisitRoot(v *RootValue) (err error) {
-	if err = dfs.Visitor.VisitRoot(v); err != nil {
+	if err = dfs.visitor.VisitRoot(v); err != nil {
 		return err
 	}
 	if err := v.Value.Accept(dfs); err != nil {
@@ -71,10 +74,10 @@ func (dfs *Dfs[V]) VisitRoot(v *RootValue) (err error) {
 	return nil
 }
 func (dfs *Dfs[V]) LeaveRoot(v *RootValue) error {
-	return dfs.Visitor.LeaveRoot(v)
+	return dfs.visitor.LeaveRoot(v)
 }
 func (dfs *Dfs[V]) VisitObject(o *Object) (err error) {
-	if err = dfs.Visitor.VisitObject(o); err != nil {
+	if err = dfs.visitor.VisitObject(o); err != nil {
 		return err
 	}
 	defer func() { err = dfs.LeaveObject(o) }()
@@ -87,7 +90,7 @@ func (dfs *Dfs[V]) VisitObject(o *Object) (err error) {
 	return nil
 }
 func (dfs *Dfs[V]) VisitObjectEntry(k string, v JsonValue) (err error) {
-	if err = dfs.Visitor.VisitObjectEntry(k, v); err != nil {
+	if err = dfs.visitor.VisitObjectEntry(k, v); err != nil {
 		return err
 	}
 	defer func() { err = dfs.LeaveObjectEntry(k, v) }()
@@ -98,13 +101,13 @@ func (dfs *Dfs[V]) VisitObjectEntry(k string, v JsonValue) (err error) {
 	return nil
 }
 func (dfs *Dfs[V]) LeaveObjectEntry(k string, v JsonValue) error {
-	return dfs.Visitor.LeaveObjectEntry(k, v)
+	return dfs.visitor.LeaveObjectEntry(k, v)
 }
 func (dfs *Dfs[V]) LeaveObject(o *Object) error {
-	return dfs.Visitor.LeaveObject(o)
+	return dfs.visitor.LeaveObject(o)
 }
 func (dfs *Dfs[V]) VisitArray(a *Array) (err error) {
-	if err = dfs.Visitor.VisitArray(a); err != nil {
+	if err = dfs.visitor.VisitArray(a); err != nil {
 		return err
 	}
 	defer func() { err = dfs.LeaveArray(a) }()
@@ -117,7 +120,7 @@ func (dfs *Dfs[V]) VisitArray(a *Array) (err error) {
 	return nil
 }
 func (dfs *Dfs[V]) VisitArrayEntry(i int, v JsonValue) (err error) {
-	if err = dfs.Visitor.VisitArrayEntry(i, v); err != nil {
+	if err = dfs.visitor.VisitArrayEntry(i, v); err != nil {
 		return err
 	}
 	defer func() { err = dfs.LeaveArrayEntry(i, v) }()
@@ -128,22 +131,22 @@ func (dfs *Dfs[V]) VisitArrayEntry(i int, v JsonValue) (err error) {
 	return nil
 }
 func (dfs *Dfs[V]) LeaveArrayEntry(i int, v JsonValue) error {
-	return dfs.Visitor.LeaveArrayEntry(i, v)
+	return dfs.visitor.LeaveArrayEntry(i, v)
 }
 func (dfs *Dfs[V]) LeaveArray(a *Array) error {
-	return dfs.Visitor.LeaveArray(a)
+	return dfs.visitor.LeaveArray(a)
 }
 func (dfs *Dfs[V]) VisitString(s *String) error {
-	return dfs.Visitor.VisitString(s)
+	return dfs.visitor.VisitString(s)
 }
 func (dfs *Dfs[V]) VisitNumber(n *Number) error {
-	return dfs.Visitor.VisitNumber(n)
+	return dfs.visitor.VisitNumber(n)
 }
 func (dfs *Dfs[V]) VisitBool(b *Bool) error {
-	return dfs.Visitor.VisitBool(b)
+	return dfs.visitor.VisitBool(b)
 }
 func (dfs *Dfs[V]) VisitNull(n *Null) error {
-	return dfs.Visitor.VisitNull(n)
+	return dfs.visitor.VisitNull(n)
 }
 
 type ValueVisitor struct {
@@ -153,10 +156,7 @@ type ValueVisitor struct {
 }
 
 func (v *RootValue) DepthFirst() iter.Seq2[Pointer, JsonValue] {
-	return func(yield func(Pointer, JsonValue) bool) {
-		visitor := &ValueVisitor{yield: yield}
-		v.Accept(DfsVisitor(visitor))
-	}
+	return func(yield func(Pointer, JsonValue) bool) { v.Accept(DfsVisitor(&ValueVisitor{yield: yield})) }
 }
 
 func (vv *ValueVisitor) VisitRoot(v *RootValue) error {
