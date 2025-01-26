@@ -9,8 +9,8 @@ type (
 		Accept(Visitor) error
 	}
 	Visitor interface {
-		VisitRoot(*Value) error
-		LeaveRoot(*Value) error
+		VisitRoot(*RootValue) error
+		LeaveRoot(*RootValue) error
 
 		VisitObject(*Object) error
 		VisitObjectEntry(string, JsonValue) error
@@ -34,16 +34,16 @@ type (
 	}
 )
 
-func (v *Value) Accept(visitor Visitor) error  { return visitor.VisitRoot(v) }
-func (o *Object) Accept(visitor Visitor) error { return visitor.VisitObject(o) }
-func (a *Array) Accept(visitor Visitor) error  { return visitor.VisitArray(a) }
-func (s *String) Accept(visitor Visitor) error { return visitor.VisitString(s) }
-func (n *Number) Accept(visitor Visitor) error { return visitor.VisitNumber(n) }
-func (b *Bool) Accept(visitor Visitor) error   { return visitor.VisitBool(b) }
-func (n *Null) Accept(visitor Visitor) error   { return visitor.VisitNull(n) }
+func (v *RootValue) Accept(visitor Visitor) error { return visitor.VisitRoot(v) }
+func (o *Object) Accept(visitor Visitor) error    { return visitor.VisitObject(o) }
+func (a *Array) Accept(visitor Visitor) error     { return visitor.VisitArray(a) }
+func (s *String) Accept(visitor Visitor) error    { return visitor.VisitString(s) }
+func (n *Number) Accept(visitor Visitor) error    { return visitor.VisitNumber(n) }
+func (b *Bool) Accept(visitor Visitor) error      { return visitor.VisitBool(b) }
+func (n *Null) Accept(visitor Visitor) error      { return visitor.VisitNull(n) }
 
-func (bv *BaseVisitor) VisitRoot(v *Value) error                         { return nil }
-func (bv *BaseVisitor) LeaveRoot(v *Value) error                         { return nil }
+func (bv *BaseVisitor) VisitRoot(v *RootValue) error                     { return nil }
+func (bv *BaseVisitor) LeaveRoot(v *RootValue) error                     { return nil }
 func (bv *BaseVisitor) VisitObject(o *Object) error                      { return nil }
 func (bv *BaseVisitor) VisitObjectEntry(key string, val JsonValue) error { return nil }
 func (bv *BaseVisitor) LeaveObjectEntry(key string, val JsonValue) error { return nil }
@@ -60,7 +60,7 @@ func (bv *BaseVisitor) VisitNull(n *Null) error                          { retur
 func DfsVisitor[V Visitor](visitor V) *Dfs[V] {
 	return &Dfs[V]{Visitor: visitor}
 }
-func (dfs *Dfs[V]) VisitRoot(v *Value) (err error) {
+func (dfs *Dfs[V]) VisitRoot(v *RootValue) (err error) {
 	if err = dfs.Visitor.VisitRoot(v); err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (dfs *Dfs[V]) VisitRoot(v *Value) (err error) {
 	defer func() { err = dfs.LeaveRoot(v) }() // TODO if err != nil, leave should be called or not ?
 	return nil
 }
-func (dfs *Dfs[V]) LeaveRoot(v *Value) error {
+func (dfs *Dfs[V]) LeaveRoot(v *RootValue) error {
 	return dfs.Visitor.LeaveRoot(v)
 }
 func (dfs *Dfs[V]) VisitObject(o *Object) (err error) {
@@ -152,14 +152,14 @@ type ValueVisitor struct {
 	yield   func(Pointer, JsonValue) bool
 }
 
-func (v *Value) DepthFirst() iter.Seq2[Pointer, JsonValue] {
+func (v *RootValue) DepthFirst() iter.Seq2[Pointer, JsonValue] {
 	return func(yield func(Pointer, JsonValue) bool) {
 		visitor := &ValueVisitor{yield: yield}
 		v.Accept(DfsVisitor(visitor))
 	}
 }
 
-func (vv *ValueVisitor) VisitRoot(v *Value) error {
+func (vv *ValueVisitor) VisitRoot(v *RootValue) error {
 	vv.pointer = nil
 	vv.yield(vv.pointer, v.Value)
 	return nil

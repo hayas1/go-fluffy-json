@@ -86,18 +86,18 @@ func Force(v interface{}) *JsonValue {
 	}
 	return &value
 }
-func (v Value) IsObject() bool            { return v.Value.IsObject() }
-func (v Value) AsObject() (Object, error) { return v.Value.AsObject() }
-func (v Value) IsArray() bool             { return v.Value.IsArray() }
-func (v Value) AsArray() (Array, error)   { return v.Value.AsArray() }
-func (v Value) IsString() bool            { return v.Value.IsString() }
-func (v Value) AsString() (String, error) { return v.Value.AsString() }
-func (v Value) IsNumber() bool            { return v.Value.IsNumber() }
-func (v Value) AsNumber() (Number, error) { return v.Value.AsNumber() }
-func (v Value) IsBool() bool              { return v.Value.IsBool() }
-func (v Value) AsBool() (Bool, error)     { return v.Value.AsBool() }
-func (v Value) IsNull() bool              { return v.Value.IsNull() }
-func (v Value) AsNull() (Null, error)     { return v.Value.AsNull() }
+func (v RootValue) IsObject() bool            { return v.Value.IsObject() }
+func (v RootValue) AsObject() (Object, error) { return v.Value.AsObject() }
+func (v RootValue) IsArray() bool             { return v.Value.IsArray() }
+func (v RootValue) AsArray() (Array, error)   { return v.Value.AsArray() }
+func (v RootValue) IsString() bool            { return v.Value.IsString() }
+func (v RootValue) AsString() (String, error) { return v.Value.AsString() }
+func (v RootValue) IsNumber() bool            { return v.Value.IsNumber() }
+func (v RootValue) AsNumber() (Number, error) { return v.Value.AsNumber() }
+func (v RootValue) IsBool() bool              { return v.Value.IsBool() }
+func (v RootValue) AsBool() (Bool, error)     { return v.Value.AsBool() }
+func (v RootValue) IsNull() bool              { return v.Value.IsNull() }
+func (v RootValue) AsNull() (Null, error)     { return v.Value.AsNull() }
 
 func CastObject(m map[string]interface{}) (Object, error) {
 	var err error

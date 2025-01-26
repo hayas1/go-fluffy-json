@@ -36,7 +36,7 @@ func TestAccess(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			var value fluffyjson.Value
+			var value fluffyjson.RootValue
 			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
 				t.Fatal(err)
 			}
@@ -73,7 +73,7 @@ func TestSliceAccess(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			var value fluffyjson.Value
+			var value fluffyjson.RootValue
 			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
 				t.Fatal(err)
 			}
@@ -107,7 +107,7 @@ func TestPointer(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			var value fluffyjson.Value
+			var value fluffyjson.RootValue
 			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
 				t.Fatal(err)
 			}
@@ -125,7 +125,7 @@ func TestPointer(t *testing.T) {
 func TestPointerVariadic(t *testing.T) {
 	t.Run("variadic parameter", func(t *testing.T) {
 		target := `{"number": ["zero", "one", "two"]}`
-		var value fluffyjson.Value
+		var value fluffyjson.RootValue
 		if err := json.Unmarshal([]byte(target), &value); err != nil {
 			t.Fatal(err)
 		}

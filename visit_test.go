@@ -25,7 +25,7 @@ func (c *Collector) VisitString(s *fluffyjson.String) error {
 func TestDfsVisitor(t *testing.T) {
 	t.Run("dfs collect visitor", func(t *testing.T) {
 		target := `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`
-		var value fluffyjson.Value
+		var value fluffyjson.RootValue
 		if err := json.Unmarshal([]byte(target), &value); err != nil {
 			t.Fatal(err)
 		}
@@ -117,7 +117,7 @@ func TestDepthFirst(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			var value fluffyjson.Value
+			var value fluffyjson.RootValue
 			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
 				t.Fatal(err)
 			}

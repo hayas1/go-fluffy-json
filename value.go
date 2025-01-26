@@ -21,13 +21,13 @@ type (
 
 	Representation string
 
-	Value  struct{ Value JsonValue }
-	Object map[string]JsonValue
-	Array  []JsonValue
-	String string
-	Number float64
-	Bool   bool
-	Null   []struct{}
+	RootValue struct{ Value JsonValue }
+	Object    map[string]JsonValue
+	Array     []JsonValue
+	String    string
+	Number    float64
+	Bool      bool
+	Null      []struct{}
 )
 
 const (
@@ -39,8 +39,8 @@ const (
 	NULL   Representation = "null"
 )
 
-func (v Value) Representation() Representation { return v.Value.Representation() }
-func (v *Value) UnmarshalJSON(data []byte) error {
+func (v RootValue) Representation() Representation { return v.Value.Representation() }
+func (v *RootValue) UnmarshalJSON(data []byte) error {
 	// TODO remove this wrapper struct `Value` ?
 	// TODO do not implement as deep copy, unmarshal directly
 	var inner interface{}
@@ -53,7 +53,7 @@ func (v *Value) UnmarshalJSON(data []byte) error {
 	}
 	return nil
 }
-func (v Value) MarshalJSON() ([]byte, error) {
+func (v RootValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.Value)
 }
 
