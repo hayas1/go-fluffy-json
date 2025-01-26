@@ -155,9 +155,16 @@ type ValueVisitor struct {
 	yield   func(Pointer, JsonValue) bool
 }
 
-func (v *RootValue) DepthFirst() iter.Seq2[Pointer, JsonValue] {
+func depthFirstValues(v JsonValue) iter.Seq2[Pointer, JsonValue] {
 	return func(yield func(Pointer, JsonValue) bool) { v.Accept(DfsVisitor(&ValueVisitor{yield: yield})) }
 }
+func (v *RootValue) DepthFirst() iter.Seq2[Pointer, JsonValue] { return depthFirstValues(v) }
+func (v *Object) DepthFirst() iter.Seq2[Pointer, JsonValue]    { return depthFirstValues(v) }
+func (v *Array) DepthFirst() iter.Seq2[Pointer, JsonValue]     { return depthFirstValues(v) }
+func (v *String) DepthFirst() iter.Seq2[Pointer, JsonValue]    { return depthFirstValues(v) }
+func (v *Number) DepthFirst() iter.Seq2[Pointer, JsonValue]    { return depthFirstValues(v) }
+func (v *Bool) DepthFirst() iter.Seq2[Pointer, JsonValue]      { return depthFirstValues(v) }
+func (v *Null) DepthFirst() iter.Seq2[Pointer, JsonValue]      { return depthFirstValues(v) }
 
 func (vv *ValueVisitor) VisitRoot(v *RootValue) error {
 	vv.pointer = nil

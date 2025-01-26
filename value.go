@@ -17,6 +17,7 @@ type (
 		AsValue
 		Accept
 		Access
+		Search
 	}
 
 	Representation string
