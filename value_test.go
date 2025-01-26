@@ -41,6 +41,89 @@ func ExampleValue_MarshalJSON() {
 	fmt.Println(string(b)) // Output: ["hello","world"]
 }
 
+func ExampleValue_asMethods() {
+	target := `{"hello":"world"}`
+	var value fluffyjson.Value
+	if err := json.Unmarshal([]byte(target), &value); err != nil {
+		panic(err)
+	}
+
+	object, err := value.Value.AsObject()
+	if err != nil {
+		panic(err)
+	}
+
+	world, err := object["hello"].AsString()
+	if err != nil {
+		panic(err)
+	}
+
+	match := world == "world"
+	if !match {
+		panic("not world")
+	}
+
+	fmt.Println(match) // Output: true
+}
+func ExampleValue_switchSyntax() {
+	target := `{"hello":"world"}`
+	var value fluffyjson.Value
+	if err := json.Unmarshal([]byte(target), &value); err != nil {
+		panic(err)
+	}
+
+	switch object := value.Value.(type) {
+	// case SomeType:
+	// 	panic("fail to compile: the interface is not implemented for SomeType basically")
+	case *fluffyjson.Object:
+		switch world := (*object)["hello"].(type) {
+		case *fluffyjson.String:
+			if match := *world == "world"; !match {
+				panic("not world")
+			} else {
+				fmt.Println(match)
+			}
+		default:
+			panic("not string")
+		}
+	default:
+		panic("not object")
+	}
+	// Output: true
+}
+
+func ExampleValue_DepthFirst() {
+	target := `[[[1,2],[3,4]],[[5,6],[7,8]]]`
+	var value fluffyjson.Value
+	if err := json.Unmarshal([]byte(target), &value); err != nil {
+		panic(err)
+	}
+
+	var sum func(v fluffyjson.JsonValue) int
+	sum = func(v fluffyjson.JsonValue) int {
+		switch t := v.(type) {
+		case *fluffyjson.Value:
+			return sum(t.Value) // TODO
+		case *fluffyjson.Array:
+			s := 0
+			for _, vv := range *t {
+				s += sum(vv)
+			}
+			return s
+		case *fluffyjson.Number:
+			return int(*t)
+		default:
+			panic("not array or number")
+		}
+	}
+	results := make([]int, 0, 15)
+	for _, v := range value.DepthFirst() {
+		// TODO where is 36 ?
+		results = append(results, sum(v))
+	}
+	fmt.Println(results) // Output: [10 3 1 2 7 3 4 26 11 5 6 15 7 8]
+}
+
 type TestFluffy struct {
 	Fluffy fluffyjson.Value `json:"fluffy"`
 }
@@ -129,52 +212,4 @@ func TestMarshalBasic(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestValue(t *testing.T) {
-	t.Run("switch syntax", func(t *testing.T) {
-		target := `{"hello":"world"}`
-		var value fluffyjson.Value
-		if err := json.Unmarshal([]byte(target), &value); err != nil {
-			t.Fatal(err)
-		}
-
-		switch object := value.Value.(type) {
-		// case SomeType:
-		// 	t.Fatal("fail to compile: the interface is not implemented for SomeType basically")
-		case *fluffyjson.Object:
-			switch world := (*object)["hello"].(type) {
-			case *fluffyjson.String:
-				if *world != "world" {
-					t.Fatal("not world")
-				}
-			default:
-				t.Fatal("not string")
-			}
-		default:
-			t.Fatal("not object")
-		}
-	})
-
-	t.Run("as methods", func(t *testing.T) {
-		target := `{"hello":"world"}`
-		var value fluffyjson.Value
-		if err := json.Unmarshal([]byte(target), &value); err != nil {
-			t.Fatal(err)
-		}
-
-		object, err := value.Value.AsObject()
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		world, err := object["hello"].AsString()
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if world != "world" {
-			t.Fatal("not world")
-		}
-	})
 }

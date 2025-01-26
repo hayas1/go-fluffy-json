@@ -11,34 +11,6 @@ fluffyjson can deal with JSON fluffily.
 ## Install
 TODO
 
-## Unmarshal JSON
-```go
-import fluffyjson "github.com/hayas1/go-fluffy-json"
+## Examples
+Here is some examples. https://pkg.go.dev/github.com/hayas1/go-fluffy-json#pkg-examples
 
-target := `{"hello":"world"}`
-var v struct {
-    Hello fluffyjson.Value `json:"hello"`
-}
-if err := json.Unmarshal([]byte(target), &v); err != nil {
-    panic(err)
-}
-
-world, err := v.Hello.AsString()
-if err != nil {
-    panic(err)
-}
-fmt.Println(world)
-// Output: world
-```
-
-## Marshal JSON
-TODO
-
-## Cast JSON value as Go struct
-TODO
-
-## Access to JSON value
-TODO
-
-## Visit JSON as tree
-TODO
