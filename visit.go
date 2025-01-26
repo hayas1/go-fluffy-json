@@ -168,14 +168,8 @@ func (v *Number) DepthFirst() iter.Seq2[Pointer, JsonValue]    { return depthFir
 func (v *Bool) DepthFirst() iter.Seq2[Pointer, JsonValue]      { return depthFirstValues(v) }
 func (v *Null) DepthFirst() iter.Seq2[Pointer, JsonValue]      { return depthFirstValues(v) }
 
-func (vv *ValueVisitor) VisitRoot(v *RootValue) error {
-	vv.pointer = nil
-	vv.yield(vv.pointer, v.JsonValue)
-	return nil
-}
 func (vv *ValueVisitor) VisitObjectEntry(k string, v JsonValue) error {
 	vv.pointer = append(vv.pointer, KeyAccess(k))
-	vv.yield(vv.pointer, v)
 	return nil
 }
 func (vv *ValueVisitor) LeaveObjectEntry(k string, v JsonValue) error {
@@ -184,10 +178,33 @@ func (vv *ValueVisitor) LeaveObjectEntry(k string, v JsonValue) error {
 }
 func (vv *ValueVisitor) VisitArrayEntry(i int, v JsonValue) error {
 	vv.pointer = append(vv.pointer, IndexAccess(i))
-	vv.yield(vv.pointer, v)
 	return nil
 }
 func (vv *ValueVisitor) LeaveArrayEntry(i int, v JsonValue) error {
 	vv.pointer = vv.pointer[:len(vv.pointer)-1]
+	return nil
+}
+func (vv *ValueVisitor) VisitObject(o *Object) error {
+	vv.yield(vv.pointer, o)
+	return nil
+}
+func (vv *ValueVisitor) VisitArray(a *Array) error {
+	vv.yield(vv.pointer, a)
+	return nil
+}
+func (vv *ValueVisitor) VisitString(s *String) error {
+	vv.yield(vv.pointer, s)
+	return nil
+}
+func (vv *ValueVisitor) VisitNumber(n *Number) error {
+	vv.yield(vv.pointer, n)
+	return nil
+}
+func (vv *ValueVisitor) VisitBool(b *Bool) error {
+	vv.yield(vv.pointer, b)
+	return nil
+}
+func (vv *ValueVisitor) VisitNull(n *Null) error {
+	vv.yield(vv.pointer, n)
 	return nil
 }
