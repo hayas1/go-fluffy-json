@@ -18,11 +18,7 @@ func ExampleRootValue_UnmarshalJSON() {
 		panic(err)
 	}
 
-	worldValue, err := v.Fluffy.Access(fluffyjson.ParsePointer("/deep/nested/json/value/1"))
-	if err != nil {
-		panic(err)
-	}
-	world, err := worldValue.AsString()
+	world, err := v.Fluffy.AccessAsString(fluffyjson.ParsePointer("/deep/nested/json/value/1"))
 	if err != nil {
 		panic(err)
 	}
@@ -48,12 +44,12 @@ func ExampleRootValue_asMethods() {
 		panic(err)
 	}
 
-	object, err := value.AsObject()
+	object, err := value.AccessAsObject()
 	if err != nil {
 		panic(err)
 	}
 
-	world, err := object["hello"].AsString()
+	world, err := object["hello"].AccessAsString()
 	if err != nil {
 		panic(err)
 	}
