@@ -2,7 +2,8 @@ package fluffyjson
 
 type (
 	AccessAs interface {
-		// TODO use pointer ?
+		Access
+		// TODO return pointer ?
 		AccessAsObject
 		AccessAsArray
 		AccessAsString
@@ -45,66 +46,60 @@ func accessAsObject(v JsonValue, ptr ...Accessor) (Object, error) {
 	if err != nil {
 		return nil, err
 	}
-	o, err := v.AsObject()
-	if err != nil {
-		return nil, err
+	if !v.Is(OBJECT) {
+		return nil, ErrAsValue{Not: OBJECT, But: v.Representation()}
 	}
-	return o, nil
+	return *v.(*Object), nil
 }
 func accessAsArray(v JsonValue, ptr ...Accessor) (Array, error) {
 	v, err := Pointer(ptr).Accessing(v)
 	if err != nil {
 		return nil, err
 	}
-	a, err := v.AsArray()
-	if err != nil {
-		return nil, err
+	if !v.Is(ARRAY) {
+		return nil, ErrAsValue{Not: ARRAY, But: v.Representation()}
 	}
-	return a, nil
+	return *v.(*Array), nil
 }
 func accessAsString(v JsonValue, ptr ...Accessor) (String, error) {
 	v, err := Pointer(ptr).Accessing(v)
 	if err != nil {
 		return "", err
 	}
-	s, err := v.AsString()
-	if err != nil {
-		return "", err
+	if !v.Is(STRING) {
+		return "", ErrAsValue{Not: STRING, But: v.Representation()}
 	}
-	return s, nil
+	return *v.(*String), nil
 }
 func accessAsNumber(v JsonValue, ptr ...Accessor) (Number, error) {
 	v, err := Pointer(ptr).Accessing(v)
 	if err != nil {
 		return 0, err
 	}
-	n, err := v.AsNumber()
-	if err != nil {
-		return 0, err
+	if !v.Is(NUMBER) {
+		return 0, ErrAsValue{Not: NUMBER, But: v.Representation()}
 	}
-	return n, nil
+	return *v.(*Number), nil
 }
 func accessAsBool(v JsonValue, ptr ...Accessor) (Bool, error) {
 	v, err := Pointer(ptr).Accessing(v)
 	if err != nil {
 		return false, err
 	}
-	b, err := v.AsBool()
-	if err != nil {
-		return false, err
+	if !v.Is(BOOL) {
+		return false, ErrAsValue{Not: BOOL, But: v.Representation()}
 	}
-	return b, nil
+	return *v.(*Bool), nil
 }
 func accessAsNull(v JsonValue, ptr ...Accessor) (Null, error) {
 	v, err := Pointer(ptr).Accessing(v)
 	if err != nil {
 		return Null{}, err
 	}
-	n, err := v.AsNull()
-	if err != nil {
-		return Null{}, err
+	if !v.Is(NULL) {
+		return Null{}, ErrAsValue{Not: NULL, But: v.Representation()}
 	}
-	return n, nil
+	return *v.(*Null), nil
 }
 
 func (o Object) AccessAsObject(ptr ...Accessor) (Object, error) { return accessAsObject(&o, ptr...) }
@@ -151,11 +146,10 @@ func sliceAsObject(v JsonValue, acc SliceAccessor) ([]Object, error) {
 	}
 	s := make([]Object, 0, len(vs))
 	for _, v := range vs {
-		o, err := v.AsObject()
-		if err != nil {
-			return nil, err
+		if !v.Is(OBJECT) {
+			return nil, ErrAsValue{Not: OBJECT, But: v.Representation()}
 		}
-		s = append(s, o)
+		s = append(s, *v.(*Object))
 	}
 	return s, nil
 }
@@ -166,11 +160,10 @@ func sliceAsArray(v JsonValue, acc SliceAccessor) ([]Array, error) {
 	}
 	s := make([]Array, 0, len(vs))
 	for _, v := range vs {
-		a, err := v.AsArray()
-		if err != nil {
-			return nil, err
+		if !v.Is(ARRAY) {
+			return nil, ErrAsValue{Not: ARRAY, But: v.Representation()}
 		}
-		s = append(s, a)
+		s = append(s, *v.(*Array))
 	}
 	return s, nil
 }
@@ -181,11 +174,10 @@ func sliceAsString(v JsonValue, acc SliceAccessor) ([]String, error) {
 	}
 	s := make([]String, 0, len(vs))
 	for _, v := range vs {
-		a, err := v.AsString()
-		if err != nil {
-			return nil, err
+		if !v.Is(STRING) {
+			return nil, ErrAsValue{Not: STRING, But: v.Representation()}
 		}
-		s = append(s, a)
+		s = append(s, *v.(*String))
 	}
 	return s, nil
 }
@@ -196,11 +188,10 @@ func sliceAsNumber(v JsonValue, acc SliceAccessor) ([]Number, error) {
 	}
 	s := make([]Number, 0, len(vs))
 	for _, v := range vs {
-		a, err := v.AsNumber()
-		if err != nil {
-			return nil, err
+		if !v.Is(NUMBER) {
+			return nil, ErrAsValue{Not: NUMBER, But: v.Representation()}
 		}
-		s = append(s, a)
+		s = append(s, *v.(*Number))
 	}
 	return s, nil
 }
@@ -211,11 +202,10 @@ func sliceAsBool(v JsonValue, acc SliceAccessor) ([]Bool, error) {
 	}
 	s := make([]Bool, 0, len(vs))
 	for _, v := range vs {
-		a, err := v.AsBool()
-		if err != nil {
-			return nil, err
+		if !v.Is(BOOL) {
+			return nil, ErrAsValue{Not: BOOL, But: v.Representation()}
 		}
-		s = append(s, a)
+		s = append(s, *v.(*Bool))
 	}
 	return s, nil
 }
@@ -226,11 +216,10 @@ func sliceAsNull(v JsonValue, acc SliceAccessor) ([]Null, error) {
 	}
 	s := make([]Null, 0, len(vs))
 	for _, v := range vs {
-		a, err := v.AsNull()
-		if err != nil {
-			return nil, err
+		if !v.Is(NULL) {
+			return nil, ErrAsValue{Not: NULL, But: v.Representation()}
 		}
-		s = append(s, a)
+		s = append(s, *v.(*Null))
 	}
 	return s, nil
 }
@@ -270,106 +259,3 @@ func (n Null) SliceAsString(acc SliceAccessor) ([]String, error)   { return slic
 func (n Null) SliceAsNumber(acc SliceAccessor) ([]Number, error)   { return sliceAsNumber(&n, acc) }
 func (n Null) SliceAsBool(acc SliceAccessor) ([]Bool, error)       { return sliceAsBool(&n, acc) }
 func (n Null) SliceAsNull(acc SliceAccessor) ([]Null, error)       { return sliceAsNull(&n, acc) }
-
-// func pointerAsObject(v JsonValue, ptr Pointer) (Object, error) {
-// 	v, err := ptr.Accessing(v)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	o, err := v.AsObject()
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return o, nil
-// }
-// func pointerAsArray(v JsonValue, ptr Pointer) (Array, error) {
-// 	v, err := ptr.Accessing(v)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	a, err := v.AsArray()
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return a, nil
-// }
-// func pointerAsString(v JsonValue, ptr Pointer) (String, error) {
-// 	v, err := ptr.Accessing(v)
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	s, err := v.AsString()
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	return s, nil
-// }
-// func pointerAsNumber(v JsonValue, ptr Pointer) (Number, error) {
-// 	v, err := ptr.Accessing(v)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	n, err := v.AsNumber()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	return n, nil
-// }
-// func pointerAsBool(v JsonValue, ptr Pointer) (Bool, error) {
-// 	v, err := ptr.Accessing(v)
-// 	if err != nil {
-// 		return false, err
-// 	}
-// 	b, err := v.AsBool()
-// 	if err != nil {
-// 		return false, err
-// 	}
-// 	return b, nil
-// }
-// func pointerAsNull(v JsonValue, ptr Pointer) (Null, error) {
-// 	v, err := ptr.Accessing(v)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	n, err := v.AsNull()
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return n, nil
-// }
-// func (o Object) PointerAsObject(ptr ...Accessor) (Object, error) { return pointerAsObject(&o, ptr) }
-// func (o Object) PointerAsArray(ptr ...Accessor) (Array, error)   { return pointerAsArray(&o, ptr) }
-// func (o Object) PointerAsString(ptr ...Accessor) (String, error) { return pointerAsString(&o, ptr) }
-// func (o Object) PointerAsNumber(ptr ...Accessor) (Number, error) { return pointerAsNumber(&o, ptr) }
-// func (o Object) PointerAsBool(ptr ...Accessor) (Bool, error)     { return pointerAsBool(&o, ptr) }
-// func (o Object) PointerAsNull(ptr ...Accessor) (Null, error)     { return pointerAsNull(&o, ptr) }
-// func (a Array) PointerAsObject(ptr ...Accessor) (Object, error)  { return pointerAsObject(&a, ptr) }
-// func (a Array) PointerAsArray(ptr ...Accessor) (Array, error)    { return pointerAsArray(&a, ptr) }
-// func (a Array) PointerAsString(ptr ...Accessor) (String, error)  { return pointerAsString(&a, ptr) }
-// func (a Array) PointerAsNumber(ptr ...Accessor) (Number, error)  { return pointerAsNumber(&a, ptr) }
-// func (a Array) PointerAsBool(ptr ...Accessor) (Bool, error)      { return pointerAsBool(&a, ptr) }
-// func (a Array) PointerAsNull(ptr ...Accessor) (Null, error)      { return pointerAsNull(&a, ptr) }
-// func (s String) PointerAsObject(ptr ...Accessor) (Object, error) { return pointerAsObject(&s, ptr) }
-// func (s String) PointerAsArray(ptr ...Accessor) (Array, error)   { return pointerAsArray(&s, ptr) }
-// func (s String) PointerAsString(ptr ...Accessor) (String, error) { return pointerAsString(&s, ptr) }
-// func (s String) PointerAsNumber(ptr ...Accessor) (Number, error) { return pointerAsNumber(&s, ptr) }
-// func (s String) PointerAsBool(ptr ...Accessor) (Bool, error)     { return pointerAsBool(&s, ptr) }
-// func (s String) PointerAsNull(ptr ...Accessor) (Null, error)     { return pointerAsNull(&s, ptr) }
-// func (n Number) PointerAsObject(ptr ...Accessor) (Object, error) { return pointerAsObject(&n, ptr) }
-// func (n Number) PointerAsArray(ptr ...Accessor) (Array, error)   { return pointerAsArray(&n, ptr) }
-// func (n Number) PointerAsString(ptr ...Accessor) (String, error) { return pointerAsString(&n, ptr) }
-// func (n Number) PointerAsNumber(ptr ...Accessor) (Number, error) { return pointerAsNumber(&n, ptr) }
-// func (n Number) PointerAsBool(ptr ...Accessor) (Bool, error)     { return pointerAsBool(&n, ptr) }
-// func (n Number) PointerAsNull(ptr ...Accessor) (Null, error)     { return pointerAsNull(&n, ptr) }
-// func (b Bool) PointerAsObject(ptr ...Accessor) (Object, error)   { return pointerAsObject(&b, ptr) }
-// func (b Bool) PointerAsArray(ptr ...Accessor) (Array, error)     { return pointerAsArray(&b, ptr) }
-// func (b Bool) PointerAsString(ptr ...Accessor) (String, error)   { return pointerAsString(&b, ptr) }
-// func (b Bool) PointerAsNumber(ptr ...Accessor) (Number, error)   { return pointerAsNumber(&b, ptr) }
-// func (b Bool) PointerAsBool(ptr ...Accessor) (Bool, error)       { return pointerAsBool(&b, ptr) }
-// func (b Bool) PointerAsNull(ptr ...Accessor) (Null, error)       { return pointerAsNull(&b, ptr) }
-// func (n Null) PointerAsObject(ptr ...Accessor) (Object, error)   { return pointerAsObject(&n, ptr) }
-// func (n Null) PointerAsArray(ptr ...Accessor) (Array, error)     { return pointerAsArray(&n, ptr) }
-// func (n Null) PointerAsString(ptr ...Accessor) (String, error)   { return pointerAsString(&n, ptr) }
-// func (n Null) PointerAsNumber(ptr ...Accessor) (Number, error)   { return pointerAsNumber(&n, ptr) }
-// func (n Null) PointerAsBool(ptr ...Accessor) (Bool, error)       { return pointerAsBool(&n, ptr) }
-// func (n Null) PointerAsNull(ptr ...Accessor) (Null, error)       { return pointerAsNull(&n, ptr) }
