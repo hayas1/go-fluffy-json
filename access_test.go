@@ -1,11 +1,9 @@
 package fluffyjson_test
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
 	fluffyjson "github.com/hayas1/go-fluffy-json"
 )
 
@@ -176,12 +174,9 @@ func TestPointer(t *testing.T) {
 func TestAccessVariadic(t *testing.T) {
 	t.Run("variadic parameter", func(t *testing.T) {
 		target := `{"number": ["zero", "one", "two"]}`
-		var value fluffyjson.RootValue
-		if err := json.Unmarshal([]byte(target), &value); err != nil {
-			t.Fatal(err)
-		}
+		value := HelperUnmarshalValue(t, target)
 
-		two, err := value.Access(
+		actual, err := value.Access(
 			fluffyjson.KeyAccess("number"),
 			fluffyjson.IndexAccess(2),
 		)
@@ -189,8 +184,7 @@ func TestAccessVariadic(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if diff := cmp.Diff(fluffyjson.ForceString("two"), two); diff != "" {
-			t.Fatal(diff)
-		}
+		var expect fluffyjson.JsonValue = fluffyjson.ForceString("two")
+		HelperEvaluate(t, expect, actual)
 	})
 }
