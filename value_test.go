@@ -206,3 +206,12 @@ func TestMarshalBasic(t *testing.T) {
 		})
 	}
 }
+
+func HelperUnmarshalValue(t *testing.T, target string) fluffyjson.RootValue {
+	t.Helper()
+	var value fluffyjson.RootValue
+	if err := json.Unmarshal([]byte(target), &value); err != nil {
+		t.Fatal(err)
+	}
+	return value
+}

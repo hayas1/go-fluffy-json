@@ -118,10 +118,7 @@ func TestSearch(t *testing.T) {
 
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
-				var value fluffyjson.RootValue
-				if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
-					t.Fatal(err)
-				}
+				value := HelperUnmarshalValue(t, tc.target)
 
 				var i int
 				for p, v := range value.DepthFirst() {
@@ -225,10 +222,7 @@ func TestSearch(t *testing.T) {
 
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
-				var value fluffyjson.RootValue
-				if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
-					t.Fatal(err)
-				}
+				value := HelperUnmarshalValue(t, tc.target)
 
 				var i int
 				for p, v := range value.BreadthFirst() {
