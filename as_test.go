@@ -1,11 +1,8 @@
 package fluffyjson_test
 
 import (
-	"errors"
-	"fmt"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
 	fluffyjson "github.com/hayas1/go-fluffy-json"
 )
 
@@ -34,13 +31,8 @@ func TestAsValue(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.AccessAsObject()
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -69,13 +61,8 @@ func TestAsValue(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.AccessAsArray()
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -104,13 +91,8 @@ func TestAsValue(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.AccessAsString()
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -139,13 +121,8 @@ func TestAsValue(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.AccessAsNumber()
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -174,13 +151,8 @@ func TestAsValue(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.AccessAsBool()
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -209,13 +181,8 @@ func TestAsValue(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.AccessAsNull()
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -249,13 +216,8 @@ func TestAccessAsValue(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.AccessAsObject(tc.accessor)
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -287,13 +249,8 @@ func TestAccessAsValue(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.AccessAsArray(tc.accessor)
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -325,13 +282,8 @@ func TestAccessAsValue(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.AccessAsString(tc.accessor)
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -363,13 +315,8 @@ func TestAccessAsValue(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.AccessAsNumber(tc.accessor)
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -401,13 +348,8 @@ func TestAccessAsValue(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.AccessAsBool(tc.accessor)
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -439,13 +381,8 @@ func TestAccessAsValue(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.AccessAsNull(tc.accessor)
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})

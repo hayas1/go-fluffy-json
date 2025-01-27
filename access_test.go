@@ -2,7 +2,6 @@ package fluffyjson_test
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"testing"
 
@@ -47,17 +46,9 @@ func TestAccess(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			var value fluffyjson.RootValue
-			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
-				t.Fatal(err)
-			}
-
+			value := HelperUnmarshalValue(t, tc.target)
 			actual, err := value.Access(tc.accessor)
-			if !errors.Is(err, tc.err) {
-				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-				t.Fatal(diff)
-			}
+			HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 		})
 	}
 }
@@ -95,17 +86,9 @@ func TestSliceAccess(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			var value fluffyjson.RootValue
-			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
-				t.Fatal(err)
-			}
-
+			value := HelperUnmarshalValue(t, tc.target)
 			actual, err := value.Slice(tc.accessor)
-			if !errors.Is(err, tc.err) {
-				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-				t.Fatal(diff)
-			}
+			HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 		})
 	}
 }
@@ -152,13 +135,8 @@ func TestPointer(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-
 				actual, err := value.Access(tc.pointer)
-				if !errors.Is(err, tc.err) {
-					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -189,13 +167,10 @@ func TestPointer(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				actual := tc.pointer.String()
-				if diff := cmp.Diff(tc.expect, actual); diff != "" {
-					t.Fatal(diff)
-				}
+				HelperEvaluate(t, tc.expect, actual)
 			})
 		}
 	})
-
 }
 
 func TestAccessVariadic(t *testing.T) {

@@ -157,11 +157,7 @@ func TestUnmarshalBasic(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			err := json.Unmarshal([]byte(tc.target), &tc.actual)
-			if !errors.Is(err, tc.err) {
-				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-			} else if diff := cmp.Diff(tc.expect, tc.actual); diff != "" {
-				t.Fatal(diff)
-			}
+			HelperEvaluateError(t, tc.expect, tc.actual, tc.err, err)
 		})
 	}
 }
@@ -198,11 +194,7 @@ func TestMarshalBasic(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			bytes, err := json.Marshal(&tc.actual)
-			if !errors.Is(err, tc.err) {
-				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
-			} else if diff := cmp.Diff(tc.expect, string(bytes)); diff != "" {
-				t.Fatal(diff)
-			}
+			HelperEvaluateError(t, tc.expect, string(bytes), tc.err, err)
 		})
 	}
 }
@@ -214,4 +206,17 @@ func HelperUnmarshalValue(t *testing.T, target string) fluffyjson.RootValue {
 		t.Fatal(err)
 	}
 	return value
+}
+
+func HelperEvaluate[V any](t *testing.T, exp, act V) {
+	t.Helper()
+	HelperEvaluateError(t, exp, act, nil, nil)
+}
+func HelperEvaluateError[V any](t *testing.T, exp, act V, expErr, actErr error) {
+	t.Helper()
+	if !errors.Is(expErr, actErr) {
+		t.Fatal(fmt.Errorf("%w <-> %w", expErr, actErr))
+	} else if diff := cmp.Diff(exp, act); diff != "" {
+		t.Fatal(diff)
+	}
 }
