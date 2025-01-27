@@ -55,7 +55,7 @@ func TestAsValue(t *testing.T) {
 	}
 }
 
-func TestAccessAs(t *testing.T) {
+func TestAccessAsValue(t *testing.T) {
 	t.Run("as object", func(t *testing.T) {
 		testcases := []struct {
 			name     string
