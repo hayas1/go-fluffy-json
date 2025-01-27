@@ -39,7 +39,7 @@ func TestAccess(t *testing.T) {
 			expect:   nil,
 			err: fluffyjson.ErrAccess{
 				Accessor: fmt.Sprintf("%T", fluffyjson.KeyAccess("hello")),
-				Expect:   fluffyjson.OBJECT,
+				Expected: fluffyjson.OBJECT,
 				Actual:   fluffyjson.ARRAY,
 			},
 		},
@@ -87,7 +87,7 @@ func TestSliceAccess(t *testing.T) {
 			expect:   nil,
 			err: fluffyjson.ErrAccess{
 				Accessor: fmt.Sprintf("%T", fluffyjson.SliceAccess{}),
-				Expect:   fluffyjson.ARRAY,
+				Expected: fluffyjson.ARRAY,
 				Actual:   fluffyjson.OBJECT,
 			},
 		},
