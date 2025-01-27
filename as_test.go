@@ -28,7 +28,7 @@ func TestAsValue(t *testing.T) {
 				name:   "array as object",
 				target: `[0,1,2,{"three":4}]`,
 				expect: nil,
-				err:    fluffyjson.ErrAsValue{Not: fluffyjson.OBJECT, But: fluffyjson.ARRAY},
+				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.OBJECT, Actual: fluffyjson.ARRAY},
 			},
 		}
 
@@ -64,7 +64,7 @@ func TestAsValue(t *testing.T) {
 				name:   "string as array",
 				target: `"hello world"`,
 				expect: nil,
-				err:    fluffyjson.ErrAsValue{Not: fluffyjson.ARRAY, But: fluffyjson.STRING},
+				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.ARRAY, Actual: fluffyjson.STRING},
 			},
 		}
 
@@ -100,7 +100,7 @@ func TestAsValue(t *testing.T) {
 				name:   "number as string",
 				target: `100`,
 				expect: "",
-				err:    fluffyjson.ErrAsValue{Not: fluffyjson.STRING, But: fluffyjson.NUMBER},
+				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.STRING, Actual: fluffyjson.NUMBER},
 			},
 		}
 
@@ -136,7 +136,7 @@ func TestAsValue(t *testing.T) {
 				name:   "bool as number",
 				target: `true`,
 				expect: 0,
-				err:    fluffyjson.ErrAsValue{Not: fluffyjson.NUMBER, But: fluffyjson.BOOL},
+				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.NUMBER, Actual: fluffyjson.BOOL},
 			},
 		}
 
@@ -172,7 +172,7 @@ func TestAsValue(t *testing.T) {
 				name:   "null as bool",
 				target: `null`,
 				expect: false,
-				err:    fluffyjson.ErrAsValue{Not: fluffyjson.BOOL, But: fluffyjson.NULL},
+				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.BOOL, Actual: fluffyjson.NULL},
 			},
 		}
 
@@ -208,7 +208,7 @@ func TestAsValue(t *testing.T) {
 				name:   "object as null",
 				target: `{"hello": "world"}`,
 				expect: []struct{}{}, // TODO nil ... ?
-				err:    fluffyjson.ErrAsValue{Not: fluffyjson.NULL, But: fluffyjson.OBJECT},
+				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.NULL, Actual: fluffyjson.OBJECT},
 			},
 		}
 
@@ -250,7 +250,7 @@ func TestAsValue(t *testing.T) {
 			target: `["hello", "world"]`,
 			as:     func(jv fluffyjson.JsonValue) (fluffyjson.JsonValue, error) { a, e := jv.AccessAsString(); return &a, e },
 			expect: fluffyjson.ForceString(""),
-			err:    fluffyjson.ErrAsValue{Not: fluffyjson.STRING, But: fluffyjson.ARRAY},
+			err:    fluffyjson.ErrAsValue{Expected: fluffyjson.STRING, Actual: fluffyjson.ARRAY},
 		},
 	}
 

@@ -43,13 +43,13 @@ type (
 	}
 
 	ErrAsValue struct {
-		Not Representation
-		But Representation
+		Expected Representation
+		Actual   Representation
 	}
 )
 
 func (e ErrAsValue) Error() string {
-	return fmt.Sprintf("not %s, but %s", e.Not, e.But)
+	return fmt.Sprintf("not %s, but %s", e.Expected, e.Actual)
 }
 
 func accessAsObject(v JsonValue, ptr ...Accessor) (Object, error) {
@@ -58,7 +58,7 @@ func accessAsObject(v JsonValue, ptr ...Accessor) (Object, error) {
 		return nil, err
 	}
 	if !v.Is(OBJECT) {
-		return nil, ErrAsValue{Not: OBJECT, But: v.Representation()}
+		return nil, ErrAsValue{Expected: OBJECT, Actual: v.Representation()}
 	}
 	return *v.(*Object), nil
 }
@@ -68,7 +68,7 @@ func accessAsArray(v JsonValue, ptr ...Accessor) (Array, error) {
 		return nil, err
 	}
 	if !v.Is(ARRAY) {
-		return nil, ErrAsValue{Not: ARRAY, But: v.Representation()}
+		return nil, ErrAsValue{Expected: ARRAY, Actual: v.Representation()}
 	}
 	return *v.(*Array), nil
 }
@@ -78,7 +78,7 @@ func accessAsString(v JsonValue, ptr ...Accessor) (String, error) {
 		return "", err
 	}
 	if !v.Is(STRING) {
-		return "", ErrAsValue{Not: STRING, But: v.Representation()}
+		return "", ErrAsValue{Expected: STRING, Actual: v.Representation()}
 	}
 	return *v.(*String), nil
 }
@@ -88,7 +88,7 @@ func accessAsNumber(v JsonValue, ptr ...Accessor) (Number, error) {
 		return 0, err
 	}
 	if !v.Is(NUMBER) {
-		return 0, ErrAsValue{Not: NUMBER, But: v.Representation()}
+		return 0, ErrAsValue{Expected: NUMBER, Actual: v.Representation()}
 	}
 	return *v.(*Number), nil
 }
@@ -98,7 +98,7 @@ func accessAsBool(v JsonValue, ptr ...Accessor) (Bool, error) {
 		return false, err
 	}
 	if !v.Is(BOOL) {
-		return false, ErrAsValue{Not: BOOL, But: v.Representation()}
+		return false, ErrAsValue{Expected: BOOL, Actual: v.Representation()}
 	}
 	return *v.(*Bool), nil
 }
@@ -108,7 +108,7 @@ func accessAsNull(v JsonValue, ptr ...Accessor) (Null, error) {
 		return Null{}, err
 	}
 	if !v.Is(NULL) {
-		return Null{}, ErrAsValue{Not: NULL, But: v.Representation()}
+		return Null{}, ErrAsValue{Expected: NULL, Actual: v.Representation()}
 	}
 	return *v.(*Null), nil
 }
@@ -158,7 +158,7 @@ func sliceAsObject(v JsonValue, acc SliceAccessor) ([]Object, error) {
 	s := make([]Object, 0, len(vs))
 	for _, v := range vs {
 		if !v.Is(OBJECT) {
-			return nil, ErrAsValue{Not: OBJECT, But: v.Representation()}
+			return nil, ErrAsValue{Expected: OBJECT, Actual: v.Representation()}
 		}
 		s = append(s, *v.(*Object))
 	}
@@ -172,7 +172,7 @@ func sliceAsArray(v JsonValue, acc SliceAccessor) ([]Array, error) {
 	s := make([]Array, 0, len(vs))
 	for _, v := range vs {
 		if !v.Is(ARRAY) {
-			return nil, ErrAsValue{Not: ARRAY, But: v.Representation()}
+			return nil, ErrAsValue{Expected: ARRAY, Actual: v.Representation()}
 		}
 		s = append(s, *v.(*Array))
 	}
@@ -186,7 +186,7 @@ func sliceAsString(v JsonValue, acc SliceAccessor) ([]String, error) {
 	s := make([]String, 0, len(vs))
 	for _, v := range vs {
 		if !v.Is(STRING) {
-			return nil, ErrAsValue{Not: STRING, But: v.Representation()}
+			return nil, ErrAsValue{Expected: STRING, Actual: v.Representation()}
 		}
 		s = append(s, *v.(*String))
 	}
@@ -200,7 +200,7 @@ func sliceAsNumber(v JsonValue, acc SliceAccessor) ([]Number, error) {
 	s := make([]Number, 0, len(vs))
 	for _, v := range vs {
 		if !v.Is(NUMBER) {
-			return nil, ErrAsValue{Not: NUMBER, But: v.Representation()}
+			return nil, ErrAsValue{Expected: NUMBER, Actual: v.Representation()}
 		}
 		s = append(s, *v.(*Number))
 	}
@@ -214,7 +214,7 @@ func sliceAsBool(v JsonValue, acc SliceAccessor) ([]Bool, error) {
 	s := make([]Bool, 0, len(vs))
 	for _, v := range vs {
 		if !v.Is(BOOL) {
-			return nil, ErrAsValue{Not: BOOL, But: v.Representation()}
+			return nil, ErrAsValue{Expected: BOOL, Actual: v.Representation()}
 		}
 		s = append(s, *v.(*Bool))
 	}
@@ -228,7 +228,7 @@ func sliceAsNull(v JsonValue, acc SliceAccessor) ([]Null, error) {
 	s := make([]Null, 0, len(vs))
 	for _, v := range vs {
 		if !v.Is(NULL) {
-			return nil, ErrAsValue{Not: NULL, But: v.Representation()}
+			return nil, ErrAsValue{Expected: NULL, Actual: v.Representation()}
 		}
 		s = append(s, *v.(*Null))
 	}
