@@ -155,7 +155,7 @@ func TestAsValue(t *testing.T) {
 			},
 			"object as null": {
 				target: `{"hello": "world"}`,
-				expect: []struct{}{}, // TODO nil ... ?
+				expect: nil,
 				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.NULL, Actual: fluffyjson.OBJECT},
 			},
 		}

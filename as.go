@@ -105,10 +105,10 @@ func accessAsBool(v JsonValue, ptr ...Accessor) (Bool, error) {
 func accessAsNull(v JsonValue, ptr ...Accessor) (Null, error) {
 	v, err := Pointer(ptr).Accessing(v)
 	if err != nil {
-		return Null{}, err
+		return nil, err
 	}
 	if !v.Is(NULL) {
-		return Null{}, ErrAsValue{Expected: NULL, Actual: v.Representation()}
+		return nil, ErrAsValue{Expected: NULL, Actual: v.Representation()}
 	}
 	return *v.(*Null), nil
 }
