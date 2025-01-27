@@ -122,15 +122,13 @@ type TestFluffy struct {
 }
 
 func TestUnmarshalBasic(t *testing.T) {
-	testcases := []struct {
-		name   string
+	testcases := map[string]struct {
 		actual TestFluffy
 		target string
 		expect TestFluffy
 		err    error
 	}{
-		{
-			name:   "object and string",
+		"object and string": {
 			actual: TestFluffy{},
 			target: `{"fluffy":{"hoge":"fuga"}}`,
 			expect: TestFluffy{
@@ -138,8 +136,7 @@ func TestUnmarshalBasic(t *testing.T) {
 			},
 			err: nil,
 		},
-		{
-			name:   "compound",
+		"compound": {
 			actual: TestFluffy{},
 			target: `{"fluffy":[null, true, {"three": 4}, "five"]}`,
 			expect: TestFluffy{
@@ -154,30 +151,27 @@ func TestUnmarshalBasic(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testcases {
-		t.Run(tc.name, func(t *testing.T) {
+	for name, tc := range testcases {
+		t.Run(name, func(t *testing.T) {
 			err := json.Unmarshal([]byte(tc.target), &tc.actual)
 			HelperFatalEvaluateError(t, tc.expect, tc.actual, tc.err, err)
 		})
 	}
 }
 func TestMarshalBasic(t *testing.T) {
-	testcases := []struct {
-		name   string
+	testcases := map[string]struct {
 		actual TestFluffy
 		expect string
 		err    error
 	}{
-		{
-			name: "object and string",
+		"object and string": {
 			actual: TestFluffy{
 				Fluffy: fluffyjson.RootValue{&fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
 			},
 			expect: `{"fluffy":{"hoge":"fuga"}}`,
 			err:    nil,
 		},
-		{
-			name: "compound",
+		"compound": {
 			actual: TestFluffy{
 				Fluffy: fluffyjson.RootValue{&fluffyjson.Array{
 					fluffyjson.ForceNull(nil),
@@ -191,8 +185,8 @@ func TestMarshalBasic(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testcases {
-		t.Run(tc.name, func(t *testing.T) {
+	for name, tc := range testcases {
+		t.Run(name, func(t *testing.T) {
 			bytes, err := json.Marshal(&tc.actual)
 			HelperFatalEvaluateError(t, tc.expect, string(bytes), tc.err, err)
 		})

@@ -40,14 +40,12 @@ func TestDfsVisitor(t *testing.T) {
 
 func TestSearch(t *testing.T) {
 	t.Run("depth first", func(t *testing.T) {
-		testcases := []struct {
-			name          string
+		testcases := map[string]struct {
 			target        string
 			expectPointer [][]fluffyjson.Pointer
 			expectValue   [][]fluffyjson.JsonValue
 		}{
-			{
-				name:   "basic",
+			"basic": {
 				target: `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`,
 				expectPointer: [][]fluffyjson.Pointer{
 					{
@@ -112,8 +110,8 @@ func TestSearch(t *testing.T) {
 			},
 		}
 
-		for _, tc := range testcases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, tc := range testcases {
+			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 
 				var i int
@@ -144,14 +142,12 @@ func TestSearch(t *testing.T) {
 	})
 
 	t.Run("breadth first", func(t *testing.T) {
-		testcases := []struct {
-			name          string
+		testcases := map[string]struct {
 			target        string
 			expectPointer [][]fluffyjson.Pointer
 			expectValue   [][]fluffyjson.JsonValue
 		}{
-			{
-				name:   "basic",
+			"basic": {
 				target: `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`,
 				expectPointer: [][]fluffyjson.Pointer{
 					{
@@ -216,8 +212,8 @@ func TestSearch(t *testing.T) {
 			},
 		}
 
-		for _, tc := range testcases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, tc := range testcases {
+			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 
 				var i int

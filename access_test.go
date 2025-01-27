@@ -8,29 +8,25 @@ import (
 )
 
 func TestAccess(t *testing.T) {
-	testcases := []struct {
-		name     string
+	testcases := map[string]struct {
 		target   string
 		accessor fluffyjson.Accessor
 		expect   fluffyjson.JsonValue
 		err      error
 	}{
-		{
-			name:     "key access",
+		"key access": {
 			target:   `{"hello":"world"}`,
 			accessor: fluffyjson.KeyAccess("hello"),
 			expect:   fluffyjson.ForceString("world"),
 			err:      nil,
 		},
-		{
-			name:     "index access",
+		"index access": {
 			target:   `["hello", "world"]`,
 			accessor: fluffyjson.IndexAccess(1),
 			expect:   fluffyjson.ForceString("world"),
 			err:      nil,
 		},
-		{
-			name:     "invalid key access",
+		"invalid key access": {
 			target:   `["hello", "world"]`,
 			accessor: fluffyjson.KeyAccess("hello"),
 			expect:   nil,
@@ -42,8 +38,8 @@ func TestAccess(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testcases {
-		t.Run(tc.name, func(t *testing.T) {
+	for name, tc := range testcases {
+		t.Run(name, func(t *testing.T) {
 			value := HelperUnmarshalValue(t, tc.target)
 			actual, err := value.Access(tc.accessor)
 			HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
@@ -52,15 +48,13 @@ func TestAccess(t *testing.T) {
 }
 
 func TestSliceAccess(t *testing.T) {
-	testcases := []struct {
-		name     string
+	testcases := map[string]struct {
 		target   string
 		accessor fluffyjson.SliceAccessor
 		expect   []fluffyjson.JsonValue
 		err      error
 	}{
-		{
-			name:     "slice access",
+		"slice access": {
 			target:   `["one", "two", "three"]`,
 			accessor: fluffyjson.SliceAccess{Start: 1, End: 3},
 			expect: []fluffyjson.JsonValue{
@@ -69,8 +63,7 @@ func TestSliceAccess(t *testing.T) {
 			},
 			err: nil,
 		},
-		{
-			name:     "invalid slice access",
+		"invalid slice access": {
 			target:   `{"hello":"world"}`,
 			accessor: fluffyjson.SliceAccess{Start: 0, End: 2},
 			expect:   nil,
@@ -82,8 +75,8 @@ func TestSliceAccess(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testcases {
-		t.Run(tc.name, func(t *testing.T) {
+	for name, tc := range testcases {
+		t.Run(name, func(t *testing.T) {
 			value := HelperUnmarshalValue(t, tc.target)
 			actual, err := value.Slice(tc.accessor)
 			HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
@@ -93,36 +86,31 @@ func TestSliceAccess(t *testing.T) {
 
 func TestPointer(t *testing.T) {
 	t.Run("parse", func(t *testing.T) {
-		testcases := []struct {
-			name    string
+		testcases := map[string]struct {
 			target  string
 			pointer fluffyjson.Pointer
 			expect  fluffyjson.JsonValue
 			err     error
 		}{
-			{
-				name:    "root",
+			"root": {
 				target:  `{"hello":"world"}`,
 				pointer: fluffyjson.ParsePointer("/"),
 				expect:  &fluffyjson.Object{"hello": fluffyjson.ForceString("world")},
 				err:     nil,
 			},
-			{
-				name:    "slice access",
+			"slice access": {
 				target:  `{"number": ["zero", "one", "two"]}`,
 				pointer: fluffyjson.ParsePointer("/number/1"),
 				expect:  fluffyjson.ForceString("one"),
 				err:     nil,
 			},
-			{
-				name:    "integer like map key",
+			"integer like map key": {
 				target:  `{"0": "zero", "1": "one", "2": "two"}`,
 				pointer: fluffyjson.ParsePointer("/0"),
 				expect:  fluffyjson.ForceString("zero"),
 				err:     nil,
 			},
-			{
-				name:    "escape",
+			"escape": {
 				target:  `{"a/b~c~1": "success"}`,
 				pointer: fluffyjson.ParsePointer("/a~1b~0c~01"),
 				expect:  fluffyjson.ForceString("success"),
@@ -130,8 +118,8 @@ func TestPointer(t *testing.T) {
 			},
 		}
 
-		for _, tc := range testcases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, tc := range testcases {
+			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.Access(tc.pointer)
 				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
@@ -140,30 +128,26 @@ func TestPointer(t *testing.T) {
 	})
 
 	t.Run("to string", func(t *testing.T) {
-		testcases := []struct {
-			name    string
+		testcases := map[string]struct {
 			pointer fluffyjson.Pointer
 			expect  string
 		}{
-			{
-				name:    "root",
+			"root": {
 				pointer: nil,
 				expect:  "/",
 			},
-			{
-				name:    "slice access",
+			"slice access": {
 				pointer: fluffyjson.Pointer{fluffyjson.KeyAccess("number"), fluffyjson.IndexAccess(1)},
 				expect:  "/number/1",
 			},
-			{
-				name:    "escape",
+			"escape": {
 				pointer: fluffyjson.Pointer{fluffyjson.KeyAccess("a/b~c~1")},
 				expect:  "/a~1b~0c~01",
 			},
 		}
 
-		for _, tc := range testcases {
-			t.Run(tc.name, func(t *testing.T) {
+		for name, tc := range testcases {
+			t.Run(name, func(t *testing.T) {
 				actual := tc.pointer.String()
 				HelperFatalEvaluate(t, tc.expect, actual)
 			})
