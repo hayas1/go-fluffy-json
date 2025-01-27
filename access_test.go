@@ -149,7 +149,7 @@ func TestPointer(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				actual, err := value.Pointer(tc.pointer)
+				actual, err := value.Access(tc.pointer)
 				if !errors.Is(err, tc.err) {
 					t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
 				} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
@@ -194,7 +194,7 @@ func TestPointer(t *testing.T) {
 
 }
 
-func TestPointerVariadic(t *testing.T) {
+func TestAccessVariadic(t *testing.T) {
 	t.Run("variadic parameter", func(t *testing.T) {
 		target := `{"number": ["zero", "one", "two"]}`
 		var value fluffyjson.RootValue
@@ -202,7 +202,7 @@ func TestPointerVariadic(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		two, err := value.Pointer(
+		two, err := value.Access(
 			fluffyjson.KeyAccess("number"),
 			fluffyjson.IndexAccess(2),
 		)

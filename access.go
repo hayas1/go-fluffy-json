@@ -8,9 +8,8 @@ import (
 
 type (
 	Access interface {
-		Access(Accessor) (JsonValue, error)
+		Access(...Accessor) (JsonValue, error)
 		Slice(SliceAccessor) ([]JsonValue, error)
-		Pointer(...Accessor) (JsonValue, error)
 	}
 
 	Accessor interface {
@@ -22,12 +21,12 @@ type (
 
 	KeyAccess   string
 	IndexAccess int
+	Pointer     []Accessor
+
 	SliceAccess struct {
 		Start int
 		End   int
 	}
-
-	Pointer []Accessor
 
 	ErrAccess struct {
 		Accessor string
@@ -40,24 +39,18 @@ func (e ErrAccess) Error() string {
 	return fmt.Sprintf("%s only allowed on %s, got %s", e.Accessor, e.Expect, e.Actual)
 }
 
-func (o *Object) Access(acc Accessor) (JsonValue, error)       { return acc.Accessing(o) }
+func (o *Object) Access(ptr ...Accessor) (JsonValue, error)    { return Pointer(ptr).Accessing(o) }
 func (o *Object) Slice(acc SliceAccessor) ([]JsonValue, error) { return acc.Slicing(o) }
-func (o *Object) Pointer(ptr ...Accessor) (JsonValue, error)   { return Pointer(ptr).Accessing(o) }
-func (a *Array) Access(acc Accessor) (JsonValue, error)        { return acc.Accessing(a) }
+func (a *Array) Access(ptr ...Accessor) (JsonValue, error)     { return Pointer(ptr).Accessing(a) }
 func (a *Array) Slice(acc SliceAccessor) ([]JsonValue, error)  { return acc.Slicing(a) }
-func (a *Array) Pointer(ptr ...Accessor) (JsonValue, error)    { return Pointer(ptr).Accessing(a) }
-func (s *String) Access(acc Accessor) (JsonValue, error)       { return acc.Accessing(s) }
+func (s *String) Access(ptr ...Accessor) (JsonValue, error)    { return Pointer(ptr).Accessing(s) }
 func (s *String) Slice(acc SliceAccessor) ([]JsonValue, error) { return acc.Slicing(s) }
-func (s *String) Pointer(ptr ...Accessor) (JsonValue, error)   { return Pointer(ptr).Accessing(s) }
-func (n *Number) Access(acc Accessor) (JsonValue, error)       { return acc.Accessing(n) }
+func (n *Number) Access(ptr ...Accessor) (JsonValue, error)    { return Pointer(ptr).Accessing(n) }
 func (n *Number) Slice(acc SliceAccessor) ([]JsonValue, error) { return acc.Slicing(n) }
-func (n *Number) Pointer(ptr ...Accessor) (JsonValue, error)   { return Pointer(ptr).Accessing(n) }
-func (b *Bool) Access(acc Accessor) (JsonValue, error)         { return acc.Accessing(b) }
+func (b *Bool) Access(ptr ...Accessor) (JsonValue, error)      { return Pointer(ptr).Accessing(b) }
 func (b *Bool) Slice(acc SliceAccessor) ([]JsonValue, error)   { return acc.Slicing(b) }
-func (b *Bool) Pointer(ptr ...Accessor) (JsonValue, error)     { return Pointer(ptr).Accessing(b) }
-func (n *Null) Access(acc Accessor) (JsonValue, error)         { return acc.Accessing(n) }
+func (n *Null) Access(ptr ...Accessor) (JsonValue, error)      { return Pointer(ptr).Accessing(n) }
 func (n *Null) Slice(acc SliceAccessor) ([]JsonValue, error)   { return acc.Slicing(n) }
-func (n *Null) Pointer(ptr ...Accessor) (JsonValue, error)     { return Pointer(ptr).Accessing(n) }
 
 func (k KeyAccess) Accessing(v JsonValue) (JsonValue, error) {
 	switch o := v.(type) {
