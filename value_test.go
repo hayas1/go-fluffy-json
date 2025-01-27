@@ -201,6 +201,14 @@ func HelperUnmarshalValue(t *testing.T, target string) fluffyjson.RootValue {
 	}
 	return value
 }
+func HelperMarshalValue(t *testing.T, value fluffyjson.RootValue) string {
+	t.Helper()
+	bytes, err := json.Marshal(value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(bytes)
+}
 
 func HelperFatalEvaluate[V any](t *testing.T, exp, act V) {
 	t.Helper()
