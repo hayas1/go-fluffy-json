@@ -51,7 +51,7 @@ const (
 )
 
 func (v *RootValue) UnmarshalJSON(data []byte) error {
-	// TODO remove this wrapper struct `Value` ?
+	// TODO remove this wrapper struct `RootValue` ?
 	// TODO do not implement as deep copy, unmarshal directly
 	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
