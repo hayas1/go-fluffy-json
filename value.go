@@ -11,6 +11,7 @@ import (
 type (
 	// The interface of JSON(https://www.json.org/) value
 	JsonValue interface {
+		Is(Representation) bool
 		Representation() Representation
 		json.Unmarshaler // TODO this cause pointer receiver
 		json.Marshaler
@@ -58,6 +59,7 @@ func (v RootValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.JsonValue)
 }
 
+func (v Object) Is(r Representation) bool       { return r == OBJECT }
 func (o Object) Representation() Representation { return OBJECT }
 func (o *Object) UnmarshalJSON(data []byte) error {
 	var inner any
@@ -74,6 +76,7 @@ func (o Object) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]JsonValue(o))
 }
 
+func (a Array) Is(r Representation) bool       { return r == ARRAY }
 func (a Array) Representation() Representation { return ARRAY }
 func (a *Array) UnmarshalJSON(data []byte) error {
 	var inner any
@@ -90,6 +93,7 @@ func (a Array) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]JsonValue(a))
 }
 
+func (s String) Is(r Representation) bool       { return r == STRING }
 func (s String) Representation() Representation { return STRING }
 func (s *String) UnmarshalJSON(data []byte) error {
 	var inner any
@@ -107,6 +111,7 @@ func (s String) MarshalJSON() ([]byte, error) {
 	return json.Marshal(string(s))
 }
 
+func (n Number) Is(r Representation) bool       { return r == NUMBER }
 func (n Number) Representation() Representation { return NUMBER }
 func (n *Number) UnmarshalJSON(data []byte) error {
 	var inner any
@@ -124,6 +129,7 @@ func (n Number) MarshalJSON() ([]byte, error) {
 	return json.Marshal(float64(n))
 }
 
+func (b Bool) Is(r Representation) bool       { return r == BOOL }
 func (b Bool) Representation() Representation { return BOOL }
 func (b *Bool) UnmarshalJSON(data []byte) error {
 	var inner any
@@ -141,6 +147,7 @@ func (b Bool) MarshalJSON() ([]byte, error) {
 	return json.Marshal(bool(b))
 }
 
+func (n Null) Is(r Representation) bool       { return r == NULL }
 func (n Null) Representation() Representation { return NULL }
 func (n *Null) UnmarshalJSON(data []byte) error {
 	var inner any
