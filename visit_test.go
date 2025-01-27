@@ -1,7 +1,6 @@
 package fluffyjson_test
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -25,10 +24,7 @@ func (c *Collector) VisitString(s *fluffyjson.String) error {
 func TestDfsVisitor(t *testing.T) {
 	t.Run("dfs collect visitor", func(t *testing.T) {
 		target := `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`
-		var value fluffyjson.RootValue
-		if err := json.Unmarshal([]byte(target), &value); err != nil {
-			t.Fatal(err)
-		}
+		value := HelperUnmarshalValue(t, target)
 
 		collector := &Collector{}
 		if err := value.Accept(fluffyjson.DfsVisitor(collector)); err != nil {
