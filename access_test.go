@@ -46,7 +46,7 @@ func TestAccess(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			value := HelperUnmarshalValue(t, tc.target)
 			actual, err := value.Access(tc.accessor)
-			HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+			HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 		})
 	}
 }
@@ -86,7 +86,7 @@ func TestSliceAccess(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			value := HelperUnmarshalValue(t, tc.target)
 			actual, err := value.Slice(tc.accessor)
-			HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+			HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 		})
 	}
 }
@@ -134,7 +134,7 @@ func TestPointer(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.Access(tc.pointer)
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -165,7 +165,7 @@ func TestPointer(t *testing.T) {
 		for _, tc := range testcases {
 			t.Run(tc.name, func(t *testing.T) {
 				actual := tc.pointer.String()
-				HelperEvaluate(t, tc.expect, actual)
+				HelperFatalEvaluate(t, tc.expect, actual)
 			})
 		}
 	})
@@ -185,6 +185,6 @@ func TestAccessVariadic(t *testing.T) {
 		}
 
 		var expect fluffyjson.JsonValue = fluffyjson.ForceString("two")
-		HelperEvaluate(t, expect, actual)
+		HelperFatalEvaluate(t, expect, actual)
 	})
 }

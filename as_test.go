@@ -32,7 +32,7 @@ func TestAsValue(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsObject()
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -62,7 +62,7 @@ func TestAsValue(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsArray()
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -92,7 +92,7 @@ func TestAsValue(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsString()
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -122,7 +122,7 @@ func TestAsValue(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsNumber()
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -152,7 +152,7 @@ func TestAsValue(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsBool()
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -182,7 +182,7 @@ func TestAsValue(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsNull()
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -217,7 +217,7 @@ func TestAccessAsValue(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsObject(tc.accessor)
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -250,7 +250,7 @@ func TestAccessAsValue(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsArray(tc.accessor)
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -283,7 +283,7 @@ func TestAccessAsValue(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsString(tc.accessor)
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -316,7 +316,7 @@ func TestAccessAsValue(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsNumber(tc.accessor)
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -349,7 +349,7 @@ func TestAccessAsValue(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsBool(tc.accessor)
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
@@ -382,7 +382,7 @@ func TestAccessAsValue(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsNull(tc.accessor)
-				HelperEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
 			})
 		}
 	})
