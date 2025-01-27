@@ -19,9 +19,10 @@ type (
 		Slicing(JsonValue) ([]JsonValue, error)
 	}
 
-	KeyAccess   string
-	IndexAccess int
-	Pointer     []Accessor
+	KeyAccess      string
+	IndexAccess    int
+	KeyIndexAccess string
+	Pointer        []Accessor
 
 	SliceAccess struct {
 		Start int
@@ -76,6 +77,25 @@ func (i IndexAccess) Accessing(v JsonValue) (JsonValue, error) {
 		}
 	}
 }
+func (ki KeyIndexAccess) Accessing(v JsonValue) (JsonValue, error) {
+	switch t := v.(type) {
+	case *Object:
+		return KeyAccess(ki).Accessing(t)
+	case *Array:
+		index, err := strconv.Atoi(string(ki))
+		if err != nil {
+			return nil, err
+		}
+		return IndexAccess(index).Accessing(t)
+	default:
+		return nil, ErrAccess{
+			Accessor: fmt.Sprintf("%T", ki),
+			Expect:   OBJECT, // TODO OBJECT or ARRAY
+			Actual:   v.Representation(),
+		}
+	}
+}
+
 func (s SliceAccess) Slicing(v JsonValue) ([]JsonValue, error) {
 	switch a := v.(type) {
 	case *Array:
@@ -104,12 +124,7 @@ func ParsePointer(p string) Pointer {
 
 	pointer := make([]Accessor, 0, len(parsed))
 	for _, a := range parsed {
-		// TODO integer like map key
-		if index, err := strconv.Atoi(a); err != nil {
-			pointer = append(pointer, KeyAccess(a))
-		} else {
-			pointer = append(pointer, IndexAccess(index))
-		}
+		pointer = append(pointer, KeyIndexAccess(a))
 	}
 	return pointer
 }

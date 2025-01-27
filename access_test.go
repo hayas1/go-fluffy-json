@@ -134,6 +134,13 @@ func TestPointer(t *testing.T) {
 				err:     nil,
 			},
 			{
+				name:    "integer like map key",
+				target:  `{"0": "zero", "1": "one", "2": "two"}`,
+				pointer: fluffyjson.ParsePointer("/0"),
+				expect:  fluffyjson.ForceString("zero"),
+				err:     nil,
+			},
+			{
 				name:    "escape",
 				target:  `{"a/b~c~1": "success"}`,
 				pointer: fluffyjson.ParsePointer("/a~1b~0c~01"),
