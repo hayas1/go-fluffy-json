@@ -11,6 +11,222 @@ import (
 )
 
 func TestAsValue(t *testing.T) {
+	t.Run("as object", func(t *testing.T) {
+		testcases := []struct {
+			name   string
+			target string
+			expect fluffyjson.Object
+			err    error
+		}{
+			{
+				name:   "object as object",
+				target: `{"hello":"world"}`,
+				expect: fluffyjson.Object{"hello": fluffyjson.ForceString("world")},
+				err:    nil,
+			},
+			{
+				name:   "array as object",
+				target: `[0,1,2,{"three":4}]`,
+				expect: nil,
+				err:    fluffyjson.ErrAsValue{Not: fluffyjson.OBJECT, But: fluffyjson.ARRAY},
+			},
+		}
+
+		for _, tc := range testcases {
+			var value fluffyjson.RootValue
+			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
+				t.Fatal(err)
+			}
+
+			actual, err := value.AccessAsObject()
+			if !errors.Is(err, tc.err) {
+				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
+			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
+				t.Fatal(diff)
+			}
+		}
+	})
+
+	t.Run("as array", func(t *testing.T) {
+		testcases := []struct {
+			name   string
+			target string
+			expect fluffyjson.Array
+			err    error
+		}{
+			{
+				name:   "array as array",
+				target: `["hello", "world"]`,
+				expect: fluffyjson.Array{fluffyjson.ForceString("hello"), fluffyjson.ForceString("world")},
+				err:    nil,
+			},
+			{
+				name:   "string as array",
+				target: `"hello world"`,
+				expect: nil,
+				err:    fluffyjson.ErrAsValue{Not: fluffyjson.ARRAY, But: fluffyjson.STRING},
+			},
+		}
+
+		for _, tc := range testcases {
+			var value fluffyjson.RootValue
+			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
+				t.Fatal(err)
+			}
+
+			actual, err := value.AccessAsArray()
+			if !errors.Is(err, tc.err) {
+				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
+			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
+				t.Fatal(diff)
+			}
+		}
+	})
+
+	t.Run("as string", func(t *testing.T) {
+		testcases := []struct {
+			name   string
+			target string
+			expect fluffyjson.String
+			err    error
+		}{
+			{
+				name:   "string as string",
+				target: `"hello world"`,
+				expect: "hello world",
+				err:    nil,
+			},
+			{
+				name:   "number as string",
+				target: `100`,
+				expect: "",
+				err:    fluffyjson.ErrAsValue{Not: fluffyjson.STRING, But: fluffyjson.NUMBER},
+			},
+		}
+
+		for _, tc := range testcases {
+			var value fluffyjson.RootValue
+			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
+				t.Fatal(err)
+			}
+
+			actual, err := value.AccessAsString()
+			if !errors.Is(err, tc.err) {
+				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
+			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
+				t.Fatal(diff)
+			}
+		}
+	})
+
+	t.Run("as number", func(t *testing.T) {
+		testcases := []struct {
+			name   string
+			target string
+			expect fluffyjson.Number
+			err    error
+		}{
+			{
+				name:   "number as number",
+				target: `100`,
+				expect: 100,
+				err:    nil,
+			},
+			{
+				name:   "bool as number",
+				target: `true`,
+				expect: 0,
+				err:    fluffyjson.ErrAsValue{Not: fluffyjson.NUMBER, But: fluffyjson.BOOL},
+			},
+		}
+
+		for _, tc := range testcases {
+			var value fluffyjson.RootValue
+			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
+				t.Fatal(err)
+			}
+
+			actual, err := value.AccessAsNumber()
+			if !errors.Is(err, tc.err) {
+				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
+			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
+				t.Fatal(diff)
+			}
+		}
+	})
+
+	t.Run("as bool", func(t *testing.T) {
+		testcases := []struct {
+			name   string
+			target string
+			expect fluffyjson.Bool
+			err    error
+		}{
+			{
+				name:   "bool as bool",
+				target: `true`,
+				expect: true,
+				err:    nil,
+			},
+			{
+				name:   "null as bool",
+				target: `null`,
+				expect: false,
+				err:    fluffyjson.ErrAsValue{Not: fluffyjson.BOOL, But: fluffyjson.NULL},
+			},
+		}
+
+		for _, tc := range testcases {
+			var value fluffyjson.RootValue
+			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
+				t.Fatal(err)
+			}
+
+			actual, err := value.AccessAsBool()
+			if !errors.Is(err, tc.err) {
+				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
+			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
+				t.Fatal(diff)
+			}
+		}
+	})
+
+	t.Run("as null", func(t *testing.T) {
+		testcases := []struct {
+			name   string
+			target string
+			expect fluffyjson.Null
+			err    error
+		}{
+			{
+				name:   "null as null",
+				target: `null`,
+				expect: nil,
+				err:    nil,
+			},
+			{
+				name:   "object as null",
+				target: `{"hello": "world"}`,
+				expect: []struct{}{}, // TODO nil ... ?
+				err:    fluffyjson.ErrAsValue{Not: fluffyjson.NULL, But: fluffyjson.OBJECT},
+			},
+		}
+
+		for _, tc := range testcases {
+			var value fluffyjson.RootValue
+			if err := json.Unmarshal([]byte(tc.target), &value); err != nil {
+				t.Fatal(err)
+			}
+
+			actual, err := value.AccessAsNull()
+			if !errors.Is(err, tc.err) {
+				t.Fatal(fmt.Errorf("%w <-> %w", tc.err, err))
+			} else if diff := cmp.Diff(tc.expect, actual); diff != "" {
+				t.Fatal(diff)
+			}
+		}
+	})
+
 	testcases := []struct {
 		name   string
 		target string
