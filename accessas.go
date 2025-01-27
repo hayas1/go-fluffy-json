@@ -1,5 +1,7 @@
 package fluffyjson
 
+import "fmt"
+
 type (
 	AccessAs interface {
 		Access
@@ -39,7 +41,16 @@ type (
 		AccessAsNull(...Accessor) (Null, error)
 		SliceAsNull(SliceAccessor) ([]Null, error)
 	}
+
+	ErrAsValue struct {
+		Not Representation
+		But Representation
+	}
 )
+
+func (e ErrAsValue) Error() string {
+	return fmt.Sprintf("not %s, but %s", e.Not, e.But)
+}
 
 func accessAsObject(v JsonValue, ptr ...Accessor) (Object, error) {
 	v, err := Pointer(ptr).Accessing(v)

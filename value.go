@@ -6,6 +6,7 @@ package fluffyjson
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 type (
@@ -31,7 +32,15 @@ type (
 	Number    float64
 	Bool      bool
 	Null      []struct{}
+
+	ErrCast struct {
+		Unsupported any
+	}
 )
+
+func (e ErrCast) Error() string {
+	return fmt.Sprintf("unsupported type %T", e.Unsupported)
+}
 
 const (
 	OBJECT Representation = "object"
@@ -58,6 +67,37 @@ func (v *RootValue) UnmarshalJSON(data []byte) error {
 func (v RootValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.JsonValue)
 }
+func Cast(v any) (JsonValue, error) {
+	switch t := v.(type) {
+	case map[string]any:
+		o, err := CastObject(t)
+		return &o, err
+	case []any:
+		a, err := CastArray(t)
+		return &a, err
+	case string:
+		s, err := CastString(t)
+		return &s, err
+	case float64:
+		n, err := CastNumber(t)
+		return &n, err
+	case bool:
+		b, err := CastBool(t)
+		return &b, err
+	case nil:
+		n, err := CastNull(nil)
+		return &n, err
+	default:
+		return nil, ErrCast{Unsupported: t}
+	}
+}
+func Force(v any) *JsonValue {
+	value, err := Cast(v)
+	if err != nil {
+		panic(err)
+	}
+	return &value
+}
 
 func (v Object) Is(r Representation) bool       { return r == OBJECT }
 func (o Object) Representation() Representation { return OBJECT }
@@ -75,6 +115,23 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 func (o Object) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]JsonValue(o))
 }
+func CastObject(m map[string]any) (Object, error) {
+	var err error
+	object := make(map[string]JsonValue, len(m))
+	for k, v := range m {
+		if object[k], err = Cast(v); err != nil {
+			return nil, err
+		}
+	}
+	return object, nil
+}
+func ForceObject(m map[string]any) *Object {
+	object, err := CastObject(m)
+	if err != nil {
+		panic(err)
+	}
+	return &object
+}
 
 func (a Array) Is(r Representation) bool       { return r == ARRAY }
 func (a Array) Representation() Representation { return ARRAY }
@@ -91,6 +148,23 @@ func (a *Array) UnmarshalJSON(data []byte) error {
 }
 func (a Array) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]JsonValue(a))
+}
+func CastArray(l []any) (Array, error) {
+	var err error
+	array := make([]JsonValue, len(l))
+	for i, v := range l {
+		if array[i], err = Cast(v); err != nil {
+			return nil, err
+		}
+	}
+	return array, nil
+}
+func ForceArray(l []any) *Array {
+	array, err := CastArray(l)
+	if err != nil {
+		panic(err)
+	}
+	return &array
 }
 
 func (s String) Is(r Representation) bool       { return r == STRING }
@@ -110,6 +184,16 @@ func (s *String) UnmarshalJSON(data []byte) error {
 func (s String) MarshalJSON() ([]byte, error) {
 	return json.Marshal(string(s))
 }
+func CastString(s string) (String, error) {
+	return String(s), nil
+}
+func ForceString(s string) *String {
+	str, err := CastString(s)
+	if err != nil {
+		panic(err)
+	}
+	return &str
+}
 
 func (n Number) Is(r Representation) bool       { return r == NUMBER }
 func (n Number) Representation() Representation { return NUMBER }
@@ -127,6 +211,16 @@ func (n *Number) UnmarshalJSON(data []byte) error {
 }
 func (n Number) MarshalJSON() ([]byte, error) {
 	return json.Marshal(float64(n))
+}
+func CastNumber(n float64) (Number, error) {
+	return Number(n), nil
+}
+func ForceNumber(n float64) *Number {
+	num, err := CastNumber(n)
+	if err != nil {
+		panic(err)
+	}
+	return &num
 }
 
 func (b Bool) Is(r Representation) bool       { return r == BOOL }
@@ -146,6 +240,16 @@ func (b *Bool) UnmarshalJSON(data []byte) error {
 func (b Bool) MarshalJSON() ([]byte, error) {
 	return json.Marshal(bool(b))
 }
+func CastBool(b bool) (Bool, error) {
+	return Bool(b), nil
+}
+func ForceBool(b bool) *Bool {
+	bool, err := CastBool(b)
+	if err != nil {
+		panic(err)
+	}
+	return &bool
+}
 
 func (n Null) Is(r Representation) bool       { return r == NULL }
 func (n Null) Representation() Representation { return NULL }
@@ -163,4 +267,14 @@ func (n *Null) UnmarshalJSON(data []byte) error {
 }
 func (n Null) MarshalJSON() ([]byte, error) {
 	return json.Marshal(nil)
+}
+func CastNull(n []struct{}) (Null, error) {
+	return Null(n), nil
+}
+func ForceNull(n []struct{}) *Null {
+	null, err := CastNull(n)
+	if err != nil {
+		panic(err)
+	}
+	return &null
 }

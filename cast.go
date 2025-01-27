@@ -1,9 +1,5 @@
 package fluffyjson
 
-import (
-	"fmt"
-)
-
 type (
 	AsValue interface {
 		AsObject
@@ -38,72 +34,8 @@ type (
 		IsNull() bool
 		AsNull() (Null, error)
 	}
-
-	ErrAsValue struct {
-		Not Representation
-		But Representation
-	}
-	ErrCast struct {
-		Unsupported any
-	}
 )
 
-func (e ErrAsValue) Error() string {
-	return fmt.Sprintf("not %s, but %s", e.Not, e.But)
-}
-func (e ErrCast) Error() string {
-	return fmt.Sprintf("unsupported type %T", e.Unsupported)
-}
-
-func Cast(v any) (JsonValue, error) {
-	switch t := v.(type) {
-	case map[string]any:
-		o, err := CastObject(t)
-		return &o, err
-	case []any:
-		a, err := CastArray(t)
-		return &a, err
-	case string:
-		s, err := CastString(t)
-		return &s, err
-	case float64:
-		n, err := CastNumber(t)
-		return &n, err
-	case bool:
-		b, err := CastBool(t)
-		return &b, err
-	case nil:
-		n, err := CastNull(nil)
-		return &n, err
-	default:
-		return nil, ErrCast{Unsupported: t}
-	}
-}
-func Force(v any) *JsonValue {
-	value, err := Cast(v)
-	if err != nil {
-		panic(err)
-	}
-	return &value
-}
-
-func CastObject(m map[string]any) (Object, error) {
-	var err error
-	object := make(map[string]JsonValue, len(m))
-	for k, v := range m {
-		if object[k], err = Cast(v); err != nil {
-			return nil, err
-		}
-	}
-	return object, nil
-}
-func ForceObject(m map[string]any) *Object {
-	object, err := CastObject(m)
-	if err != nil {
-		panic(err)
-	}
-	return &object
-}
 func (o Object) IsObject() bool            { return true }
 func (o Object) AsObject() (Object, error) { return o, nil }
 func (o Object) IsArray() bool             { return false }
@@ -117,23 +49,6 @@ func (o Object) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL,
 func (o Object) IsNull() bool              { return false }
 func (o Object) AsNull() (Null, error)     { return nil, ErrAsValue{Not: NULL, But: OBJECT} }
 
-func CastArray(l []any) (Array, error) {
-	var err error
-	array := make([]JsonValue, len(l))
-	for i, v := range l {
-		if array[i], err = Cast(v); err != nil {
-			return nil, err
-		}
-	}
-	return array, nil
-}
-func ForceArray(l []any) *Array {
-	array, err := CastArray(l)
-	if err != nil {
-		panic(err)
-	}
-	return &array
-}
 func (a Array) IsObject() bool            { return false }
 func (a Array) AsObject() (Object, error) { return nil, ErrAsValue{Not: OBJECT, But: ARRAY} }
 func (a Array) IsArray() bool             { return true }
@@ -147,16 +62,6 @@ func (a Array) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL, 
 func (a Array) IsNull() bool              { return false }
 func (a Array) AsNull() (Null, error)     { return nil, ErrAsValue{Not: NULL, But: ARRAY} }
 
-func CastString(s string) (String, error) {
-	return String(s), nil
-}
-func ForceString(s string) *String {
-	str, err := CastString(s)
-	if err != nil {
-		panic(err)
-	}
-	return &str
-}
 func (s String) IsObject() bool            { return false }
 func (s String) AsObject() (Object, error) { return nil, ErrAsValue{Not: OBJECT, But: STRING} }
 func (s String) IsArray() bool             { return false }
@@ -170,16 +75,6 @@ func (s String) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL,
 func (s String) IsNull() bool              { return false }
 func (s String) AsNull() (Null, error)     { return nil, ErrAsValue{Not: NULL, But: STRING} }
 
-func CastNumber(n float64) (Number, error) {
-	return Number(n), nil
-}
-func ForceNumber(n float64) *Number {
-	num, err := CastNumber(n)
-	if err != nil {
-		panic(err)
-	}
-	return &num
-}
 func (n Number) IsObject() bool            { return false }
 func (n Number) AsObject() (Object, error) { return nil, ErrAsValue{Not: OBJECT, But: NUMBER} }
 func (n Number) IsArray() bool             { return false }
@@ -193,16 +88,6 @@ func (n Number) AsBool() (Bool, error)     { return false, ErrAsValue{Not: BOOL,
 func (n Number) IsNull() bool              { return false }
 func (n Number) AsNull() (Null, error)     { return nil, ErrAsValue{Not: NULL, But: NUMBER} }
 
-func CastBool(b bool) (Bool, error) {
-	return Bool(b), nil
-}
-func ForceBool(b bool) *Bool {
-	bool, err := CastBool(b)
-	if err != nil {
-		panic(err)
-	}
-	return &bool
-}
 func (b Bool) IsObject() bool            { return false }
 func (b Bool) AsObject() (Object, error) { return nil, ErrAsValue{Not: OBJECT, But: BOOL} }
 func (b Bool) IsArray() bool             { return false }
@@ -216,16 +101,6 @@ func (b Bool) AsBool() (Bool, error)     { return b, nil }
 func (b Bool) IsNull() bool              { return false }
 func (b Bool) AsNull() (Null, error)     { return nil, ErrAsValue{Not: NULL, But: BOOL} }
 
-func CastNull(n []struct{}) (Null, error) {
-	return Null(n), nil
-}
-func ForceNull(n []struct{}) *Null {
-	null, err := CastNull(n)
-	if err != nil {
-		panic(err)
-	}
-	return &null
-}
 func (n Null) IsObject() bool            { return false }
 func (n Null) AsObject() (Object, error) { return nil, ErrAsValue{Not: OBJECT, But: NULL} }
 func (n Null) IsArray() bool             { return false }
