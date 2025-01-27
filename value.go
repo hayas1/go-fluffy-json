@@ -90,13 +90,6 @@ func Cast(v any) (JsonValue, error) {
 		return nil, ErrCast{Unsupported: t}
 	}
 }
-func Force(v any) *JsonValue {
-	value, err := Cast(v)
-	if err != nil {
-		panic(err)
-	}
-	return &value
-}
 
 func (v Object) Is(r Representation) bool       { return r == OBJECT }
 func (o Object) Representation() Representation { return OBJECT }
@@ -123,13 +116,6 @@ func CastObject(m map[string]any) (Object, error) {
 		}
 	}
 	return object, nil
-}
-func ForceObject(m map[string]any) *Object {
-	object, err := CastObject(m)
-	if err != nil {
-		panic(err)
-	}
-	return &object
 }
 
 func (a Array) Is(r Representation) bool       { return r == ARRAY }
@@ -158,13 +144,6 @@ func CastArray(l []any) (Array, error) {
 	}
 	return array, nil
 }
-func ForceArray(l []any) *Array {
-	array, err := CastArray(l)
-	if err != nil {
-		panic(err)
-	}
-	return &array
-}
 
 func (s String) Is(r Representation) bool       { return r == STRING }
 func (s String) Representation() Representation { return STRING }
@@ -185,13 +164,6 @@ func (s String) MarshalJSON() ([]byte, error) {
 }
 func CastString(s string) (String, error) {
 	return String(s), nil
-}
-func ForceString(s string) *String {
-	str, err := CastString(s)
-	if err != nil {
-		panic(err)
-	}
-	return &str
 }
 
 func (n Number) Is(r Representation) bool       { return r == NUMBER }
@@ -214,13 +186,6 @@ func (n Number) MarshalJSON() ([]byte, error) {
 func CastNumber(n float64) (Number, error) {
 	return Number(n), nil
 }
-func ForceNumber(n float64) *Number {
-	num, err := CastNumber(n)
-	if err != nil {
-		panic(err)
-	}
-	return &num
-}
 
 func (b Bool) Is(r Representation) bool       { return r == BOOL }
 func (b Bool) Representation() Representation { return BOOL }
@@ -242,13 +207,6 @@ func (b Bool) MarshalJSON() ([]byte, error) {
 func CastBool(b bool) (Bool, error) {
 	return Bool(b), nil
 }
-func ForceBool(b bool) *Bool {
-	bool, err := CastBool(b)
-	if err != nil {
-		panic(err)
-	}
-	return &bool
-}
 
 func (n Null) Is(r Representation) bool       { return r == NULL }
 func (n Null) Representation() Representation { return NULL }
@@ -269,11 +227,4 @@ func (n Null) MarshalJSON() ([]byte, error) {
 }
 func CastNull(n []struct{}) (Null, error) {
 	return Null(n), nil
-}
-func ForceNull(n []struct{}) *Null {
-	null, err := CastNull(n)
-	if err != nil {
-		panic(err)
-	}
-	return &null
 }

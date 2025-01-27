@@ -17,13 +17,13 @@ func TestAccess(t *testing.T) {
 		"key access": {
 			target:   `{"hello":"world"}`,
 			accessor: fluffyjson.KeyAccess("hello"),
-			expect:   fluffyjson.ForceString("world"),
+			expect:   HelperCastString(t, "world"),
 			err:      nil,
 		},
 		"index access": {
 			target:   `["hello", "world"]`,
 			accessor: fluffyjson.IndexAccess(1),
-			expect:   fluffyjson.ForceString("world"),
+			expect:   HelperCastString(t, "world"),
 			err:      nil,
 		},
 		"invalid key access": {
@@ -58,8 +58,8 @@ func TestSliceAccess(t *testing.T) {
 			target:   `["one", "two", "three"]`,
 			accessor: fluffyjson.SliceAccess{Start: 1, End: 3},
 			expect: []fluffyjson.JsonValue{
-				fluffyjson.ForceString("two"),
-				fluffyjson.ForceString("three"),
+				HelperCastString(t, "two"),
+				HelperCastString(t, "three"),
 			},
 			err: nil,
 		},
@@ -95,25 +95,25 @@ func TestPointer(t *testing.T) {
 			"root": {
 				target:  `{"hello":"world"}`,
 				pointer: fluffyjson.ParsePointer("/"),
-				expect:  &fluffyjson.Object{"hello": fluffyjson.ForceString("world")},
+				expect:  &fluffyjson.Object{"hello": HelperCastString(t, "world")},
 				err:     nil,
 			},
 			"slice access": {
 				target:  `{"number": ["zero", "one", "two"]}`,
 				pointer: fluffyjson.ParsePointer("/number/1"),
-				expect:  fluffyjson.ForceString("one"),
+				expect:  HelperCastString(t, "one"),
 				err:     nil,
 			},
 			"integer like map key": {
 				target:  `{"0": "zero", "1": "one", "2": "two"}`,
 				pointer: fluffyjson.ParsePointer("/0"),
-				expect:  fluffyjson.ForceString("zero"),
+				expect:  HelperCastString(t, "zero"),
 				err:     nil,
 			},
 			"escape": {
 				target:  `{"a/b~c~1": "success"}`,
 				pointer: fluffyjson.ParsePointer("/a~1b~0c~01"),
-				expect:  fluffyjson.ForceString("success"),
+				expect:  HelperCastString(t, "success"),
 				err:     nil,
 			},
 		}
@@ -168,7 +168,7 @@ func TestAccessVariadic(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		var expect fluffyjson.JsonValue = fluffyjson.ForceString("two")
+		var expect fluffyjson.JsonValue = HelperCastString(t, "two")
 		HelperFatalEvaluate(t, expect, actual)
 	})
 }

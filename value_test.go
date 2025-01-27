@@ -27,8 +27,8 @@ func ExampleRootValue_UnmarshalJSON() {
 
 func ExampleRootValue_MarshalJSON() {
 	v := fluffyjson.RootValue{&fluffyjson.Array{
-		fluffyjson.ForceString("hello"),
-		fluffyjson.ForceString("world"),
+		&[]fluffyjson.String{fluffyjson.String("hello")}[0],
+		&[]fluffyjson.String{fluffyjson.String("world")}[0],
 	}}
 	b, err := v.MarshalJSON()
 	if err != nil {
@@ -132,7 +132,7 @@ func TestUnmarshalBasic(t *testing.T) {
 			actual: TestFluffy{},
 			target: `{"fluffy":{"hoge":"fuga"}}`,
 			expect: TestFluffy{
-				Fluffy: fluffyjson.RootValue{&fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
+				Fluffy: fluffyjson.RootValue{&fluffyjson.Object{"hoge": HelperCastString(t, "fuga")}},
 			},
 			err: nil,
 		},
@@ -141,10 +141,10 @@ func TestUnmarshalBasic(t *testing.T) {
 			target: `{"fluffy":[null, true, {"three": 4}, "five"]}`,
 			expect: TestFluffy{
 				Fluffy: fluffyjson.RootValue{&fluffyjson.Array{
-					fluffyjson.ForceNull(nil),
-					fluffyjson.ForceBool(true),
-					&fluffyjson.Object{"three": fluffyjson.ForceNumber(4)},
-					fluffyjson.ForceString("five"),
+					HelperCastNull(t, nil),
+					HelperCastBool(t, true),
+					&fluffyjson.Object{"three": HelperCastNumber(t, 4)},
+					HelperCastString(t, "five"),
 				}},
 			},
 			err: nil,
@@ -166,7 +166,7 @@ func TestMarshalBasic(t *testing.T) {
 	}{
 		"object and string": {
 			actual: TestFluffy{
-				Fluffy: fluffyjson.RootValue{&fluffyjson.Object{"hoge": fluffyjson.ForceString("fuga")}},
+				Fluffy: fluffyjson.RootValue{&fluffyjson.Object{"hoge": HelperCastString(t, "fuga")}},
 			},
 			expect: `{"fluffy":{"hoge":"fuga"}}`,
 			err:    nil,
@@ -174,10 +174,10 @@ func TestMarshalBasic(t *testing.T) {
 		"compound": {
 			actual: TestFluffy{
 				Fluffy: fluffyjson.RootValue{&fluffyjson.Array{
-					fluffyjson.ForceNull(nil),
-					fluffyjson.ForceBool(true),
-					&fluffyjson.Object{"three": fluffyjson.ForceNumber(4)},
-					fluffyjson.ForceString("five"),
+					HelperCastNull(t, nil),
+					HelperCastBool(t, true),
+					&fluffyjson.Object{"three": HelperCastNumber(t, 4)},
+					HelperCastString(t, "five"),
 				}},
 			},
 			expect: `{"fluffy":[null,true,{"three":4},"five"]}`,
@@ -229,4 +229,52 @@ func HelperEvaluateError[V any](t *testing.T, exp, act V, expErr, actErr error) 
 		return []any{diff}
 	}
 	return nil
+}
+func HelperCastObject(t *testing.T, m map[string]any) fluffyjson.Object {
+	t.Helper()
+	v, err := fluffyjson.CastObject(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return v
+}
+func HelperCastArray(t *testing.T, l []any) fluffyjson.Array {
+	t.Helper()
+	v, err := fluffyjson.CastArray(l)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return v
+}
+func HelperCastString(t *testing.T, s string) *fluffyjson.String {
+	t.Helper()
+	v, err := fluffyjson.CastString(s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return &v
+}
+func HelperCastNumber(t *testing.T, n float64) *fluffyjson.Number {
+	t.Helper()
+	v, err := fluffyjson.CastNumber(n)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return &v
+}
+func HelperCastBool(t *testing.T, b bool) *fluffyjson.Bool {
+	t.Helper()
+	v, err := fluffyjson.CastBool(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return &v
+}
+func HelperCastNull(t *testing.T, n []struct{}) *fluffyjson.Null {
+	t.Helper()
+	v, err := fluffyjson.CastNull(n)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return &v
 }

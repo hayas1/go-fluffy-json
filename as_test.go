@@ -15,7 +15,7 @@ func TestAsValue(t *testing.T) {
 		}{
 			"object as object": {
 				target: `{"hello":"world"}`,
-				expect: fluffyjson.Object{"hello": fluffyjson.ForceString("world")},
+				expect: fluffyjson.Object{"hello": HelperCastString(t, "world")},
 				err:    nil,
 			},
 			"string as object": {
@@ -42,7 +42,7 @@ func TestAsValue(t *testing.T) {
 		}{
 			"array as array": {
 				target: `["hello", "world"]`,
-				expect: fluffyjson.Array{fluffyjson.ForceString("hello"), fluffyjson.ForceString("world")},
+				expect: fluffyjson.Array{HelperCastString(t, "hello"), HelperCastString(t, "world")},
 				err:    nil,
 			},
 			"string as array": {
@@ -181,13 +181,13 @@ func TestAccessAsValue(t *testing.T) {
 			"root": {
 				target:   `{"hello":"world"}`,
 				accessor: fluffyjson.ParsePointer("/"),
-				expect:   fluffyjson.Object{"hello": fluffyjson.ForceString("world")},
+				expect:   fluffyjson.Object{"hello": HelperCastString(t, "world")},
 				err:      nil,
 			},
 			"nested": {
 				target:   `[0,1,2,{"three":4}]`,
 				accessor: fluffyjson.ParsePointer("/3"),
-				expect:   fluffyjson.Object{"three": fluffyjson.ForceNumber(4)},
+				expect:   fluffyjson.Object{"three": HelperCastNumber(t, 4)},
 				err:      nil,
 			},
 		}
@@ -211,13 +211,13 @@ func TestAccessAsValue(t *testing.T) {
 			"root": {
 				target:   `["hello", "world"]`,
 				accessor: fluffyjson.ParsePointer("/"),
-				expect:   fluffyjson.Array{fluffyjson.ForceString("hello"), fluffyjson.ForceString("world")},
+				expect:   fluffyjson.Array{HelperCastString(t, "hello"), HelperCastString(t, "world")},
 				err:      nil,
 			},
 			"nested": {
 				target:   `{"zero": 1, "two": [3,4]}`,
 				accessor: fluffyjson.ParsePointer("/two"),
-				expect:   fluffyjson.Array{fluffyjson.ForceNumber(3), fluffyjson.ForceNumber(4)},
+				expect:   fluffyjson.Array{HelperCastNumber(t, 3), HelperCastNumber(t, 4)},
 				err:      nil,
 			},
 		}
@@ -241,13 +241,13 @@ func TestAccessAsValue(t *testing.T) {
 			"root": {
 				target:   `"hello world"`,
 				accessor: fluffyjson.ParsePointer("/"),
-				expect:   *fluffyjson.ForceString("hello world"),
+				expect:   *HelperCastString(t, "hello world"),
 				err:      nil,
 			},
 			"nested": {
 				target:   `[0,1,2,{"three":"4"}]`,
 				accessor: fluffyjson.ParsePointer("/3/three"),
-				expect:   *fluffyjson.ForceString("4"),
+				expect:   *HelperCastString(t, "4"),
 				err:      nil,
 			},
 		}
@@ -271,13 +271,13 @@ func TestAccessAsValue(t *testing.T) {
 			"root": {
 				target:   `100`,
 				accessor: fluffyjson.ParsePointer("/"),
-				expect:   *fluffyjson.ForceNumber(100),
+				expect:   *HelperCastNumber(t, 100),
 				err:      nil,
 			},
 			"nested": {
 				target:   `[0,1,2,{"three":4}]`,
 				accessor: fluffyjson.ParsePointer("/2"),
-				expect:   *fluffyjson.ForceNumber(2),
+				expect:   *HelperCastNumber(t, 2),
 				err:      nil,
 			},
 		}
@@ -301,13 +301,13 @@ func TestAccessAsValue(t *testing.T) {
 			"root": {
 				target:   `true`,
 				accessor: fluffyjson.ParsePointer("/"),
-				expect:   *fluffyjson.ForceBool(true),
+				expect:   *HelperCastBool(t, true),
 				err:      nil,
 			},
 			"nested": {
 				target:   `[0,1,2,{"three":false}]`,
 				accessor: fluffyjson.ParsePointer("/3/three"),
-				expect:   *fluffyjson.ForceBool(false),
+				expect:   *HelperCastBool(t, false),
 				err:      nil,
 			},
 		}
@@ -331,13 +331,13 @@ func TestAccessAsValue(t *testing.T) {
 			"root": {
 				target:   `null`,
 				accessor: fluffyjson.ParsePointer("/"),
-				expect:   *fluffyjson.ForceNull(nil),
+				expect:   *HelperCastNull(t, nil),
 				err:      nil,
 			},
 			"nested": {
 				target:   `[null,1,2,{"three":false}]`,
 				accessor: fluffyjson.ParsePointer("/0"),
-				expect:   *fluffyjson.ForceNull(nil),
+				expect:   *HelperCastNull(t, nil),
 				err:      nil,
 			},
 		}
