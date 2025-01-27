@@ -16,7 +16,6 @@ type (
 		Representation() Representation
 		json.Unmarshaler // TODO this cause pointer receiver
 		json.Marshaler
-		AsValue
 		Access
 		AccessAs
 		Accept
