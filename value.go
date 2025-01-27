@@ -15,8 +15,9 @@ type (
 		json.Unmarshaler // TODO this cause pointer receiver
 		json.Marshaler
 		AsValue
-		Accept
 		Access
+		AccessAs
+		Accept
 		Search
 	}
 
