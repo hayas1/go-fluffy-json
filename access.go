@@ -120,7 +120,11 @@ func ParsePointer(p string) (Pointer, error) {
 	parsed := make([]string, 0)
 	for _, s := range strings.Split(p, "/")[1:] {
 		s = strings.ReplaceAll(s, "~1", "/")
+		c, l := strings.Count(s, "~"), len(s)
 		s = strings.ReplaceAll(s, "~0", "~")
+		if c+len(s) != l {
+			return nil, fmt.Errorf("invalid escape sequence near %s", s)
+		}
 		parsed = append(parsed, s)
 	}
 

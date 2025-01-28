@@ -193,6 +193,22 @@ func TestAccessVariadic(t *testing.T) {
 	})
 }
 
+func FuzzPointerRoundtrip(f *testing.F) {
+	f.Add("/hoge/0/")
+	f.Add("/fuga/1/~0")
+	f.Fuzz(func(t *testing.T, target string) {
+		pointer, err := fluffyjson.ParsePointer(target)
+		if err != nil {
+			return
+		}
+		roundtrip, err := pointer.String()
+		if err != nil {
+			t.Fatal(err)
+		}
+		HelperFatalEvaluate(t, target, roundtrip)
+	})
+}
+
 func HelperFatalParsePointer(t *testing.T, target string) fluffyjson.Pointer {
 	t.Helper()
 	pointer, err := fluffyjson.ParsePointer(target)
