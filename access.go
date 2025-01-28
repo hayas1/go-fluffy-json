@@ -138,14 +138,20 @@ func (p Pointer) String() (string, error) {
 	escaped := make([]string, 0, len(p))
 	for _, acc := range p {
 		var pointer string
-		switch ki := acc.(type) {
+		switch a := acc.(type) {
 		case KeyAccess:
-			pointer = string(ki)
+			pointer = string(a)
 		case IndexAccess:
-			pointer = fmt.Sprint(ki)
+			pointer = fmt.Sprint(a)
 		case KeyIndexAccess:
-			pointer = string(ki)
-		// TODO case Pointer:
+			pointer = string(a)
+		case Pointer:
+			p, err := a.String()
+			if err != nil {
+				return "", err
+			}
+			escaped = append(escaped, p)
+			continue
 		default:
 			return "", fmt.Errorf("unknown accessor %T", acc)
 		}
