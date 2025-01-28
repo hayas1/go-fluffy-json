@@ -123,15 +123,15 @@ type TestFluffy struct {
 
 func TestUnmarshalBasic(t *testing.T) {
 	testcases := map[string]struct {
-		actual TestFluffy
-		target string
-		expect TestFluffy
-		err    error
+		actual   TestFluffy
+		target   string
+		expected TestFluffy
+		err      error
 	}{
 		"object and string": {
 			actual: TestFluffy{},
 			target: `{"fluffy":{"hoge":"fuga"}}`,
-			expect: TestFluffy{
+			expected: TestFluffy{
 				Fluffy: fluffyjson.RootValue{&fluffyjson.Object{"hoge": HelperCastString(t, "fuga")}},
 			},
 			err: nil,
@@ -139,7 +139,7 @@ func TestUnmarshalBasic(t *testing.T) {
 		"compound": {
 			actual: TestFluffy{},
 			target: `{"fluffy":[null, true, {"three": 4}, "five"]}`,
-			expect: TestFluffy{
+			expected: TestFluffy{
 				Fluffy: fluffyjson.RootValue{&fluffyjson.Array{
 					HelperCastNull(t, nil),
 					HelperCastBool(t, true),
@@ -154,22 +154,22 @@ func TestUnmarshalBasic(t *testing.T) {
 	for name, tc := range testcases {
 		t.Run(name, func(t *testing.T) {
 			err := json.Unmarshal([]byte(tc.target), &tc.actual)
-			HelperFatalEvaluateError(t, tc.expect, tc.actual, tc.err, err)
+			HelperFatalEvaluateError(t, tc.expected, tc.actual, tc.err, err)
 		})
 	}
 }
 func TestMarshalBasic(t *testing.T) {
 	testcases := map[string]struct {
-		actual TestFluffy
-		expect string
-		err    error
+		actual   TestFluffy
+		expected string
+		err      error
 	}{
 		"object and string": {
 			actual: TestFluffy{
 				Fluffy: fluffyjson.RootValue{&fluffyjson.Object{"hoge": HelperCastString(t, "fuga")}},
 			},
-			expect: `{"fluffy":{"hoge":"fuga"}}`,
-			err:    nil,
+			expected: `{"fluffy":{"hoge":"fuga"}}`,
+			err:      nil,
 		},
 		"compound": {
 			actual: TestFluffy{
@@ -180,15 +180,15 @@ func TestMarshalBasic(t *testing.T) {
 					HelperCastString(t, "five"),
 				}},
 			},
-			expect: `{"fluffy":[null,true,{"three":4},"five"]}`,
-			err:    nil,
+			expected: `{"fluffy":[null,true,{"three":4},"five"]}`,
+			err:      nil,
 		},
 	}
 
 	for name, tc := range testcases {
 		t.Run(name, func(t *testing.T) {
 			bytes, err := json.Marshal(&tc.actual)
-			HelperFatalEvaluateError(t, tc.expect, string(bytes), tc.err, err)
+			HelperFatalEvaluateError(t, tc.expected, string(bytes), tc.err, err)
 		})
 	}
 }

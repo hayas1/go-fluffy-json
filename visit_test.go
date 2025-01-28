@@ -41,13 +41,13 @@ func TestDfsVisitor(t *testing.T) {
 func TestSearch(t *testing.T) {
 	t.Run("depth first", func(t *testing.T) {
 		testcases := map[string]struct {
-			target        string
-			expectPointer [][]fluffyjson.Pointer
-			expectValue   [][]fluffyjson.JsonValue
+			target          string
+			expectedPointer [][]fluffyjson.Pointer
+			expectedValue   [][]fluffyjson.JsonValue
 		}{
 			"basic": {
 				target: `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`,
-				expectPointer: [][]fluffyjson.Pointer{
+				expectedPointer: [][]fluffyjson.Pointer{
 					{
 						nil,
 						fluffyjson.Pointer{fluffyjson.KeyAccess("a")},
@@ -69,7 +69,7 @@ func TestSearch(t *testing.T) {
 						fluffyjson.Pointer{fluffyjson.KeyAccess("a"), fluffyjson.KeyAccess("b"), fluffyjson.IndexAccess(1)},
 					},
 				},
-				expectValue: [][]fluffyjson.JsonValue{
+				expectedValue: [][]fluffyjson.JsonValue{
 					{
 						&fluffyjson.Object{
 							"a": &fluffyjson.Object{
@@ -116,8 +116,8 @@ func TestSearch(t *testing.T) {
 
 				var i int
 				for p, v := range value.DepthFirst() {
-					pAny, pDiff := false, make([]string, 0, len(tc.expectPointer))
-					for _, ep := range tc.expectPointer {
+					pAny, pDiff := false, make([]string, 0, len(tc.expectedPointer))
+					for _, ep := range tc.expectedPointer {
 						diff := cmp.Diff(ep[i], p)
 						pDiff = append(pDiff, diff)
 						pAny = pAny || diff == ""
@@ -126,8 +126,8 @@ func TestSearch(t *testing.T) {
 						t.Fatal(pDiff)
 					}
 
-					vAny, vDiff := false, make([]string, 0, len(tc.expectValue))
-					for _, ev := range tc.expectValue {
+					vAny, vDiff := false, make([]string, 0, len(tc.expectedValue))
+					for _, ev := range tc.expectedValue {
 						diff := cmp.Diff(ev[i], v)
 						vDiff = append(vDiff, diff)
 						vAny = vAny || diff == ""
@@ -143,13 +143,13 @@ func TestSearch(t *testing.T) {
 
 	t.Run("breadth first", func(t *testing.T) {
 		testcases := map[string]struct {
-			target        string
-			expectPointer [][]fluffyjson.Pointer
-			expectValue   [][]fluffyjson.JsonValue
+			target          string
+			expectedPointer [][]fluffyjson.Pointer
+			expectedValue   [][]fluffyjson.JsonValue
 		}{
 			"basic": {
 				target: `{"a":{"b": ["c", "d"], "e": ["f", "g"]}}`,
-				expectPointer: [][]fluffyjson.Pointer{
+				expectedPointer: [][]fluffyjson.Pointer{
 					{
 						nil,
 						fluffyjson.Pointer{fluffyjson.KeyAccess("a")},
@@ -171,7 +171,7 @@ func TestSearch(t *testing.T) {
 						fluffyjson.Pointer{fluffyjson.KeyAccess("a"), fluffyjson.KeyAccess("b"), fluffyjson.IndexAccess(1)},
 					},
 				},
-				expectValue: [][]fluffyjson.JsonValue{
+				expectedValue: [][]fluffyjson.JsonValue{
 					{
 						&fluffyjson.Object{
 							"a": &fluffyjson.Object{
@@ -218,8 +218,8 @@ func TestSearch(t *testing.T) {
 
 				var i int
 				for p, v := range value.BreadthFirst() {
-					pAny, pDiff := false, make([]string, 0, len(tc.expectPointer))
-					for _, ep := range tc.expectPointer {
+					pAny, pDiff := false, make([]string, 0, len(tc.expectedPointer))
+					for _, ep := range tc.expectedPointer {
 						diff := cmp.Diff(ep[i], p)
 						pDiff = append(pDiff, diff)
 						pAny = pAny || diff == ""
@@ -228,8 +228,8 @@ func TestSearch(t *testing.T) {
 						t.Fatal(pDiff)
 					}
 
-					vAny, vDiff := false, make([]string, 0, len(tc.expectValue))
-					for _, ev := range tc.expectValue {
+					vAny, vDiff := false, make([]string, 0, len(tc.expectedValue))
+					for _, ev := range tc.expectedValue {
 						diff := cmp.Diff(ev[i], v)
 						vDiff = append(vDiff, diff)
 						vAny = vAny || diff == ""

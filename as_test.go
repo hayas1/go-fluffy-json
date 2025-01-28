@@ -9,19 +9,19 @@ import (
 func TestAsValue(t *testing.T) {
 	t.Run("as object", func(t *testing.T) {
 		testcases := map[string]struct {
-			target string
-			expect fluffyjson.Object
-			err    error
+			target   string
+			expected fluffyjson.Object
+			err      error
 		}{
 			"object as object": {
-				target: `{"hello":"world"}`,
-				expect: fluffyjson.Object{"hello": HelperCastString(t, "world")},
-				err:    nil,
+				target:   `{"hello":"world"}`,
+				expected: fluffyjson.Object{"hello": HelperCastString(t, "world")},
+				err:      nil,
 			},
 			"string as object": {
-				target: `[0,1,2,{"three":4}]`,
-				expect: nil,
-				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.OBJECT, Actual: fluffyjson.ARRAY},
+				target:   `[0,1,2,{"three":4}]`,
+				expected: nil,
+				err:      fluffyjson.ErrAsValue{Expected: fluffyjson.OBJECT, Actual: fluffyjson.ARRAY},
 			},
 		}
 
@@ -29,26 +29,26 @@ func TestAsValue(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsObject()
-				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
 
 	t.Run("as array", func(t *testing.T) {
 		testcases := map[string]struct {
-			target string
-			expect fluffyjson.Array
-			err    error
+			target   string
+			expected fluffyjson.Array
+			err      error
 		}{
 			"array as array": {
-				target: `["hello", "world"]`,
-				expect: fluffyjson.Array{HelperCastString(t, "hello"), HelperCastString(t, "world")},
-				err:    nil,
+				target:   `["hello", "world"]`,
+				expected: fluffyjson.Array{HelperCastString(t, "hello"), HelperCastString(t, "world")},
+				err:      nil,
 			},
 			"string as array": {
-				target: `"hello world"`,
-				expect: nil,
-				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.ARRAY, Actual: fluffyjson.STRING},
+				target:   `"hello world"`,
+				expected: nil,
+				err:      fluffyjson.ErrAsValue{Expected: fluffyjson.ARRAY, Actual: fluffyjson.STRING},
 			},
 		}
 
@@ -56,26 +56,26 @@ func TestAsValue(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsArray()
-				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
 
 	t.Run("as string", func(t *testing.T) {
 		testcases := map[string]struct {
-			target string
-			expect fluffyjson.String
-			err    error
+			target   string
+			expected fluffyjson.String
+			err      error
 		}{
 			"string as string": {
-				target: `"hello world"`,
-				expect: "hello world",
-				err:    nil,
+				target:   `"hello world"`,
+				expected: "hello world",
+				err:      nil,
 			},
 			"number as string": {
-				target: `100`,
-				expect: "",
-				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.STRING, Actual: fluffyjson.NUMBER},
+				target:   `100`,
+				expected: "",
+				err:      fluffyjson.ErrAsValue{Expected: fluffyjson.STRING, Actual: fluffyjson.NUMBER},
 			},
 		}
 
@@ -83,26 +83,26 @@ func TestAsValue(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsString()
-				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
 
 	t.Run("as number", func(t *testing.T) {
 		testcases := map[string]struct {
-			target string
-			expect fluffyjson.Number
-			err    error
+			target   string
+			expected fluffyjson.Number
+			err      error
 		}{
 			"number as number": {
-				target: `100`,
-				expect: 100,
-				err:    nil,
+				target:   `100`,
+				expected: 100,
+				err:      nil,
 			},
 			"string as number": {
-				target: `true`,
-				expect: 0,
-				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.NUMBER, Actual: fluffyjson.BOOL},
+				target:   `true`,
+				expected: 0,
+				err:      fluffyjson.ErrAsValue{Expected: fluffyjson.NUMBER, Actual: fluffyjson.BOOL},
 			},
 		}
 
@@ -110,26 +110,26 @@ func TestAsValue(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsNumber()
-				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
 
 	t.Run("as bool", func(t *testing.T) {
 		testcases := map[string]struct {
-			target string
-			expect fluffyjson.Bool
-			err    error
+			target   string
+			expected fluffyjson.Bool
+			err      error
 		}{
 			"bool as bool": {
-				target: `true`,
-				expect: true,
-				err:    nil,
+				target:   `true`,
+				expected: true,
+				err:      nil,
 			},
 			"null as bool": {
-				target: `null`,
-				expect: false,
-				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.BOOL, Actual: fluffyjson.NULL},
+				target:   `null`,
+				expected: false,
+				err:      fluffyjson.ErrAsValue{Expected: fluffyjson.BOOL, Actual: fluffyjson.NULL},
 			},
 		}
 
@@ -137,26 +137,26 @@ func TestAsValue(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsBool()
-				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
 
 	t.Run("as null", func(t *testing.T) {
 		testcases := map[string]struct {
-			target string
-			expect fluffyjson.Null
-			err    error
+			target   string
+			expected fluffyjson.Null
+			err      error
 		}{
 			"null as null": {
-				target: `null`,
-				expect: nil,
-				err:    nil,
+				target:   `null`,
+				expected: nil,
+				err:      nil,
 			},
 			"object as null": {
-				target: `{"hello": "world"}`,
-				expect: nil,
-				err:    fluffyjson.ErrAsValue{Expected: fluffyjson.NULL, Actual: fluffyjson.OBJECT},
+				target:   `{"hello": "world"}`,
+				expected: nil,
+				err:      fluffyjson.ErrAsValue{Expected: fluffyjson.NULL, Actual: fluffyjson.OBJECT},
 			},
 		}
 
@@ -164,7 +164,7 @@ func TestAsValue(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsNull()
-				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
@@ -175,19 +175,19 @@ func TestAccessAsValue(t *testing.T) {
 		testcases := map[string]struct {
 			target   string
 			accessor fluffyjson.Accessor
-			expect   fluffyjson.Object
+			expected fluffyjson.Object
 			err      error
 		}{
 			"root": {
 				target:   `{"hello":"world"}`,
 				accessor: fluffyjson.ParsePointer("/"),
-				expect:   fluffyjson.Object{"hello": HelperCastString(t, "world")},
+				expected: fluffyjson.Object{"hello": HelperCastString(t, "world")},
 				err:      nil,
 			},
 			"nested": {
 				target:   `[0,1,2,{"three":4}]`,
 				accessor: fluffyjson.ParsePointer("/3"),
-				expect:   fluffyjson.Object{"three": HelperCastNumber(t, 4)},
+				expected: fluffyjson.Object{"three": HelperCastNumber(t, 4)},
 				err:      nil,
 			},
 		}
@@ -196,7 +196,7 @@ func TestAccessAsValue(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsObject(tc.accessor)
-				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
@@ -205,19 +205,19 @@ func TestAccessAsValue(t *testing.T) {
 		testcases := map[string]struct {
 			target   string
 			accessor fluffyjson.Accessor
-			expect   fluffyjson.Array
+			expected fluffyjson.Array
 			err      error
 		}{
 			"root": {
 				target:   `["hello", "world"]`,
 				accessor: fluffyjson.ParsePointer("/"),
-				expect:   fluffyjson.Array{HelperCastString(t, "hello"), HelperCastString(t, "world")},
+				expected: fluffyjson.Array{HelperCastString(t, "hello"), HelperCastString(t, "world")},
 				err:      nil,
 			},
 			"nested": {
 				target:   `{"zero": 1, "two": [3,4]}`,
 				accessor: fluffyjson.ParsePointer("/two"),
-				expect:   fluffyjson.Array{HelperCastNumber(t, 3), HelperCastNumber(t, 4)},
+				expected: fluffyjson.Array{HelperCastNumber(t, 3), HelperCastNumber(t, 4)},
 				err:      nil,
 			},
 		}
@@ -226,7 +226,7 @@ func TestAccessAsValue(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsArray(tc.accessor)
-				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
@@ -235,19 +235,19 @@ func TestAccessAsValue(t *testing.T) {
 		testcases := map[string]struct {
 			target   string
 			accessor fluffyjson.Accessor
-			expect   fluffyjson.String
+			expected fluffyjson.String
 			err      error
 		}{
 			"root": {
 				target:   `"hello world"`,
 				accessor: fluffyjson.ParsePointer("/"),
-				expect:   *HelperCastString(t, "hello world"),
+				expected: *HelperCastString(t, "hello world"),
 				err:      nil,
 			},
 			"nested": {
 				target:   `[0,1,2,{"three":"4"}]`,
 				accessor: fluffyjson.ParsePointer("/3/three"),
-				expect:   *HelperCastString(t, "4"),
+				expected: *HelperCastString(t, "4"),
 				err:      nil,
 			},
 		}
@@ -256,7 +256,7 @@ func TestAccessAsValue(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsString(tc.accessor)
-				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
@@ -265,19 +265,19 @@ func TestAccessAsValue(t *testing.T) {
 		testcases := map[string]struct {
 			target   string
 			accessor fluffyjson.Accessor
-			expect   fluffyjson.Number
+			expected fluffyjson.Number
 			err      error
 		}{
 			"root": {
 				target:   `100`,
 				accessor: fluffyjson.ParsePointer("/"),
-				expect:   *HelperCastNumber(t, 100),
+				expected: *HelperCastNumber(t, 100),
 				err:      nil,
 			},
 			"nested": {
 				target:   `[0,1,2,{"three":4}]`,
 				accessor: fluffyjson.ParsePointer("/2"),
-				expect:   *HelperCastNumber(t, 2),
+				expected: *HelperCastNumber(t, 2),
 				err:      nil,
 			},
 		}
@@ -286,7 +286,7 @@ func TestAccessAsValue(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsNumber(tc.accessor)
-				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
@@ -295,19 +295,19 @@ func TestAccessAsValue(t *testing.T) {
 		testcases := map[string]struct {
 			target   string
 			accessor fluffyjson.Accessor
-			expect   fluffyjson.Bool
+			expected fluffyjson.Bool
 			err      error
 		}{
 			"root": {
 				target:   `true`,
 				accessor: fluffyjson.ParsePointer("/"),
-				expect:   *HelperCastBool(t, true),
+				expected: *HelperCastBool(t, true),
 				err:      nil,
 			},
 			"nested": {
 				target:   `[0,1,2,{"three":false}]`,
 				accessor: fluffyjson.ParsePointer("/3/three"),
-				expect:   *HelperCastBool(t, false),
+				expected: *HelperCastBool(t, false),
 				err:      nil,
 			},
 		}
@@ -316,7 +316,7 @@ func TestAccessAsValue(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsBool(tc.accessor)
-				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
@@ -325,19 +325,19 @@ func TestAccessAsValue(t *testing.T) {
 		testcases := map[string]struct {
 			target   string
 			accessor fluffyjson.Accessor
-			expect   fluffyjson.Null
+			expected fluffyjson.Null
 			err      error
 		}{
 			"root": {
 				target:   `null`,
 				accessor: fluffyjson.ParsePointer("/"),
-				expect:   *HelperCastNull(t, nil),
+				expected: *HelperCastNull(t, nil),
 				err:      nil,
 			},
 			"nested": {
 				target:   `[null,1,2,{"three":false}]`,
 				accessor: fluffyjson.ParsePointer("/0"),
-				expect:   *HelperCastNull(t, nil),
+				expected: *HelperCastNull(t, nil),
 				err:      nil,
 			},
 		}
@@ -346,7 +346,7 @@ func TestAccessAsValue(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
 				actual, err := value.AccessAsNull(tc.accessor)
-				HelperFatalEvaluateError(t, tc.expect, actual, tc.err, err)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
