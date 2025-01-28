@@ -88,6 +88,25 @@ func TestPointer(t *testing.T) {
 	t.Run("parse", func(t *testing.T) {
 		testcases := map[string]struct {
 			target   string
+			expected fluffyjson.Pointer
+			err      error
+		}{
+			"root": {
+				target:   "/",
+				expected: nil,
+				err:      nil,
+			},
+		}
+		for name, tc := range testcases {
+			t.Run(name, func(t *testing.T) {
+				actual, err := fluffyjson.ParsePointer(tc.target)
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
+			})
+		}
+	})
+	t.Run("access", func(t *testing.T) {
+		testcases := map[string]struct {
+			target   string
 			pointer  string
 			expected fluffyjson.JsonValue
 			err      error
@@ -121,7 +140,7 @@ func TestPointer(t *testing.T) {
 		for name, tc := range testcases {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-				actual, err := value.Access(fluffyjson.ParsePointer(tc.pointer))
+				actual, err := value.Access(HelperFatalParsePointer(t, tc.pointer))
 				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
@@ -131,6 +150,7 @@ func TestPointer(t *testing.T) {
 		testcases := map[string]struct {
 			pointer  fluffyjson.Pointer
 			expected string
+			err      error
 		}{
 			"root": {
 				pointer:  nil,
@@ -148,8 +168,8 @@ func TestPointer(t *testing.T) {
 
 		for name, tc := range testcases {
 			t.Run(name, func(t *testing.T) {
-				actual := tc.pointer.String()
-				HelperFatalEvaluate(t, tc.expected, actual)
+				actual, err := tc.pointer.String()
+				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
 	})
@@ -171,4 +191,13 @@ func TestAccessVariadic(t *testing.T) {
 		var expected fluffyjson.JsonValue = HelperCastString(t, "two")
 		HelperFatalEvaluate(t, expected, actual)
 	})
+}
+
+func HelperFatalParsePointer(t *testing.T, target string) fluffyjson.Pointer {
+	t.Helper()
+	pointer, err := fluffyjson.ParsePointer(target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return pointer
 }

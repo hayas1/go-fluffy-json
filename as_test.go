@@ -180,13 +180,13 @@ func TestAccessAsValue(t *testing.T) {
 		}{
 			"root": {
 				target:   `{"hello":"world"}`,
-				accessor: fluffyjson.ParsePointer("/"),
+				accessor: HelperFatalParsePointer(t, "/"),
 				expected: fluffyjson.Object{"hello": HelperCastString(t, "world")},
 				err:      nil,
 			},
 			"nested": {
 				target:   `[0,1,2,{"three":4}]`,
-				accessor: fluffyjson.ParsePointer("/3"),
+				accessor: HelperFatalParsePointer(t, "/3"),
 				expected: fluffyjson.Object{"three": HelperCastNumber(t, 4)},
 				err:      nil,
 			},
@@ -210,13 +210,13 @@ func TestAccessAsValue(t *testing.T) {
 		}{
 			"root": {
 				target:   `["hello", "world"]`,
-				accessor: fluffyjson.ParsePointer("/"),
+				accessor: HelperFatalParsePointer(t, "/"),
 				expected: fluffyjson.Array{HelperCastString(t, "hello"), HelperCastString(t, "world")},
 				err:      nil,
 			},
 			"nested": {
 				target:   `{"zero": 1, "two": [3,4]}`,
-				accessor: fluffyjson.ParsePointer("/two"),
+				accessor: HelperFatalParsePointer(t, "/two"),
 				expected: fluffyjson.Array{HelperCastNumber(t, 3), HelperCastNumber(t, 4)},
 				err:      nil,
 			},
@@ -240,13 +240,13 @@ func TestAccessAsValue(t *testing.T) {
 		}{
 			"root": {
 				target:   `"hello world"`,
-				accessor: fluffyjson.ParsePointer("/"),
+				accessor: HelperFatalParsePointer(t, "/"),
 				expected: *HelperCastString(t, "hello world"),
 				err:      nil,
 			},
 			"nested": {
 				target:   `[0,1,2,{"three":"4"}]`,
-				accessor: fluffyjson.ParsePointer("/3/three"),
+				accessor: HelperFatalParsePointer(t, "/3/three"),
 				expected: *HelperCastString(t, "4"),
 				err:      nil,
 			},
@@ -270,13 +270,13 @@ func TestAccessAsValue(t *testing.T) {
 		}{
 			"root": {
 				target:   `100`,
-				accessor: fluffyjson.ParsePointer("/"),
+				accessor: HelperFatalParsePointer(t, "/"),
 				expected: *HelperCastNumber(t, 100),
 				err:      nil,
 			},
 			"nested": {
 				target:   `[0,1,2,{"three":4}]`,
-				accessor: fluffyjson.ParsePointer("/2"),
+				accessor: HelperFatalParsePointer(t, "/2"),
 				expected: *HelperCastNumber(t, 2),
 				err:      nil,
 			},
@@ -300,13 +300,13 @@ func TestAccessAsValue(t *testing.T) {
 		}{
 			"root": {
 				target:   `true`,
-				accessor: fluffyjson.ParsePointer("/"),
+				accessor: HelperFatalParsePointer(t, "/"),
 				expected: *HelperCastBool(t, true),
 				err:      nil,
 			},
 			"nested": {
 				target:   `[0,1,2,{"three":false}]`,
-				accessor: fluffyjson.ParsePointer("/3/three"),
+				accessor: HelperFatalParsePointer(t, "/3/three"),
 				expected: *HelperCastBool(t, false),
 				err:      nil,
 			},
@@ -330,13 +330,13 @@ func TestAccessAsValue(t *testing.T) {
 		}{
 			"root": {
 				target:   `null`,
-				accessor: fluffyjson.ParsePointer("/"),
+				accessor: HelperFatalParsePointer(t, "/"),
 				expected: *HelperCastNull(t, nil),
 				err:      nil,
 			},
 			"nested": {
 				target:   `[null,1,2,{"three":false}]`,
-				accessor: fluffyjson.ParsePointer("/0"),
+				accessor: HelperFatalParsePointer(t, "/0"),
 				expected: *HelperCastNull(t, nil),
 				err:      nil,
 			},

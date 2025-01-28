@@ -110,9 +110,11 @@ func (s SliceAccess) Slicing(v JsonValue) ([]JsonValue, error) {
 }
 
 // https://tools.ietf.org/html/rfc6901
-func ParsePointer(p string) Pointer {
-	if p == "/" {
-		return nil
+func ParsePointer(p string) (Pointer, error) {
+	if !strings.HasPrefix(p, "/") {
+		return nil, fmt.Errorf("%s is not prefixed by /", p)
+	} else if p == "/" {
+		return nil, nil
 	}
 
 	parsed := make([]string, 0)
@@ -126,9 +128,9 @@ func ParsePointer(p string) Pointer {
 	for _, a := range parsed {
 		pointer = append(pointer, KeyIndexAccess(a))
 	}
-	return pointer
+	return pointer, nil
 }
-func (p Pointer) String() string {
+func (p Pointer) String() (string, error) {
 	escaped := make([]string, 0, len(p))
 	for _, acc := range p {
 		var pointer string
@@ -137,12 +139,17 @@ func (p Pointer) String() string {
 			pointer = string(ki)
 		case IndexAccess:
 			pointer = fmt.Sprint(ki)
+		case KeyIndexAccess:
+			pointer = string(ki)
+		// TODO case Pointer:
+		default:
+			return "", fmt.Errorf("unknown accessor %T", acc)
 		}
 		pointer = strings.ReplaceAll(pointer, "~", "~0")
 		pointer = strings.ReplaceAll(pointer, "/", "~1")
 		escaped = append(escaped, pointer)
 	}
-	return "/" + strings.Join(escaped, "/")
+	return "/" + strings.Join(escaped, "/"), nil
 }
 func (p Pointer) Accessing(v JsonValue) (JsonValue, error) {
 	curr := v
