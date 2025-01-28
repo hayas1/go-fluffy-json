@@ -88,31 +88,31 @@ func TestPointer(t *testing.T) {
 	t.Run("parse", func(t *testing.T) {
 		testcases := map[string]struct {
 			target   string
-			pointer  fluffyjson.Pointer
+			pointer  string
 			expected fluffyjson.JsonValue
 			err      error
 		}{
 			"root": {
 				target:   `{"hello":"world"}`,
-				pointer:  fluffyjson.ParsePointer("/"),
+				pointer:  "/",
 				expected: &fluffyjson.Object{"hello": HelperCastString(t, "world")},
 				err:      nil,
 			},
 			"slice access": {
 				target:   `{"number": ["zero", "one", "two"]}`,
-				pointer:  fluffyjson.ParsePointer("/number/1"),
+				pointer:  "/number/1",
 				expected: HelperCastString(t, "one"),
 				err:      nil,
 			},
 			"integer like map key": {
 				target:   `{"0": "zero", "1": "one", "2": "two"}`,
-				pointer:  fluffyjson.ParsePointer("/0"),
+				pointer:  "/0",
 				expected: HelperCastString(t, "zero"),
 				err:      nil,
 			},
 			"escape": {
 				target:   `{"a/b~c~1": "success"}`,
-				pointer:  fluffyjson.ParsePointer("/a~1b~0c~01"),
+				pointer:  "/a~1b~0c~01",
 				expected: HelperCastString(t, "success"),
 				err:      nil,
 			},
@@ -121,7 +121,7 @@ func TestPointer(t *testing.T) {
 		for name, tc := range testcases {
 			t.Run(name, func(t *testing.T) {
 				value := HelperUnmarshalValue(t, tc.target)
-				actual, err := value.Access(tc.pointer)
+				actual, err := value.Access(fluffyjson.ParsePointer(tc.pointer))
 				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
