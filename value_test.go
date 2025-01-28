@@ -270,9 +270,13 @@ func HelperCastBool(t *testing.T, b bool) *fluffyjson.Bool {
 	}
 	return &v
 }
-func HelperCastNull(t *testing.T, n []struct{}) *fluffyjson.Null {
+func HelperCastNull(t *testing.T, n func()) *fluffyjson.Null {
+	// func HelperCastNull(t *testing.T, n func(null)) *fluffyjson.Null {
 	t.Helper()
-	v, err := fluffyjson.CastNull(n)
+	if n != nil {
+		t.Fatalf("%p is not nil", n)
+	}
+	v, err := fluffyjson.CastNull(nil)
 	if err != nil {
 		t.Fatal(err)
 	}

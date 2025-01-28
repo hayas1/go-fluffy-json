@@ -30,7 +30,11 @@ type (
 	String    string
 	Number    float64
 	Bool      bool
-	Null      []struct{}
+	Null      func(null)
+
+	null struct {
+		_ struct{}
+	}
 
 	ErrCast struct {
 		Unsupported any
@@ -225,6 +229,6 @@ func (n *Null) UnmarshalJSON(data []byte) error {
 func (n Null) MarshalJSON() ([]byte, error) {
 	return json.Marshal(nil)
 }
-func CastNull(n []struct{}) (Null, error) {
+func CastNull(n func(null)) (Null, error) {
 	return Null(n), nil
 }
