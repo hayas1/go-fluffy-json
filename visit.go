@@ -50,7 +50,7 @@ type (
 )
 
 var (
-	// implemented visitor
+	// implemented visitors
 	_ []Visitor = []Visitor{&BaseVisitor{}, &PointerVisitor{}, &Dfs[Visitor]{}, &Bfs[Visitor]{}}
 )
 

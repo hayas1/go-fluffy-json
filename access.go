@@ -144,7 +144,6 @@ func (p Pointer) String() string {
 	}
 	return "/" + strings.Join(escaped, "/")
 }
-
 func (p Pointer) Accessing(v JsonValue) (JsonValue, error) {
 	curr := v
 	for _, a := range p {
