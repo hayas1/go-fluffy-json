@@ -5,7 +5,6 @@ import "fmt"
 type (
 	AccessAs interface {
 		Access
-		// TODO return pointer ?
 		AccessAsObject
 		AccessAsArray
 		AccessAsString

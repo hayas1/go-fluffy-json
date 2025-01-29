@@ -1,6 +1,7 @@
 package fluffyjson_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	fluffyjson "github.com/hayas1/go-fluffy-json"
@@ -349,5 +350,24 @@ func TestAccessAsValue(t *testing.T) {
 				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
+	})
+}
+
+func TestSubtreeReplace(t *testing.T) {
+	t.Run("subtree replace", func(t *testing.T) {
+		value := HelperUnmarshalValue(t, `[0,1,2]`)
+		array, err := value.AccessAsArray()
+		if err != nil {
+			t.Fatal(err)
+		}
+		hello := HelperUnmarshalValue(t, `{"hello":"world"}`)
+		array[1] = &hello
+
+		replaced, err := json.Marshal(value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		expected := `[0,{"hello":"world"},2]`
+		HelperFatalEvaluate(t, expected, string(replaced))
 	})
 }
