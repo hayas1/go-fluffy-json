@@ -7,15 +7,23 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-
     - uses: actions/setup-go@v5
       with:
         go-version: '1.23'
-
     - run: go test --race -v ./...
-    - run: go test --race --fuzz . -fuzztime 60s
+
+  fuzz:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        fuzz: [ FuzzMarshalUnmarshalRoundtrip, FuzzPointerRoundtrip ]
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+    - run: go test --race --fuzz ${{ matrix.fuzz }} -fuzztime 60s
