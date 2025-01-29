@@ -168,7 +168,7 @@ func TestPointer(t *testing.T) {
 
 		for name, tc := range testcases {
 			t.Run(name, func(t *testing.T) {
-				actual, err := tc.pointer.String()
+				actual, err := tc.pointer.PointerString()
 				HelperFatalEvaluateError(t, tc.expected, actual, tc.err, err)
 			})
 		}
@@ -201,7 +201,7 @@ func FuzzPointerRoundtrip(f *testing.F) {
 		if err != nil {
 			return
 		}
-		roundtrip, err := pointer.String()
+		roundtrip, err := pointer.PointerString()
 		if err != nil {
 			t.Fatal(err)
 		}

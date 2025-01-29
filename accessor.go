@@ -134,30 +134,22 @@ func ParsePointer(p string) (Pointer, error) {
 	}
 	return pointer, nil
 }
-func (p Pointer) String() (string, error) {
+func (p Pointer) PointerString() (string, error) {
 	escaped := make([]string, 0, len(p))
 	for _, acc := range p {
-		var pointer string
 		switch a := acc.(type) {
-		case KeyAccess:
-			pointer = string(a)
-		case IndexAccess:
-			pointer = fmt.Sprint(a)
-		case KeyIndexAccess:
-			pointer = string(a)
 		case Pointer:
-			p, err := a.String()
+			p, err := a.PointerString()
 			if err != nil {
 				return "", err
 			}
 			escaped = append(escaped, p)
-			continue
 		default:
-			return "", fmt.Errorf("unknown accessor %T", acc)
+			pointer := fmt.Sprint(a)
+			pointer = strings.ReplaceAll(pointer, "~", "~0")
+			pointer = strings.ReplaceAll(pointer, "/", "~1")
+			escaped = append(escaped, pointer)
 		}
-		pointer = strings.ReplaceAll(pointer, "~", "~0")
-		pointer = strings.ReplaceAll(pointer, "/", "~1")
-		escaped = append(escaped, pointer)
 	}
 	return "/" + strings.Join(escaped, "/"), nil
 }
