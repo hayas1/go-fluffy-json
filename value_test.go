@@ -198,6 +198,37 @@ func TestMarshalBasic(t *testing.T) {
 	}
 }
 
+func FuzzMarshalUnmarshalRoundtrip(f *testing.F) {
+	f.Add(`[
+		{"hoge": "fuga"},
+		[null, true, {"three": 4}, "five"],
+		"a\ta\fa\n",
+		100,
+		true,
+		null
+	]`)
+	f.Fuzz(func(t *testing.T, target string) {
+		var v1 fluffyjson.RootValue
+		if err := json.Unmarshal([]byte(target), &v1); err != nil {
+			return
+		}
+		b1, err := json.Marshal(v1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var v2 fluffyjson.RootValue
+		if err := json.Unmarshal(b1, &v2); err != nil {
+			t.Fatal(err)
+		}
+		HelperFatalEvaluate(t, v1, v2)
+		b2, err := json.Marshal(v2)
+		if err != nil {
+			t.Fatal(err)
+		}
+		HelperFatalEvaluate(t, b1, b2)
+	})
+}
+
 func HelperUnmarshalValue(t *testing.T, target string) fluffyjson.RootValue {
 	t.Helper()
 	var value fluffyjson.RootValue
