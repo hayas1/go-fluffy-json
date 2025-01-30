@@ -38,8 +38,8 @@ type (
 	}
 
 	ErrAsValue struct {
-		Expected Representation
-		Actual   Representation
+		Expected representation
+		Actual   representation
 	}
 )
 

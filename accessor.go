@@ -31,8 +31,8 @@ type (
 
 	ErrAccess struct {
 		Accessor string
-		Expected Representation
-		Actual   Representation
+		Expected representation
+		Actual   representation
 	}
 )
 
