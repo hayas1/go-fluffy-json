@@ -45,60 +45,42 @@ func accessAsObject(v JsonValue, ptr ...Accessor) (Object, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !v.Is(OBJECT) {
-		return nil, ErrAsValue{Expected: OBJECT, Actual: v.Representation()}
-	}
-	return *v.(*Object), nil
+	return v.AsObject()
 }
 func accessAsArray(v JsonValue, ptr ...Accessor) (Array, error) {
 	v, err := Pointer(ptr).Accessing(v)
 	if err != nil {
 		return nil, err
 	}
-	if !v.Is(ARRAY) {
-		return nil, ErrAsValue{Expected: ARRAY, Actual: v.Representation()}
-	}
-	return *v.(*Array), nil
+	return v.AsArray()
 }
 func accessAsString(v JsonValue, ptr ...Accessor) (String, error) {
 	v, err := Pointer(ptr).Accessing(v)
 	if err != nil {
 		return "", err
 	}
-	if !v.Is(STRING) {
-		return "", ErrAsValue{Expected: STRING, Actual: v.Representation()}
-	}
-	return *v.(*String), nil
+	return v.AsString()
 }
 func accessAsNumber(v JsonValue, ptr ...Accessor) (Number, error) {
 	v, err := Pointer(ptr).Accessing(v)
 	if err != nil {
 		return 0, err
 	}
-	if !v.Is(NUMBER) {
-		return 0, ErrAsValue{Expected: NUMBER, Actual: v.Representation()}
-	}
-	return *v.(*Number), nil
+	return v.AsNumber()
 }
 func accessAsBool(v JsonValue, ptr ...Accessor) (Bool, error) {
 	v, err := Pointer(ptr).Accessing(v)
 	if err != nil {
 		return false, err
 	}
-	if !v.Is(BOOL) {
-		return false, ErrAsValue{Expected: BOOL, Actual: v.Representation()}
-	}
-	return *v.(*Bool), nil
+	return v.AsBool()
 }
 func accessAsNull(v JsonValue, ptr ...Accessor) (Null, error) {
 	v, err := Pointer(ptr).Accessing(v)
 	if err != nil {
 		return nil, err
 	}
-	if !v.Is(NULL) {
-		return nil, ErrAsValue{Expected: NULL, Actual: v.Representation()}
-	}
-	return *v.(*Null), nil
+	return v.AsNull()
 }
 
 func (o Object) AccessAsObject(ptr ...Accessor) (Object, error) { return accessAsObject(&o, ptr...) }
