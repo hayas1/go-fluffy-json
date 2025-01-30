@@ -99,7 +99,7 @@ func (v *RootValue) UnmarshalJSON(data []byte) error {
 		}
 		v.JsonValue = &n
 	default:
-		var unmarshaled interface{}
+		var unmarshaled any
 		if err := json.Unmarshal(data, &unmarshaled); err != nil {
 			return err
 		}
