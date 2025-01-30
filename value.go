@@ -39,10 +39,16 @@ type (
 	ErrCast struct {
 		Unsupported any
 	}
+	ErrUnmarshal struct {
+		Data []byte
+	}
 )
 
 func (e ErrCast) Error() string {
 	return fmt.Sprintf("unsupported type %T", e.Unsupported)
+}
+func (e ErrUnmarshal) Error() string {
+	return fmt.Sprintf("cannot unmarshal %s", e.Data)
 }
 
 const (
@@ -55,15 +61,54 @@ const (
 )
 
 func (v *RootValue) UnmarshalJSON(data []byte) error {
-	// TODO remove this wrapper struct `RootValue` ?
-	// TODO do not implement as deep copy, unmarshal directly
-	var inner any
-	if err := json.Unmarshal(data, &inner); err != nil {
-		return err
-	} else if value, err := Cast(inner); err != nil {
-		return err
-	} else {
+	switch data[0] {
+	case '{':
+		var o Object
+		if err := json.Unmarshal(data, &o); err != nil {
+			return err
+		}
+		v.JsonValue = &o
+	case '[':
+		var a Array
+		if err := json.Unmarshal(data, &a); err != nil {
+			return err
+		}
+		v.JsonValue = &a
+	case '"':
+		var s String
+		if err := json.Unmarshal(data, &s); err != nil {
+			return err
+		}
+		v.JsonValue = &s
+	case '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+		var n Number
+		if err := json.Unmarshal(data, &n); err != nil {
+			return err
+		}
+		v.JsonValue = &n
+	case 't', 'f':
+		var b Bool
+		if err := json.Unmarshal(data, &b); err != nil {
+			return err
+		}
+		v.JsonValue = &b
+	case 'n':
+		var n Null
+		if err := json.Unmarshal(data, &n); err != nil {
+			return err
+		}
+		v.JsonValue = &n
+	default:
+		var unmarshaled interface{}
+		if err := json.Unmarshal(data, &unmarshaled); err != nil {
+			return err
+		}
+		value, err := Cast(unmarshaled)
+		if err != nil {
+			return err
+		}
 		v.JsonValue = value
+		return ErrUnmarshal{Data: data}
 	}
 	return nil
 }
