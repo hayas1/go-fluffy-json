@@ -61,7 +61,7 @@ func (k KeyAccess) Accessing(v JsonValue) (JsonValue, error) {
 		return nil, ErrAccess{
 			Accessor: fmt.Sprintf("%T", k),
 			Expected: OBJECT,
-			Actual:   v.Representation(),
+			Actual:   v.representation(),
 		}
 	}
 }
@@ -73,7 +73,7 @@ func (i IndexAccess) Accessing(v JsonValue) (JsonValue, error) {
 		return nil, ErrAccess{
 			Accessor: fmt.Sprintf("%T", i),
 			Expected: ARRAY,
-			Actual:   v.Representation(),
+			Actual:   v.representation(),
 		}
 	}
 }
@@ -91,7 +91,7 @@ func (ki KeyIndexAccess) Accessing(v JsonValue) (JsonValue, error) {
 		return nil, ErrAccess{
 			Accessor: fmt.Sprintf("%T", ki),
 			Expected: OBJECT, // TODO OBJECT or ARRAY
-			Actual:   v.Representation(),
+			Actual:   v.representation(),
 		}
 	}
 }
@@ -104,7 +104,7 @@ func (s SliceAccess) Slicing(v JsonValue) ([]JsonValue, error) {
 		return nil, ErrAccess{
 			Accessor: fmt.Sprintf("%T", s),
 			Expected: ARRAY,
-			Actual:   v.Representation(),
+			Actual:   v.representation(),
 		}
 	}
 }

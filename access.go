@@ -125,84 +125,90 @@ func sliceAsObject(v JsonValue, acc SliceAccessor) ([]Object, error) {
 	if err != nil {
 		return nil, err
 	}
-	s := make([]Object, 0, len(vs))
+	slice := make([]Object, 0, len(vs))
 	for _, v := range vs {
-		if !v.Is(OBJECT) {
-			return nil, ErrAsValue{Expected: OBJECT, Actual: v.Representation()}
+		o, err := v.AsObject()
+		if err != nil {
+			return nil, err
 		}
-		s = append(s, *v.(*Object))
+		slice = append(slice, o)
 	}
-	return s, nil
+	return slice, nil
 }
 func sliceAsArray(v JsonValue, acc SliceAccessor) ([]Array, error) {
 	vs, err := acc.Slicing(v)
 	if err != nil {
 		return nil, err
 	}
-	s := make([]Array, 0, len(vs))
+	slice := make([]Array, 0, len(vs))
 	for _, v := range vs {
-		if !v.Is(ARRAY) {
-			return nil, ErrAsValue{Expected: ARRAY, Actual: v.Representation()}
+		a, err := v.AsArray()
+		if err != nil {
+			return nil, err
 		}
-		s = append(s, *v.(*Array))
+		slice = append(slice, a)
 	}
-	return s, nil
+	return slice, nil
 }
 func sliceAsString(v JsonValue, acc SliceAccessor) ([]String, error) {
 	vs, err := acc.Slicing(v)
 	if err != nil {
 		return nil, err
 	}
-	s := make([]String, 0, len(vs))
+	slice := make([]String, 0, len(vs))
 	for _, v := range vs {
-		if !v.Is(STRING) {
-			return nil, ErrAsValue{Expected: STRING, Actual: v.Representation()}
+		s, err := v.AsString()
+		if err != nil {
+			return nil, err
 		}
-		s = append(s, *v.(*String))
+		slice = append(slice, s)
 	}
-	return s, nil
+	return slice, nil
 }
 func sliceAsNumber(v JsonValue, acc SliceAccessor) ([]Number, error) {
 	vs, err := acc.Slicing(v)
 	if err != nil {
 		return nil, err
 	}
-	s := make([]Number, 0, len(vs))
+	slice := make([]Number, 0, len(vs))
 	for _, v := range vs {
-		if !v.Is(NUMBER) {
-			return nil, ErrAsValue{Expected: NUMBER, Actual: v.Representation()}
+		n, err := v.AsNumber()
+		if err != nil {
+			return nil, err
 		}
-		s = append(s, *v.(*Number))
+		slice = append(slice, n)
 	}
-	return s, nil
+	return slice, nil
 }
 func sliceAsBool(v JsonValue, acc SliceAccessor) ([]Bool, error) {
 	vs, err := acc.Slicing(v)
 	if err != nil {
 		return nil, err
 	}
-	s := make([]Bool, 0, len(vs))
+	slice := make([]Bool, 0, len(vs))
 	for _, v := range vs {
-		if !v.Is(BOOL) {
-			return nil, ErrAsValue{Expected: BOOL, Actual: v.Representation()}
+		b, err := v.AsBool()
+		if err != nil {
+			return nil, err
 		}
-		s = append(s, *v.(*Bool))
+		slice = append(slice, b)
 	}
-	return s, nil
+	return slice, nil
 }
 func sliceAsNull(v JsonValue, acc SliceAccessor) ([]Null, error) {
 	vs, err := acc.Slicing(v)
 	if err != nil {
 		return nil, err
 	}
-	s := make([]Null, 0, len(vs))
+	slice := make([]Null, 0, len(vs))
 	for _, v := range vs {
-		if !v.Is(NULL) {
-			return nil, ErrAsValue{Expected: NULL, Actual: v.Representation()}
+		n, err := v.AsNull()
+		if err != nil {
+			return nil, err
 		}
-		s = append(s, *v.(*Null))
+		slice = append(slice, n)
 	}
-	return s, nil
+	return slice, nil
 }
 func (o Object) SliceAsObject(acc SliceAccessor) ([]Object, error) { return sliceAsObject(&o, acc) }
 func (o Object) SliceAsArray(acc SliceAccessor) ([]Array, error)   { return sliceAsArray(&o, acc) }

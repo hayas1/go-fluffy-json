@@ -12,6 +12,7 @@ import (
 type (
 	// The interface of JSON(https://www.json.org/) value
 	JsonValue interface {
+		representation() Representation
 		json.Unmarshaler // TODO this cause pointer receiver
 		json.Marshaler
 		As
@@ -70,6 +71,7 @@ func (v RootValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.JsonValue)
 }
 
+func (o Object) representation() Representation { return OBJECT }
 func (o *Object) UnmarshalJSON(data []byte) error {
 	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
@@ -85,6 +87,7 @@ func (o Object) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]JsonValue(o))
 }
 
+func (a Array) representation() Representation { return ARRAY }
 func (a *Array) UnmarshalJSON(data []byte) error {
 	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
@@ -100,6 +103,7 @@ func (a Array) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]JsonValue(a))
 }
 
+func (s *String) representation() Representation { return STRING }
 func (s *String) UnmarshalJSON(data []byte) error {
 	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
@@ -116,6 +120,7 @@ func (s String) MarshalJSON() ([]byte, error) {
 	return json.Marshal(string(s))
 }
 
+func (n *Number) representation() Representation { return NUMBER }
 func (n *Number) UnmarshalJSON(data []byte) error {
 	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
@@ -132,6 +137,7 @@ func (n Number) MarshalJSON() ([]byte, error) {
 	return json.Marshal(float64(n))
 }
 
+func (b *Bool) representation() Representation { return BOOL }
 func (b *Bool) UnmarshalJSON(data []byte) error {
 	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {
@@ -148,6 +154,7 @@ func (b Bool) MarshalJSON() ([]byte, error) {
 	return json.Marshal(bool(b))
 }
 
+func (n *Null) representation() Representation { return NULL }
 func (n *Null) UnmarshalJSON(data []byte) error {
 	var inner any
 	if err := json.Unmarshal(data, &inner); err != nil {

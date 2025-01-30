@@ -4,8 +4,6 @@ import "fmt"
 
 type (
 	As interface {
-		Is(Representation) bool
-		Representation() Representation
 		AsObject
 		AsArray
 		AsString
@@ -152,8 +150,6 @@ func (n Null) AsBool() (Bool, error)     { return false, ErrAsValue{Expected: BO
 func (n Null) IsNull() bool              { return true }
 func (n Null) AsNull() (Null, error)     { return n, nil }
 
-func (o Object) Is(r Representation) bool       { return r == OBJECT }
-func (o Object) Representation() Representation { return OBJECT }
 func CastObject(m map[string]any) (Object, error) {
 	var err error
 	object := make(map[string]JsonValue, len(m))
@@ -164,9 +160,6 @@ func CastObject(m map[string]any) (Object, error) {
 	}
 	return object, nil
 }
-
-func (a Array) Is(r Representation) bool       { return r == ARRAY }
-func (a Array) Representation() Representation { return ARRAY }
 func CastArray(l []any) (Array, error) {
 	var err error
 	array := make([]JsonValue, len(l))
@@ -177,27 +170,15 @@ func CastArray(l []any) (Array, error) {
 	}
 	return array, nil
 }
-
-func (s String) Is(r Representation) bool       { return r == STRING }
-func (s String) Representation() Representation { return STRING }
 func CastString(s string) (String, error) {
 	return String(s), nil
 }
-
-func (n Number) Is(r Representation) bool       { return r == NUMBER }
-func (n Number) Representation() Representation { return NUMBER }
 func CastNumber(n float64) (Number, error) {
 	return Number(n), nil
 }
-
-func (b Bool) Is(r Representation) bool       { return r == BOOL }
-func (b Bool) Representation() Representation { return BOOL }
 func CastBool(b bool) (Bool, error) {
 	return Bool(b), nil
 }
-
-func (n Null) Is(r Representation) bool       { return r == NULL }
-func (n Null) Representation() Representation { return NULL }
 func CastNull(n func(null)) (Null, error) {
 	return Null(n), nil
 }
