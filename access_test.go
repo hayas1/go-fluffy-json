@@ -7,7 +7,7 @@ import (
 	fluffyjson "github.com/hayas1/go-fluffy-json"
 )
 
-func TestAsValue(t *testing.T) {
+func TestAsValueLike(t *testing.T) {
 	t.Run("as object", func(t *testing.T) {
 		testcases := map[string]struct {
 			target   string
