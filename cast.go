@@ -47,31 +47,6 @@ func (e ErrAsValue) Error() string {
 	return fmt.Sprintf("not %s, but %s", e.Expected, e.Actual)
 }
 
-func Cast(v any) (JsonValue, error) {
-	switch t := v.(type) {
-	case map[string]any:
-		o, err := CastObject(t)
-		return &o, err
-	case []any:
-		a, err := CastArray(t)
-		return &a, err
-	case string:
-		s, err := CastString(t)
-		return &s, err
-	case float64:
-		n, err := CastNumber(t)
-		return &n, err
-	case bool:
-		b, err := CastBool(t)
-		return &b, err
-	case nil:
-		n, err := CastNull(nil)
-		return &n, err
-	default:
-		return nil, ErrCast{Unsupported: t}
-	}
-}
-
 func (o Object) IsObject() bool            { return true }
 func (o Object) AsObject() (Object, error) { return o, nil }
 func (o Object) IsArray() bool             { return false }
@@ -149,36 +124,3 @@ func (n Null) IsBool() bool              { return false }
 func (n Null) AsBool() (Bool, error)     { return false, ErrAsValue{Expected: BOOL, Actual: NULL} }
 func (n Null) IsNull() bool              { return true }
 func (n Null) AsNull() (Null, error)     { return n, nil }
-
-func CastObject(m map[string]any) (Object, error) {
-	var err error
-	object := make(map[string]JsonValue, len(m))
-	for k, v := range m {
-		if object[k], err = Cast(v); err != nil {
-			return nil, err
-		}
-	}
-	return object, nil
-}
-func CastArray(l []any) (Array, error) {
-	var err error
-	array := make([]JsonValue, len(l))
-	for i, v := range l {
-		if array[i], err = Cast(v); err != nil {
-			return nil, err
-		}
-	}
-	return array, nil
-}
-func CastString(s string) (String, error) {
-	return String(s), nil
-}
-func CastNumber(n float64) (Number, error) {
-	return Number(n), nil
-}
-func CastBool(b bool) (Bool, error) {
-	return Bool(b), nil
-}
-func CastNull(n func(null)) (Null, error) {
-	return Null(n), nil
-}
