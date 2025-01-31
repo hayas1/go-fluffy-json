@@ -142,13 +142,13 @@ func Cast(v any) (JsonValue, error) {
 
 func (o Object) representation() representation { return OBJECT }
 func (o *Object) UnmarshalJSON(data []byte) error {
-	var inner any
-	if err := json.Unmarshal(data, &inner); err != nil {
+	var object map[string]RootValue
+	if err := json.Unmarshal(data, &object); err != nil {
 		return err
-	} else if object, err := Cast(inner); err != nil {
-		return err
-	} else {
-		*o = *object.(*Object)
+	}
+	*o = make(Object, len(object))
+	for k, v := range object {
+		(*o)[k] = v.JsonValue
 	}
 	return nil
 }
@@ -168,13 +168,13 @@ func CastObject(m map[string]any) (Object, error) {
 
 func (a Array) representation() representation { return ARRAY }
 func (a *Array) UnmarshalJSON(data []byte) error {
-	var inner any
-	if err := json.Unmarshal(data, &inner); err != nil {
+	var array []RootValue
+	if err := json.Unmarshal(data, &array); err != nil {
 		return err
-	} else if array, err := Cast(inner); err != nil {
-		return err
-	} else {
-		*a = *array.(*Array)
+	}
+	*a = make(Array, 0, len(array))
+	for _, v := range array {
+		*a = append(*a, v.JsonValue)
 	}
 	return nil
 }
@@ -194,15 +194,11 @@ func CastArray(l []any) (Array, error) {
 
 func (s *String) representation() representation { return STRING }
 func (s *String) UnmarshalJSON(data []byte) error {
-	var inner any
-	if err := json.Unmarshal(data, &inner); err != nil {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
-	str, err := Cast(inner)
-	if err != nil {
-		return err
-	}
-	*s = *str.(*String)
+	*s = String(v)
 	return nil
 }
 func (s String) MarshalJSON() ([]byte, error) {
@@ -214,15 +210,11 @@ func CastString(s string) (String, error) {
 
 func (n *Number) representation() representation { return NUMBER }
 func (n *Number) UnmarshalJSON(data []byte) error {
-	var inner any
-	if err := json.Unmarshal(data, &inner); err != nil {
+	var v float64
+	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
-	num, err := Cast(inner)
-	if err != nil {
-		return err
-	}
-	*n = *num.(*Number)
+	*n = Number(v)
 	return nil
 }
 func (n Number) MarshalJSON() ([]byte, error) {
@@ -234,15 +226,11 @@ func CastNumber(n float64) (Number, error) {
 
 func (b *Bool) representation() representation { return BOOL }
 func (b *Bool) UnmarshalJSON(data []byte) error {
-	var inner any
-	if err := json.Unmarshal(data, &inner); err != nil {
+	var v bool
+	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
-	bool, err := Cast(inner)
-	if err != nil {
-		return err
-	}
-	*b = *bool.(*Bool)
+	*b = Bool(v)
 	return nil
 }
 func (b Bool) MarshalJSON() ([]byte, error) {
@@ -254,15 +242,11 @@ func CastBool(b bool) (Bool, error) {
 
 func (n *Null) representation() representation { return NULL }
 func (n *Null) UnmarshalJSON(data []byte) error {
-	var inner any
-	if err := json.Unmarshal(data, &inner); err != nil {
+	var v func(null)
+	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
-	null, err := Cast(inner)
-	if err != nil {
-		return err
-	}
-	*n = *null.(*Null)
+	*n = Null(v)
 	return nil
 }
 func (n Null) MarshalJSON() ([]byte, error) {
